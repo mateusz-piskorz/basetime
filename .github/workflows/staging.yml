@@ -2,18 +2,17 @@ name: Staging deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
-
   deploy:
     runs-on: self-hosted
-    
+
     defaults:
       run:
         working-directory: stg
-       
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -28,11 +27,12 @@ jobs:
       run: |
         docker images -f "dangling=true" -q | xargs -r docker rmi
 
-    - name: build and run
+    - name: Build and run containers
       run: |
-        docker-compose --file docker-compose.stg.yml up -d --build --force-recreate
+        docker compose --file docker-compose.stg.yml up -d --build --force-recreate
 
-    - name: prune docker
-      run: |
-        sleep 10s
-        docker system prune -f
+    - name: Wait for containers
+      run: sleep 10
+
+    - name: Prune Docker (optional)
+      run: docker system prune -f

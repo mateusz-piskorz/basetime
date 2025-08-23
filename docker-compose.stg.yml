@@ -15,9 +15,9 @@ services:
     image: postgres:17.6
     container_name: db_prod
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${stg.POSTGRES_DB}
+      POSTGRES_USER: ${stg.POSTGRES_USER}
+      POSTGRES_PASSWORD: ${stg.POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:

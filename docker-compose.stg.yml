@@ -1,0 +1,30 @@
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - 3001:3000
+    networks:
+      - btnetwork
+  db:
+    image: postgres:17.6
+    container_name: db_prod
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - btnetwork
+
+volumes:
+  postgres_data:
+
+networks:
+  btnetwork:

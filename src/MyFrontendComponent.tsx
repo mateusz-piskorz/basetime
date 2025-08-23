@@ -19,7 +19,7 @@ export const MyFrontendComponent = () => {
       onClick={() => refetch()}
       style={{ marginBottom: '16px', padding: '8px 16px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
       >
-      Refetch
+      Refetch2
       </button>
       <div>
       <form

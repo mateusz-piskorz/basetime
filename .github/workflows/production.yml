@@ -5,6 +5,7 @@ on:
 
 jobs:
   deploy:
+    environment: prod
     runs-on: self-hosted
 
     defaults:

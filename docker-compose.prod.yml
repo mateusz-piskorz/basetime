@@ -10,7 +10,7 @@ services:
     ports:
       - 3000:3000
     networks:
-      - btnetwork
+      - btnetworkprod
   db:
     image: postgres:17.6
     container_name: db_prod
@@ -21,10 +21,10 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - btnetwork
+      - btnetworkprod
 
 volumes:
   postgres_data:
 
 networks:
-  btnetwork:
+  btnetworkprod:

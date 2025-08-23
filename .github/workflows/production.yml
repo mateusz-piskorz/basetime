@@ -7,12 +7,17 @@ jobs:
   deploy:
     environment: prod
     runs-on: self-hosted
+    env: 
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ vars.POSTGRES_PASSWORD }}
+
 
     defaults:
       run:
         working-directory: prod
 
-    steps:
+    steps:  
     - name: Checkout code
       uses: actions/checkout@v4
       with:

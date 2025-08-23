@@ -9,6 +9,11 @@ jobs:
   deploy:
     environment: stg
     runs-on: self-hosted
+    env: 
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ vars.POSTGRES_PASSWORD }}
+
 
     defaults:
       run:

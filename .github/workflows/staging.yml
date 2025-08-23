@@ -1,0 +1,38 @@
+name: Staging deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+
+  deploy:
+    runs-on: self-hosted
+    
+    defaults:
+      run:
+        working-directory: stg
+       
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        path: stg
+
+    - name: Remove stopped containers
+      run: |
+        docker ps -a -q --filter status=exited | xargs -r docker rm
+
+    - name: Remove dangling images
+      run: |
+        docker images -f "dangling=true" -q | xargs -r docker rmi
+
+    - name: build and run
+      run: |
+        docker-compose --file docker-compose.stg.yml up -d --build --force-recreate
+
+    - name: prune docker
+      run: |
+        sleep 10s
+        docker system prune -f

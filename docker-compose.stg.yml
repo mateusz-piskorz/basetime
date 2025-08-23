@@ -13,18 +13,18 @@ services:
       - btnetworkstg
   db:
     image: postgres:17.6
-    container_name: db_prod
+    container_name: db_stg
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_stg:/var/lib/postgresql/data
     networks:
       - btnetworkstg
 
 volumes:
-  postgres_data:
+  postgres_data_stg:
 
 networks:
   btnetworkstg:

@@ -19,12 +19,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_prod:/var/lib/postgresql/data
     networks:
       - btnetworkprod
 
 volumes:
-  postgres_data:
+  postgres_data_prod:
 
 networks:
   btnetworkprod:

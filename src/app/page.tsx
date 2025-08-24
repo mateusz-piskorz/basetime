@@ -1,17 +1,16 @@
-import { getAllUsers } from '@/actions/example';
-import { getQueryClient } from '@/lib/tanstackQuery/queryClient';
-import {MyFrontendComponent} from '@/MyFrontendComponent'
+import { getQueryClient, trpc } from '@/lib/trpc/server-client';
+import { MyFrontendComponent } from '@/MyFrontendComponent';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 
 export default async function Home() {
-    const queryClient = getQueryClient()
+    const queryClient = getQueryClient();
 
-    await queryClient.prefetchQuery({queryKey:['getAllUsers'],queryFn:getAllUsers})
-  return (
-    <div>
-      <HydrationBoundary state={dehydrate(queryClient)}>
-        <MyFrontendComponent />
-      </HydrationBoundary>
-    </div>
-  );
+    await queryClient.prefetchQuery(trpc.getUsers.queryOptions());
+    return (
+        <div>
+            <HydrationBoundary state={dehydrate(queryClient)}>
+                <MyFrontendComponent />
+            </HydrationBoundary>
+        </div>
+    );
 }

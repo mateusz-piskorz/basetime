@@ -1,13 +1,16 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+
 import React from 'react'
-import { createUser, getAllUsers } from './actions/example'
+import { createUser } from './actions/example'
 import { Button } from './components/ui/button'
+import { trpc } from './lib/trpc/client'
 
 
 export const MyFrontendComponent = () => {
-      const {data,isLoading,refetch} = useQuery({ queryKey: ['getAllUsers'], queryFn: getAllUsers })
+  const {data,isLoading,refetch} = trpc.getUsers.useQuery()
+
+      
       const [name, setName] = React.useState('')
       const [email, setEmail] = React.useState('')
       const [password, setPassword] = React.useState('')

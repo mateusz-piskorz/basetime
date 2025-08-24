@@ -2,43 +2,59 @@ name: Staging deploy
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
   workflow_dispatch:
 
 jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Format
+        run: npm run format
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Types
+        run: npm run types
+
   deploy:
     environment: stg
     runs-on: self-hosted
-    env: 
+    env:
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
       POSTGRES_USER: ${{ vars.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-
 
     defaults:
       run:
         working-directory: stg
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        path: stg
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: stg
 
-    - name: Remove stopped containers
-      run: |
-        docker ps -a -q --filter status=exited | xargs -r docker rm
+      - name: Remove stopped containers
+        run: |
+          docker ps -a -q --filter status=exited | xargs -r docker rm
 
-    - name: Remove dangling images
-      run: |
-        docker images -f "dangling=true" -q | xargs -r docker rmi
+      - name: Remove dangling images
+        run: |
+          docker images -f "dangling=true" -q | xargs -r docker rmi
 
-    - name: Build and run containers
-      run: |
-        docker compose --file docker-compose.stg.yml up -d --build --force-recreate
+      - name: Build and run containers
+        run: |
+          docker compose --file docker-compose.stg.yml up -d --build --force-recreate
 
-    - name: Wait for containers
-      run: sleep 10
+      - name: Wait for containers
+        run: sleep 10
 
-    - name: Prune Docker (optional)
-      run: docker system prune -f
+      - name: Prune Docker (optional)
+        run: docker system prune -f

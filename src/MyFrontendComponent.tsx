@@ -4,12 +4,13 @@ import React from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createUser } from './actions/example'
+import { createUser } from '@/lib/actions/example'
 import { Button } from './components/ui/button'
 import { Input } from './components/ui/input'
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from './components/ui/form'
 import { trpc } from './lib/trpc/client'
 import { formSchema } from './lib/zod/my-schema'
+import { ModeToggle } from './components/common/mode-toggle'
 
 export const MyFrontendComponent = () => {
   const { data, isLoading, refetch } = trpc.getUsers.useQuery()
@@ -33,6 +34,7 @@ export const MyFrontendComponent = () => {
 
   return (
     <div style={{ padding: '24px', borderRadius: '8px', maxWidth: '400px', margin: '32px auto', boxShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+      <ModeToggle />
       <Button onClick={() => refetch()} variant="secondary">
         Refetch23
       </Button>

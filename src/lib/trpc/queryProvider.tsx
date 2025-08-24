@@ -3,7 +3,7 @@
 import { isServer, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {  makeQueryClient } from "./queryClient";
 import { ReactNode, useState } from "react";
-import { trpc } from "../trpc/client";
+import { trpc } from "./client";
 import { httpBatchLink } from '@trpc/client';
 
 

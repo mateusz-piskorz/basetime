@@ -2,7 +2,7 @@ import 'server-only';
 import { createTRPCOptionsProxy } from '@trpc/tanstack-react-query';
 import { cache } from 'react';
 import { createTRPCContext } from './init';
-import { makeQueryClient } from '../tanstackQuery/queryClient';
+import { makeQueryClient } from './queryClient';
 import { appRouter } from './index';
 
 

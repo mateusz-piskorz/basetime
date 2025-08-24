@@ -1,5 +1,5 @@
 import { getAllUsers } from '@/actions/example';
-import { getQueryClient } from '@/lib/tanstackQuery/queryClient';
+import { getQueryClient } from '@/lib/trpc/queryClient';
 import {MyFrontendComponent} from '@/MyFrontendComponent'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 

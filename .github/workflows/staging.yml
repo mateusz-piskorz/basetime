@@ -24,6 +24,7 @@ jobs:
         run: npm run types
 
   deploy:
+    needs: quality
     environment: stg
     runs-on: self-hosted
     env:

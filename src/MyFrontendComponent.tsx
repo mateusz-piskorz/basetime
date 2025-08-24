@@ -3,6 +3,8 @@
 import { useQuery } from '@tanstack/react-query'
 import React from 'react'
 import { createUser, getAllUsers } from './actions/example'
+import { Button } from './components/ui/button'
+
 
 export const MyFrontendComponent = () => {
       const {data,isLoading,refetch} = useQuery({ queryKey: ['getAllUsers'], queryFn: getAllUsers })
@@ -15,12 +17,12 @@ export const MyFrontendComponent = () => {
       }
   return (
     <div style={{ padding: '24px', background: '#18181b', borderRadius: '8px', maxWidth: '400px', margin: '32px auto', boxShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
-      <button
+      <Button 
       onClick={() => refetch()}
-      style={{ marginBottom: '16px', padding: '8px 16px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+      variant='secondary'
       >
-      Refetch2
-      </button>
+      Refetch23
+      </Button>
       <div>
       <form
         onSubmit={e => {

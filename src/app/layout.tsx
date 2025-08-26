@@ -2,6 +2,7 @@ import { ThemeProvider } from '@/lib/theme-provider';
 import { QueryProvider } from '@/lib/trpc/queryProvider';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { Toaster } from 'sonner';
 import './globals.css';
 
 const geistSans = Geist({
@@ -26,9 +27,12 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+            <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-                    <QueryProvider>{children}</QueryProvider>
+                    <QueryProvider>
+                        <Toaster />
+                        {children}
+                    </QueryProvider>
                 </ThemeProvider>
             </body>
         </html>

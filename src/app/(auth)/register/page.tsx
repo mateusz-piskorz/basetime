@@ -28,6 +28,7 @@ export default function RegisterPage() {
             return;
         }
 
+        setError(undefined);
         toast.success('registered successfully');
         form.reset();
         router.replace('/dashboard');

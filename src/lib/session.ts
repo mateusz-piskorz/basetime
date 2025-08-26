@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import { cache } from 'react';
 import 'server-only';
 import { prisma } from './prisma';
 
@@ -60,7 +61,8 @@ export async function deleteSession() {
 /**
  * use in server-components
  */
-export const getSession = async () => {
+
+export const getSession = cache(async () => {
     const cookie = (await cookies()).get('session')?.value;
     const session = await decrypt(cookie);
 
@@ -78,7 +80,7 @@ export const getSession = async () => {
     }
 
     return { ...res.user, sessionId: res.id };
-};
+});
 
 /**
  * use in server-actions and route-handlers(trpc)

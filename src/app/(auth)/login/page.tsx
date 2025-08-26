@@ -28,6 +28,7 @@ export default function LoginPage() {
             return;
         }
 
+        setError(undefined);
         toast.success('logged in successfully');
         form.reset();
         router.replace('/dashboard');

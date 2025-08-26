@@ -1,0 +1,23 @@
+import { getSession } from '@/lib/session';
+
+import { Separator } from '@/components/ui/separator';
+import { redirect } from 'next/navigation';
+import { SectionAppearance } from './_partials/section-appearance';
+import { SectionPassword } from './_partials/section-password';
+import { SectionProfileInfo } from './_partials/section-profile-info';
+
+export default async function SettingsPage() {
+    const user = await getSession();
+    if (!user) {
+        return redirect('/');
+    }
+    return (
+        <div className="space-y-8 py-8">
+            <SectionAppearance />
+            <Separator />
+            <SectionProfileInfo />
+            <Separator />
+            <SectionPassword />
+        </div>
+    );
+}

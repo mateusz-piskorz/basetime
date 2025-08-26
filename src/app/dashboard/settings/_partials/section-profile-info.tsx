@@ -14,10 +14,10 @@ import { toast } from 'sonner';
 import z from 'zod';
 
 export const SectionProfileInfo = () => {
-    const { name } = useAuth().user;
+    const { user } = useAuth();
     const form = useForm({
         resolver: zodResolver(updateProfileSchema),
-        defaultValues: { name },
+        defaultValues: { name: user?.name || '' },
     });
 
     const onSubmit = async (values: z.infer<typeof updateProfileSchema>) => {

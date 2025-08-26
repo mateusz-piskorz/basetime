@@ -6,6 +6,7 @@ import { Form } from '@/components/ui/form';
 import { signup } from '@/lib/server-actions/auth';
 import { registerSchema } from '@/lib/zod/auth-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -46,9 +47,15 @@ export default function RegisterPage() {
                     <InputField form={form} type="text" name="name" label="Name" placeholder="John Doe" />
                     <InputField form={form} type="password" name="password" label="Password" />
                     {error && <p className="text-red-500">{error}</p>}
-                    <Button disabled={form.formState.isSubmitting} type="submit">
+                    <Button disabled={form.formState.isSubmitting} type="submit" className="w-full">
                         Register
                     </Button>
+                    <p className="text-muted-foreground text-center">
+                        Already have an account?{' '}
+                        <Link href="/login" className="text-primary underline-offset-4 hover:underline">
+                            Log in
+                        </Link>
+                    </p>
                 </form>
             </Form>
         </>

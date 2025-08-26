@@ -35,7 +35,7 @@ export const signup = async (data: z.infer<typeof registerSchema>) => {
         const pwHash = await bcrypt.hash(password, 9);
         const userId = (await prisma.user.create({ data: { email, name: name || email, password: pwHash } })).id;
         const userAgent = (await headers()).get('user-agent') || '';
-        await createSession({ clientIp, userAgent, userId });
+        await createSession({ userAgent, userId });
 
         return { success: true };
     } catch {
@@ -74,10 +74,11 @@ export const signin = async (data: z.infer<typeof loginSchema>) => {
         }
 
         const userAgent = (await headers()).get('user-agent') || '';
-        await createSession({ clientIp, userAgent, userId: user.id });
+        await createSession({ userAgent, userId: user.id });
 
         return { success: true };
-    } catch {
+    } catch (e) {
+        console.log(e);
         return { success: false, message: 'Error something went wrong - signin' };
     }
 };

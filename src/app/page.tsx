@@ -1,17 +1,15 @@
-// import { getQueryClient, trpc } from '@/lib/trpc/server-client';
-// import { MyFrontendComponent } from '@/MyFrontendComponent';
-// import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+'use client';
 
-export default async function Home() {
-    // const queryClient = getQueryClient();
+import { useAuth } from '@/lib/hooks/use-auth';
+import Link from 'next/link';
 
-    // await queryClient.prefetchQuery(trpc.getUsers.queryOptions());
+export default function Home() {
+    const { user } = useAuth();
     return (
-        <div>
-            home
-            {/* <HydrationBoundary state={dehydrate(queryClient)}>
-                <MyFrontendComponent />
-            </HydrationBoundary> */}
+        <div className="h-[400px] p-4">
+            <Link className="inline-block rounded border p-4" href={user ? '/dashboard' : '/login'}>
+                {user ? 'Dashboard' : 'Login'}
+            </Link>
         </div>
     );
 }

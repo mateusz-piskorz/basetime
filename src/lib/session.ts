@@ -22,12 +22,12 @@ const decrypt = async (session: string | undefined = '') => {
     }
 };
 
-type CreateSession = { userId: string; clientIp: string; userAgent: string };
+type CreateSession = { userId: string; userAgent: string };
 
-export async function createSession({ clientIp, userId, userAgent }: CreateSession) {
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+export async function createSession({ userId, userAgent }: CreateSession) {
+    const expiresAt = new Date(Date.now() + 1 * 60 * 60 * 1000);
 
-    const sessionId = (await prisma.session.create({ data: { expiresAt, ip: clientIp, userAgent, userId } })).id;
+    const sessionId = (await prisma.session.create({ data: { expiresAt, userAgent, userId } })).id;
 
     const session = await encrypt({ sessionId, expiresAt });
     const cookieStore = await cookies();
@@ -87,33 +87,36 @@ export const getSession = cache(async () => {
  */
 
 export const verifySession = async () => {
-    const cookie = (await cookies()).get('session')?.value;
-    const session = await decrypt(cookie);
+    try {
+        const cookie = (await cookies()).get('session')?.value;
+        const session = await decrypt(cookie);
 
-    if (!cookie || !session?.sessionId) {
+        if (!cookie || !session?.sessionId) {
+            return null;
+        }
+
+        const expires = new Date(Date.now() + 1 * 60 * 60 * 1000);
+
+        const res = await prisma.session.update({
+            where: { id: session.sessionId as string, expiresAt: { gte: new Date() } },
+            select: { id: true, user: { select: { id: true, email: true, name: true } } },
+            data: { expiresAt: expires },
+        });
+        if (!res) {
+            return null;
+        }
+
+        const cookieStore = await cookies();
+        cookieStore.set('session', cookie, {
+            httpOnly: true,
+            secure: true,
+            expires,
+            sameSite: 'lax',
+            path: '/',
+        });
+
+        return { ...res.user, sessionId: res.id };
+    } catch {
         return null;
     }
-
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-    const res = await prisma.session.update({
-        where: { id: session.sessionId as string, expiresAt: { gte: new Date() } },
-        select: { id: true, user: { select: { id: true, email: true, name: true } } },
-        data: { expiresAt: expires },
-    });
-
-    if (!res) {
-        return null;
-    }
-
-    const cookieStore = await cookies();
-    cookieStore.set('session', cookie, {
-        httpOnly: true,
-        secure: true,
-        expires,
-        sameSite: 'lax',
-        path: '/',
-    });
-
-    return { ...res.user, sessionId: res.id };
 };

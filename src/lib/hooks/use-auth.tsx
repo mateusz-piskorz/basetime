@@ -15,16 +15,16 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>({ user: null });
 
-export const AuthProvider = ({ user, children }: { user: AuthUser; children: ReactNode }) => {
+export const AuthProvider = ({ user, children }: { user: AuthUser | null; children: ReactNode }) => {
     return <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
 
-    if (!context.user) {
-        throw new Error('useCarousel must be used within a <Carousel />');
+    if (!context) {
+        throw new Error('useAuth must be used within a <AuthProvider />');
     }
 
-    return { user: context.user };
+    return context;
 };

@@ -6,6 +6,7 @@ import { Form } from '@/components/ui/form';
 import { signin } from '@/lib/server-actions/auth';
 import { loginSchema } from '@/lib/zod/auth-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -48,6 +49,12 @@ export default function LoginPage() {
                     <Button disabled={form.formState.isSubmitting} type="submit" className="w-full">
                         Login
                     </Button>
+                    <p className="text-muted-foreground text-center">
+                        {"Don't have an account?"}{' '}
+                        <Link href="/register" className="text-primary underline-offset-4 hover:underline">
+                            Sign up
+                        </Link>
+                    </p>
                 </form>
             </Form>
         </>

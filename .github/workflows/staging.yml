@@ -56,14 +56,11 @@ jobs:
         run: |
           docker compose --file docker-compose.stg.yml up -d --build --force-recreate
 
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Run Prisma migrate deploy
-        run: npx prisma migrate deploy
-
       - name: Wait for containers
         run: sleep 10
+
+      - name: Run Prisma migrate deploy
+        run: docker compose --file docker-compose.stg.yml run --rm app npx prisma migrate deploy
 
       - name: Prune Docker (optional)
         run: docker system prune -f

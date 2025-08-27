@@ -28,6 +28,7 @@ jobs:
     environment: stg
     runs-on: self-hosted
     env:
+      NEXT_PUBLIC_URL: ${{ vars.NEXT_PUBLIC_URL }}
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
       POSTGRES_USER: ${{ vars.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}

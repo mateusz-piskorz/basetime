@@ -44,7 +44,7 @@ export default function RegisterPage() {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" style={{ marginBottom: '16px' }}>
                     <InputField form={form} type="email" name="email" label="Email" />
-                    <InputField form={form} type="text" name="name" label="Name" placeholder="John Doe" />
+                    <InputField form={form} type="text" name="name" label="Name (Optional)" placeholder="John Doe" />
                     <InputField form={form} type="password" name="password" label="Password" />
                     {error && <p className="text-red-500">{error}</p>}
                     <Button disabled={form.formState.isSubmitting} type="submit" className="w-full">

@@ -74,6 +74,7 @@ export const signin = async (data: z.infer<typeof loginSchema>) => {
         }
 
         const userAgent = (await headers()).get('user-agent') || '';
+
         await createSession({ userAgent, userId: user.id });
 
         return { success: true };
@@ -83,9 +84,9 @@ export const signin = async (data: z.infer<typeof loginSchema>) => {
     }
 };
 
-export const logout = async () => {
+export const logout = async (sessionId?: string) => {
     try {
-        await deleteSession();
+        await deleteSession(sessionId);
         return { success: true };
     } catch {
         return { success: false, message: 'Error something went wrong - logout' };

@@ -26,11 +26,10 @@ model User {
 }
 
 model Session {
-  id         String   @id @default(cuid())
-  userId     String
-  expiresAt  DateTime
-  userAgent  String
-  lastAction DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  expiresAt DateTime
+  userAgent String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

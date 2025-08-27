@@ -17,9 +17,7 @@ const decrypt = async (session: string | undefined = '') => {
             algorithms: ['HS256'],
         });
         return payload;
-    } catch {
-        console.log('Failed to verify session');
-    }
+    } catch {}
 };
 
 type CreateSession = { userId: string; userAgent: string };
@@ -41,7 +39,15 @@ export async function createSession({ userId, userAgent }: CreateSession) {
     });
 }
 
-export async function deleteSession() {
+export async function deleteSession(sessionId?: string) {
+    if (sessionId) {
+        await prisma.session.update({
+            where: { id: sessionId as string, expiresAt: { gte: new Date() } },
+            data: { expiresAt: new Date(Date.now() - 1000) },
+        });
+        return;
+    }
+
     const cookieStore = await cookies();
     const cookie = cookieStore.get('session')?.value;
     const session = await decrypt(cookie);
@@ -54,7 +60,6 @@ export async function deleteSession() {
         where: { id: session.sessionId as string, expiresAt: { gte: new Date() } },
         data: { expiresAt: new Date(Date.now() - 1000) },
     });
-
     cookieStore.delete('session');
 }
 
@@ -64,6 +69,7 @@ export async function deleteSession() {
 
 export const getSession = cache(async () => {
     const cookie = (await cookies()).get('session')?.value;
+
     const session = await decrypt(cookie);
 
     if (!cookie || !session?.sessionId) {

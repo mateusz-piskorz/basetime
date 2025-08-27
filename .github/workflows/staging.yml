@@ -28,9 +28,11 @@ jobs:
     environment: stg
     runs-on: self-hosted
     env:
+      NEXT_PUBLIC_URL: ${{ vars.NEXT_PUBLIC_URL }}
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
       POSTGRES_USER: ${{ vars.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
 
     defaults:
       run:
@@ -56,6 +58,9 @@ jobs:
 
       - name: Wait for containers
         run: sleep 10
+
+      - name: Run Prisma migrate deploy
+        run: docker compose --file docker-compose.stg.yml run --rm app npx prisma migrate deploy
 
       - name: Prune Docker (optional)
         run: docker system prune -f

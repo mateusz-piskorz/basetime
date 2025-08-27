@@ -1,8 +1,8 @@
 import { AuthProvider } from '@/lib/hooks/use-auth';
 import { getSession } from '@/lib/session';
-import { ThemeProvider } from '@/lib/theme-provider';
 import { QueryProvider } from '@/lib/trpc/queryProvider';
 import type { Metadata } from 'next';
+import { ThemeProvider } from 'next-themes';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Toaster } from 'sonner';
 import './globals.css';

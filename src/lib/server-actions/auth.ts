@@ -5,8 +5,8 @@ import { loginSchema, registerSchema } from '@/lib/zod/auth-schema';
 import bcrypt from 'bcrypt';
 import { headers } from 'next/headers';
 import z from 'zod';
-import { getClientIp } from '../get-client-ip';
-import rateLimit from '../rate-limit';
+import { getClientIp } from '../server-utils/get-client-ip';
+import rateLimit from '../server-utils/rate-limit';
 import { createSession, deleteSession, verifySession } from '../session';
 
 const limiter = rateLimit({

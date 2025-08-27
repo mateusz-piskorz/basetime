@@ -20,7 +20,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 export function NavUser() {
-    const { state } = useSidebar();
+    const { state, setOpenMobile } = useSidebar();
     const isMobile = useIsMobile();
 
     const router = useRouter();
@@ -58,7 +58,7 @@ export function NavUser() {
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem asChild>
-                                <Link className="block w-full" href="/dashboard/settings" prefetch>
+                                <Link className="block w-full" href="/dashboard/settings" prefetch onClick={() => setOpenMobile(false)}>
                                     <Settings className="mr-2" />
                                     Settings
                                 </Link>

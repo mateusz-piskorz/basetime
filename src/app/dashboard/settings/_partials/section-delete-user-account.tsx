@@ -36,11 +36,7 @@ export const SectionDeleteUserAccount = () => {
 
     return (
         <div className="space-y-8 px-4 md:px-8">
-            <DashboardHeading
-                className="mb-8"
-                title="Update password"
-                description="Ensure your account is using a long, random password to stay secure"
-            />
+            <DashboardHeading className="mb-8" title="Delete account" description="delete account and all of its resources permanently" />
             <div className="space-y-4 rounded-lg border border-red-200 bg-red-100 p-4 dark:border-red-200/10 dark:bg-red-700/10">
                 <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
                     <p className="font-medium">Warning</p>

@@ -9,62 +9,47 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarSeparator,
     useSidebar,
 } from '@/components/ui/sidebar';
 import { LayoutGrid } from 'lucide-react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { NavItem, NavMain } from './nav-main';
+import { NavOrganizations } from './nav-organizations';
 import { NavUser } from './nav-user';
 
-export function AppSidebar() {
-    const mainNavItems: NavItem[] = [
-        {
-            title: 'Dashboard',
-            href: '/dashboard',
-            icon: LayoutGrid,
-        },
-        // {
-        //     title: locale.Invoices,
-        //     href: route('invoices'),
-        //     icon: RadioReceiver,
-        // },
-        // {
-        //     title: locale.Contractors,
-        //     href: route('contractors'),
-        //     icon: Users2,
-        // },
-        // {
-        //     title: locale.Products,
-        //     href: route('products'),
-        //     icon: AirVentIcon,
-        // },
-        // {
-        //     title: locale.Analytics,
-        //     href: route('analytics'),
-        //     icon: ChartNoAxesCombined,
-        // },
-        // {
-        //     title: locale['Premium Account'],
-        //     href: route('premium-account'),
-        //     icon: Crown,
-        // },
-    ];
+const mainNavItems: NavItem[] = [
+    {
+        title: 'Dashboard',
+        href: '/dashboard',
+        icon: LayoutGrid,
+    },
+];
 
+export function AppSidebar() {
     const { setOpenMobile } = useSidebar();
+    const { organizationId } = useParams<{ organizationId: string | undefined }>();
 
     return (
         <Sidebar collapsible="icon" variant="sidebar">
             <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href="/dashboard" prefetch onClick={() => setOpenMobile(false)}>
-                                <AppLogo />
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
+                {organizationId ? (
+                    <NavOrganizations organizationId={organizationId} />
+                ) : (
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton size="lg" asChild>
+                                <Link href="/dashboard" prefetch onClick={() => setOpenMobile(false)}>
+                                    <AppLogo />
+                                </Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                )}
             </SidebarHeader>
+
+            <SidebarSeparator className="mx-0 mb-4" />
 
             <SidebarContent>
                 <NavMain items={mainNavItems} />

@@ -78,14 +78,14 @@ export const getSession = cache(async () => {
 
     const res = await prisma.session.findUnique({
         where: { id: session.sessionId as string, expiresAt: { gte: new Date() } },
-        select: { id: true, user: { select: { id: true, email: true, name: true } } },
+        select: { id: true, User: { select: { id: true, email: true, name: true } } },
     });
 
     if (!res) {
         return null;
     }
 
-    return { ...res.user, sessionId: res.id };
+    return { ...res.User, sessionId: res.id };
 });
 
 /**
@@ -105,7 +105,7 @@ export const verifySession = async () => {
 
         const res = await prisma.session.update({
             where: { id: session.sessionId as string, expiresAt: { gte: new Date() } },
-            select: { id: true, user: { select: { id: true, email: true, name: true } } },
+            select: { id: true, User: { select: { id: true, email: true, name: true } } },
             data: { expiresAt: expires },
         });
         if (!res) {
@@ -121,7 +121,7 @@ export const verifySession = async () => {
             path: '/',
         });
 
-        return { ...res.user, sessionId: res.id };
+        return { ...res.User, sessionId: res.id };
     } catch {
         return null;
     }

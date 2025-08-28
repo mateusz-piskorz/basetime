@@ -1,3 +1,4 @@
+import { formatMinutes, getDiffInMinutes } from '@/lib/utils';
 import z from 'zod';
 import { prisma } from '../prisma';
 import { verifySession } from '../session';
@@ -29,7 +30,14 @@ export const appRouter = createTRPCRouter({
                 PersonalOwner: { select: { id: true } },
             },
         });
-        //  count hours here
+
+        return res.map((organization) => {
+            const totalMinutes = organization.TimeEntries.reduce((sum, entry) => {
+                return sum + getDiffInMinutes({ start: entry.start, end: entry.end });
+            }, 0);
+
+            return { ...organization, loggedTime: formatMinutes(totalMinutes) };
+        });
     }),
 });
 

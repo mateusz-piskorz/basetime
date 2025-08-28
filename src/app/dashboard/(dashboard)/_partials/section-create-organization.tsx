@@ -36,7 +36,7 @@ export const SectionCreateOrganization = () => {
 
     return (
         <div className="space-y-8 px-4 md:px-8">
-            <DashboardHeading className="mb-8" title="Organization form" description="Create and manage new organization" />
+            <DashboardHeading className="mb-8" title="Organization form" description="Create new organization" />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" style={{ marginBottom: '16px' }}>
                     <InputField form={form} type="text" name="name" label="Name" className="max-w-[300px]" />

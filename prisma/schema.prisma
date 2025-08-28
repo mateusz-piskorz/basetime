@@ -22,3 +22,74 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+/**
+ * user [icon: user, color: blue] {
+ * id string pk
+ * displayName string
+ * team_role string
+ * teams string
+ * members
+ * invitations
+ * }
+ * team [icon: users, color: blue] {
+ * id string pk
+ * name string
+ * currency string
+ * members
+ * invitations
+ * projects
+ * }
+ * member [icon:user]{
+ * id string pk
+ * hourlyRates
+ * teamId
+ * projects
+ * tasks
+ * userId
+ * timeEntries
+ * }
+ * hourlyRate [icon: money]{
+ * id string pk
+ * memberId
+ * value number
+ * }
+ * invitation [icon: mail, color: green] {
+ * id string pk
+ * teamId
+ * userId
+ * }
+ * project [icon: box]{
+ * id string pk
+ * teamId
+ * projectMembers
+ * timeEntries
+ * tasks
+ * }
+ * task [icon: wrench]{
+ * id string pk
+ * estimated_time int
+ * projectId
+ * members
+ * timeEntries
+ * }
+ * timeEntry [icon: mail, color: green] {
+ * id string pk
+ * name string
+ * memberId
+ * projectId
+ * taskId
+ * }
+ * team.members > member.teamId
+ * team.invitations > invitation.teamId
+ * team.projects > project.teamId
+ * project.projectMembers <> member.projects
+ * project.timeEntries > timeEntry.projectId
+ * project.tasks > task.projectId
+ * task.members <> member.tasks
+ * task.timeEntries > timeEntry.taskId
+ * user.members > member.userId
+ * user.invitations > invitation.userId
+ * member.hourlyRates > hourlyRate.memberId
+ * member.timeEntries > timeEntry.memberId
+ */

@@ -30,7 +30,7 @@ export const NavOrganizations = ({ organizationId }: Props) => {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton size="lg" className="text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent group">
-                            <p>{selectedOrganization?.name}</p>
+                            <p className="line-clamp-1">{selectedOrganization?.name}</p>
                             <ChevronsUpDown className="ml-auto size-4" />
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
@@ -48,7 +48,7 @@ export const NavOrganizations = ({ organizationId }: Props) => {
                                         href={`/dashboard/organization/${id}`}
                                         onClick={() => setOpenMobile(false)}
                                     >
-                                        {name}
+                                        <p className="line-clamp-1">{name}</p>
                                         {isPersonal ? <Home /> : <BriefcaseBusiness />}
                                     </Link>
                                 </DropdownMenuItem>

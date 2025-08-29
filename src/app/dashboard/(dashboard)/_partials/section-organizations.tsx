@@ -24,7 +24,7 @@ export const SectionOrganizations = () => {
                         return (
                             <Card key={id} className="w-full md:max-w-[325px]">
                                 <CardContent className="space-y-6">
-                                    <h2 className="font-semibold">
+                                    <h2 className="line-clamp-1 font-semibold">
                                         {name} {isPersonal && <span className="text-muted-foreground">(personal organization)</span>}
                                     </h2>
                                     <div className="flex flex-wrap items-center gap-x-8 gap-y-6">
@@ -38,7 +38,7 @@ export const SectionOrganizations = () => {
                                             <Users2 size={16} className="text-muted-foreground" /> {_count.Members}
                                         </div>
                                     </div>
-                                    <Button>
+                                    <Button asChild>
                                         <Link href={`dashboard/organization/${id}`}>Open</Link>
                                     </Button>
                                 </CardContent>

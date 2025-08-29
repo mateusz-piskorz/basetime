@@ -55,7 +55,7 @@ export const SectionActiveSessions = () => {
                                         <p className="text-muted-foreground">{`End of session: ${dayjs(session.expiresAt).fromNow()} (${dayjs(session.expiresAt).format('DD-MM-YYYY HH:mm:ss')})`}</p>
                                         <p className="text-muted-foreground">{`Last activity: ${dayjs(session.updatedAt).fromNow()} (${dayjs(session.updatedAt).format('DD-MM-YYYY HH:mm:ss')})`}</p>
                                     </div>
-                                    <Button disabled={isCurrentSession} variant="accent" onClick={() => handleLogoutSession(session.id)}>
+                                    <Button disabled={isCurrentSession} onClick={() => handleLogoutSession(session.id)}>
                                         Log out
                                     </Button>
                                 </CardContent>

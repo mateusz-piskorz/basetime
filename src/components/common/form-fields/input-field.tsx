@@ -2,7 +2,6 @@
 
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
-import { cn } from '@/lib/utils';
 import { InputHTMLAttributes } from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { Input } from '../../ui/input';
@@ -41,7 +40,7 @@ export const InputField = <T extends FieldValues, IT extends InputType>({
             control={control}
             name={name}
             render={({ field }) => (
-                <FormItem className={cn(className)}>
+                <FormItem className={className}>
                     <FormLabel>{label}</FormLabel>
                     <FormControl>
                         <Input

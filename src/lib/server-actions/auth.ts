@@ -33,9 +33,26 @@ export const signup = async (data: z.infer<typeof registerSchema>) => {
         }
 
         const pwHash = await bcrypt.hash(password, 9);
-        const userId = (await prisma.user.create({ data: { email, name: name || email, password: pwHash } })).id;
+
+        const user = await prisma.user.create({
+            data: {
+                email,
+                name: name || email,
+                password: pwHash,
+                PersonalOrganization: {
+                    create: {
+                        currency: 'EUR',
+                        name: name || email,
+                        Projects: { create: { name: 'Personal project' } },
+                    },
+                },
+            },
+            select: { id: true, personalOrganizationId: true },
+        });
+        await prisma.member.create({ data: { role: 'OWNER', organizationId: user.personalOrganizationId, userId: user.id } });
+
         const userAgent = (await headers()).get('user-agent') || '';
-        await createSession({ userAgent, userId });
+        await createSession({ userAgent, userId: user.id });
 
         return { success: true };
     } catch {

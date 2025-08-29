@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,26 +7,142 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       String @id @default(cuid())
-  email    String @unique
-  name     String
-  password String
+enum MEMBER_ROLE {
+  OWNER
+  MANAGER
+  EMPLOYEE
+}
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum INVITATION_STATUS {
+  SENT
+  ACCEPTED
+  REJECTED
+}
 
-  Session Session[]
+enum CURRENCY {
+  PLN
+  EUR
+  USD
 }
 
 model Session {
   id        String   @id @default(cuid())
-  userId    String
   expiresAt DateTime
   userAgent String
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  personalOrganizationId String       @unique
+  PersonalOrganization   Organization @relation("PersonalOrganization", fields: [personalOrganizationId], references: [id])
+
+  Session     Session[]
+  Members     Member[]
+  Invitations Invitation[]
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  currency  CURRENCY
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  PersonalOwner User?        @relation("PersonalOrganization")
+  Members       Member[]
+  Invitations   Invitation[]
+  Projects      Project[]
+  TimeEntries   TimeEntry[]
+}
+
+model Member {
+  id        String      @id @default(cuid())
+  role      MEMBER_ROLE
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  userId         String
+  organizationId String
+  User           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  HourlyRates    HourlyRate[]
+  Projects       Project[]
+  Tasks          Task[]
+  TimeEntries    TimeEntry[]
+}
+
+model Invitation {
+  id        String            @id @default(cuid())
+  status    INVITATION_STATUS
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  organizationId String
+  userId         String
+  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  User           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model HourlyRate {
+  id        String   @id @default(cuid())
+  value     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberId String
+  Member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}
+
+model TimeEntry {
+  id        String    @id @default(cuid())
+  name      String
+  start     DateTime
+  end       DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  memberId       String
+  projectId      String?
+  taskId         String?
+  organizationId String
+  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  Member         Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  Project        Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  Task           Task?        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+  id               String   @id @default(cuid())
+  estimatedMinutes Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  projectId   String
+  Project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  TimeEntries TimeEntry[]
+  Members     Member[]
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizationId String
+  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  Members        Member[]
+  Tasks          Task[]
+  TimeEntries    TimeEntry[]
 }

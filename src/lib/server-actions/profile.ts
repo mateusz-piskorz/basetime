@@ -21,7 +21,11 @@ export const updateProfile = async (data: z.infer<typeof updateProfileSchema>) =
 
         const { name } = validated.data;
 
-        await prisma.user.update({ where: { id: session?.id }, data: { name } });
+        await prisma.user.update({
+            where: { id: session?.id },
+            data: { name, PersonalOrganization: { update: { name } } },
+            select: { id: true },
+        });
 
         return { success: true };
     } catch {
@@ -64,6 +68,7 @@ export const updatePassword = async (data: z.infer<typeof updatePasswordSchema>)
     }
 };
 
+// TODO: check if organizations are also removed
 export const deleteUserAccount = async (data: z.infer<typeof deleteUserAccountSchema>) => {
     try {
         const validated = deleteUserAccountSchema.safeParse(data);

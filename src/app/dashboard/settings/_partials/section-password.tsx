@@ -20,7 +20,7 @@ export const SectionPassword = () => {
     });
 
     const onSubmit = async (data: z.infer<typeof updatePasswordSchema>) => {
-        const res = await updatePassword(data);
+        const res = await updatePassword({ data });
 
         if (!res.success) {
             toast.error(res.message);

@@ -24,7 +24,7 @@ export const SectionOrganizationInfo = () => {
     return (
         <div className="space-y-8 px-4 md:px-8">
             <DashboardHeading className="mb-8" title="Organization information" description="Update your organizations name and currency" />
-            {error && <p className="text-red-500">dwa{error.message}</p>}
+            {error && <p className="text-red-500">error getting organization info</p>}
             {!error && isLoading && <SpinLoader />}
 
             {!error && !isLoading && data && <FormComponent organizationId={data.id} defaultValues={{ ...data }} />}

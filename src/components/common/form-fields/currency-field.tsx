@@ -63,7 +63,7 @@ export const CurrencyField = <T extends FieldValues>({ form, label, name: propsN
                 const _change = field.onChange;
                 return (
                     <FormItem className={className}>
-                        <FormLabel>{label}</FormLabel>Ń
+                        <FormLabel>{label}</FormLabel>
                         <FormControl>
                             <Input
                                 type="text"

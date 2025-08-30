@@ -39,17 +39,9 @@ export const signup = async (data: z.infer<typeof registerSchema>) => {
                 email,
                 name: name || email,
                 password: pwHash,
-                PersonalOrganization: {
-                    create: {
-                        currency: 'EUR',
-                        name: name || email,
-                        Projects: { create: { name: 'Personal project' } },
-                    },
-                },
             },
-            select: { id: true, personalOrganizationId: true },
+            select: { id: true },
         });
-        await prisma.member.create({ data: { role: 'OWNER', organizationId: user.personalOrganizationId, userId: user.id } });
 
         const userAgent = (await headers()).get('user-agent') || '';
         await createSession({ userAgent, userId: user.id });

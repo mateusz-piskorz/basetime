@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
 import { trpc } from '@/lib/trpc/client';
-import { BriefcaseBusiness, ChevronsUpDown, Home } from 'lucide-react';
+import { ChevronsUpDown } from 'lucide-react';
 import Link from 'next/link';
 
 type Props = {
@@ -39,8 +39,7 @@ export const NavOrganizations = ({ organizationId }: Props) => {
                             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">Select Organization</div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        {data?.map(({ id, name, PersonalOwner }) => {
-                            const isPersonal = PersonalOwner?.id;
+                        {data?.map(({ id, name }) => {
                             return (
                                 <DropdownMenuItem key={id} asChild>
                                     <Link
@@ -49,7 +48,6 @@ export const NavOrganizations = ({ organizationId }: Props) => {
                                         onClick={() => setOpenMobile(false)}
                                     >
                                         <p className="line-clamp-1">{name}</p>
-                                        {isPersonal ? <Home /> : <BriefcaseBusiness />}
                                     </Link>
                                 </DropdownMenuItem>
                             );

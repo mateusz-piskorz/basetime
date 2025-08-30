@@ -44,9 +44,6 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  personalOrganizationId String       @unique
-  PersonalOrganization   Organization @relation("PersonalOrganization", fields: [personalOrganizationId], references: [id])
-
   Session     Session[]
   Members     Member[]
   Invitations Invitation[]
@@ -59,11 +56,10 @@ model Organization {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  PersonalOwner User?        @relation("PersonalOrganization")
-  Members       Member[]
-  Invitations   Invitation[]
-  Projects      Project[]
-  TimeEntries   TimeEntry[]
+  Members     Member[]
+  Invitations Invitation[]
+  Projects    Project[]
+  TimeEntries TimeEntry[]
 }
 
 model Member {

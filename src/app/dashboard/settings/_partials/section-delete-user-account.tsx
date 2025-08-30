@@ -21,8 +21,8 @@ export const SectionDeleteUserAccount = () => {
         resolver: zodResolver(deleteUserAccountSchema),
     });
 
-    const onSubmit = async (values: z.infer<typeof deleteUserAccountSchema>) => {
-        const res = await deleteUserAccount(values);
+    const onSubmit = async (data: z.infer<typeof deleteUserAccountSchema>) => {
+        const res = await deleteUserAccount({ data });
 
         if (!res.success) {
             toast.error(res.message);

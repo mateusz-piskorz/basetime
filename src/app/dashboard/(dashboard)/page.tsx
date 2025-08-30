@@ -2,6 +2,7 @@ import { Separator } from '@/components/ui/separator';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import { SectionCreateOrganization } from './_partials/section-create-organization';
+import { SectionMyInvitations } from './_partials/section-my-invitations';
 import { SectionOrganizations } from './_partials/section-organizations';
 
 export default async function DashboardPage() {
@@ -14,6 +15,8 @@ export default async function DashboardPage() {
             <SectionOrganizations />
             <Separator />
             <SectionCreateOrganization />
+            <Separator />
+            <SectionMyInvitations />
         </div>
     );
 }

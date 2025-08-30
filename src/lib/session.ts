@@ -88,6 +88,7 @@ export const getSession = cache(async () => {
     return { ...res.User, sessionId: res.id };
 });
 
+// TODO: fix me
 /**
  * use in server-actions and route-handlers(trpc)
  */
@@ -122,7 +123,8 @@ export const verifySession = async () => {
         });
 
         return { ...res.User, sessionId: res.id };
-    } catch {
+    } catch (e) {
+        console.log(e);
         return null;
     }
 };

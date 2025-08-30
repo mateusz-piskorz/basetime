@@ -101,7 +101,7 @@ export const signin = async (data: z.infer<typeof loginSchema>) => {
     }
 };
 
-export const logout = async (sessionId?: string) => {
+export const logout = async ({ sessionId }: { sessionId?: string }) => {
     try {
         await deleteSession(sessionId);
         return { success: true };

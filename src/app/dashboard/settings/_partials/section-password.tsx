@@ -19,8 +19,8 @@ export const SectionPassword = () => {
         resolver: zodResolver(updatePasswordSchema),
     });
 
-    const onSubmit = async (values: z.infer<typeof updatePasswordSchema>) => {
-        const res = await updatePassword(values);
+    const onSubmit = async (data: z.infer<typeof updatePasswordSchema>) => {
+        const res = await updatePassword({ data });
 
         if (!res.success) {
             toast.error(res.message);

@@ -4,11 +4,22 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useInitials } from '@/lib/hooks/use-initials';
 
-export function UserInfo({ showEmail = false }: { showEmail?: boolean }) {
+type Props = {
+    user?: {
+        name: string;
+        email: string;
+    };
+    showEmail?: boolean;
+};
+
+export function UserInfo(props: Props) {
     const getInitials = useInitials();
-    const { user } = useAuth();
+    const auth = useAuth();
+
+    const user = props.user || auth.user;
 
     const name = user?.name || '';
+
     return (
         <>
             <Avatar className="h-8 w-8 overflow-hidden rounded-full">
@@ -20,7 +31,7 @@ export function UserInfo({ showEmail = false }: { showEmail?: boolean }) {
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{name}</span>
-                {showEmail && <span className="text-muted-foreground truncate text-xs">{user?.email}</span>}
+                {props.showEmail && <span className="text-muted-foreground truncate text-xs">{user?.email}</span>}
             </div>
         </>
     );

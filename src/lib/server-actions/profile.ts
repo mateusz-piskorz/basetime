@@ -3,10 +3,10 @@
 import bcrypt from 'bcrypt';
 import z from 'zod';
 import { prisma } from '../prisma';
-import { verifySession } from '../session';
+import { getSession } from '../session';
 import { deleteUserAccountSchema, updatePasswordSchema, updateProfileSchema } from '../zod/profile-schema';
 
-export const updateProfile = async (data: z.infer<typeof updateProfileSchema>) => {
+export const updateProfile = async ({ data }: { data: z.infer<typeof updateProfileSchema> }) => {
     try {
         const validated = updateProfileSchema.safeParse(data);
 
@@ -14,7 +14,7 @@ export const updateProfile = async (data: z.infer<typeof updateProfileSchema>) =
             return { success: false, message: 'Error validating fields' };
         }
 
-        const session = await verifySession();
+        const session = await getSession();
         if (!session) {
             return { success: false, message: 'Error session invalid' };
         }
@@ -33,7 +33,7 @@ export const updateProfile = async (data: z.infer<typeof updateProfileSchema>) =
     }
 };
 
-export const updatePassword = async (data: z.infer<typeof updatePasswordSchema>) => {
+export const updatePassword = async ({ data }: { data: z.infer<typeof updatePasswordSchema> }) => {
     try {
         const validated = updatePasswordSchema.safeParse(data);
 
@@ -41,7 +41,7 @@ export const updatePassword = async (data: z.infer<typeof updatePasswordSchema>)
             return { success: false, message: 'Error validating fields' };
         }
 
-        const session = await verifySession();
+        const session = await getSession();
         if (!session) {
             return { success: false, message: 'Error session invalid' };
         }
@@ -69,7 +69,7 @@ export const updatePassword = async (data: z.infer<typeof updatePasswordSchema>)
 };
 
 // TODO: check if organizations are also removed
-export const deleteUserAccount = async (data: z.infer<typeof deleteUserAccountSchema>) => {
+export const deleteUserAccount = async ({ data }: { data: z.infer<typeof deleteUserAccountSchema> }) => {
     try {
         const validated = deleteUserAccountSchema.safeParse(data);
 
@@ -77,7 +77,7 @@ export const deleteUserAccount = async (data: z.infer<typeof deleteUserAccountSc
             return { success: false, message: 'Error validating fields' };
         }
 
-        const session = await verifySession();
+        const session = await getSession();
         if (!session) {
             return { success: false, message: 'Error session invalid' };
         }

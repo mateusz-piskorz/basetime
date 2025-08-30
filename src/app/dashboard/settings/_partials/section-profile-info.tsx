@@ -20,8 +20,8 @@ export const SectionProfileInfo = () => {
         defaultValues: { name: user?.name || '' },
     });
 
-    const onSubmit = async (values: z.infer<typeof updateProfileSchema>) => {
-        const res = await updateProfile(values);
+    const onSubmit = async (data: z.infer<typeof updateProfileSchema>) => {
+        const res = await updateProfile({ data });
 
         if (!res.success) {
             toast.error(res.message);

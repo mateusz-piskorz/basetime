@@ -1,19 +1,11 @@
-'use client';
+import { getSession } from '@/lib/session';
+import { redirect } from 'next/navigation';
+import { MainSection } from './_partials/main-section';
 
-import { SpinLoader } from '@/components/common/spin-loader';
-import { trpc } from '@/lib/trpc/client';
-import { useParams } from 'next/navigation';
-
-export default function OrganizationPage() {
-    const { organizationId } = useParams<{ organizationId: string }>();
-
-    const { data, isLoading, error } = trpc.getOrganization.useQuery({ organizationId });
-
-    return (
-        <div>
-            {error && <p className="text-red-500">Error loading organization data: {error.message}</p>}
-            {!error && isLoading && <SpinLoader />}
-            {!error && !isLoading && data && <p>OrganizationPage {data.name}</p>}
-        </div>
-    );
+export default async function OrganizationPage() {
+    const user = await getSession();
+    if (!user) {
+        return redirect('/');
+    }
+    return <MainSection />;
 }

@@ -9,14 +9,14 @@ import { Clock, FolderClosed, Users2 } from 'lucide-react';
 import Link from 'next/link';
 
 export const SectionOrganizations = () => {
-    const { data, isLoading, isError } = trpc.getUserOrganizations.useQuery();
+    const { data, isLoading, error } = trpc.getUserOrganizations.useQuery();
     return (
         <div className="space-y-8 px-4 md:px-8">
             <DashboardHeading className="mb-8" title="Organizations" description="Preview and manage your organizations" />
             <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:gap-8">
-                {isError && <p className="text-red-500">Error loading organizations</p>}
-                {!isError && isLoading && <SpinLoader />}
-                {!isError &&
+                {error && <p className="text-red-500">Error loading organizations</p>}
+                {!error && isLoading && <SpinLoader />}
+                {!error &&
                     !isLoading &&
                     data?.map(({ id, name, PersonalOwner, loggedTime, _count }) => {
                         const isPersonal = PersonalOwner?.id;

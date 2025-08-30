@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
 
-export const SectionCreateOrganization = () => {
+export const SectionUpsertOrganization = () => {
     const trpcUtils = trpc.useUtils();
 
     const form = useForm({
@@ -35,7 +35,7 @@ export const SectionCreateOrganization = () => {
 
     return (
         <div className="space-y-8 px-4 md:px-8">
-            <DashboardHeading className="mb-8" title="Create Organization" description="Create new organization" />
+            <DashboardHeading className="mb-8" title="Create organization" description="create new organization" />
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" style={{ marginBottom: '16px' }}>

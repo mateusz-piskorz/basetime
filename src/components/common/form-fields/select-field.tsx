@@ -37,7 +37,7 @@ export const SelectField = <T extends FieldValues>({
             render={({ field }) => (
                 <FormItem className={className}>
                     <FormLabel>{label}</FormLabel>
-                    <Select onValueChange={field.onChange}>
+                    <Select onValueChange={field.onChange} value={field.value || ''}>
                         <FormControl>
                             <SelectTrigger>
                                 <SelectValue placeholder={placeholder} />

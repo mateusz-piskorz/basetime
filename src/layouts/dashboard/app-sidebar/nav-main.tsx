@@ -12,13 +12,13 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
     const { setOpenMobile } = useSidebar();
 
     return (
-        <SidebarGroup className="px-2 py-0">
+        <SidebarGroup className="py-0">
             {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
             <SidebarMenu>
                 {items.map((item) => {
                     return (
                         <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton asChild isActive={item.href === pathname} tooltip={{ children: item.title }}>
+                            <SidebarMenuButton className="py-5" asChild isActive={item.href === pathname} tooltip={{ children: item.title }}>
                                 <Link href={item.href} prefetch onClick={() => setOpenMobile(false)}>
                                     {item.icon && <item.icon />}
                                     <span>{item.title}</span>

@@ -18,15 +18,11 @@ export const SectionOrganizations = () => {
                 {!error && isLoading && <SpinLoader />}
                 {!error &&
                     !isLoading &&
-                    data?.map(({ id, name, PersonalOwner, loggedTime, _count }) => {
-                        const isPersonal = PersonalOwner?.id;
-
+                    data?.map(({ id, name, loggedTime, _count }) => {
                         return (
                             <Card key={id} className="w-full md:max-w-[325px]">
                                 <CardContent className="space-y-6">
-                                    <h2 className="line-clamp-1 font-semibold">
-                                        {name} {isPersonal && <span className="text-muted-foreground">(personal organization)</span>}
-                                    </h2>
+                                    <h2 className="line-clamp-1 font-semibold">{name}</h2>
                                     <div className="flex flex-wrap items-center gap-x-8 gap-y-6">
                                         <div className="flex items-center gap-2">
                                             <Clock size={16} className="text-muted-foreground" /> {loggedTime}

@@ -23,7 +23,7 @@ export const updateProfile = async ({ data }: { data: z.infer<typeof updateProfi
 
         await prisma.user.update({
             where: { id: session?.id },
-            data: { name, PersonalOrganization: { update: { name } } },
+            data: { name },
             select: { id: true },
         });
 

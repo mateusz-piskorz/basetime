@@ -68,7 +68,6 @@ export const appRouter = createTRPCRouter({
                 name: true,
                 _count: true,
                 TimeEntries: { select: { id: true, start: true, end: true } },
-                PersonalOwner: { select: { id: true } },
             },
         });
 

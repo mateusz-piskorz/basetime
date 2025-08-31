@@ -1,10 +1,12 @@
 'use client';
 
 import { SpinLoader } from '@/components/common/spin-loader';
+import { MemberProvider } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { Rabbit } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
+// todo: make this component server side and check session
 export default function OrganizationLayout({
     children,
 }: Readonly<{
@@ -33,5 +35,5 @@ export default function OrganizationLayout({
         );
     }
 
-    return children;
+    return <MemberProvider member={data.member}>{children}</MemberProvider>;
 }

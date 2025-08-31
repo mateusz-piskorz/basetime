@@ -7,15 +7,16 @@ import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { Input } from '../../ui/input';
 
 type FieldType = Nullable<string | number>;
-type InputType = 'text' | 'number' | 'email' | 'tel' | 'password';
+type InputType = 'text' | 'number' | 'email' | 'tel' | 'password' | 'time';
 
 type Props<T extends FieldValues, IT extends InputType> = {
     type?: IT;
     form: UseFormReturn<T>;
     name: TypedFieldPath<T, IT extends 'number' ? Nullable<number> : Nullable<string>>;
-    label: string;
+    label?: string;
     inputMode?: InputHTMLAttributes<''>['inputMode'];
     className?: React.HTMLAttributes<'div'>['className'];
+    classNameInput?: React.HTMLAttributes<'input'>['className'];
     onFocus?: () => void;
     errorMessage?: boolean;
     placeholder?: string;
@@ -29,6 +30,7 @@ export const InputField = <T extends FieldValues, IT extends InputType>({
     type,
     inputMode,
     className,
+    classNameInput,
     placeholder,
     errorMessage = true,
 }: Props<T, IT>) => {
@@ -41,9 +43,10 @@ export const InputField = <T extends FieldValues, IT extends InputType>({
             name={name}
             render={({ field }) => (
                 <FormItem className={className}>
-                    <FormLabel>{label}</FormLabel>
+                    {label && <FormLabel>{label}</FormLabel>}
                     <FormControl>
                         <Input
+                            className={classNameInput}
                             onFocus={onFocus}
                             placeholder={placeholder || label}
                             {...field}

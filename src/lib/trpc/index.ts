@@ -1,4 +1,4 @@
-import { formatMinutes, getDiffInMinutes } from '@/lib/utils';
+import { sumTimeEntries } from '@/lib/utils';
 import z from 'zod';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
@@ -21,8 +21,48 @@ export const appRouter = createTRPCRouter({
     getOrganization: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
         const session = await getSession();
         if (!session) return null;
-        return await prisma.organization.findUnique({ where: { id: organizationId, Members: { some: { userId: session.id } } } });
+        const res = await prisma.organization.findUnique({
+            include: { Members: { where: { userId: session.id } } },
+            where: { id: organizationId, Members: { some: { userId: session.id } } },
+        });
+        if (!res?.Members[0]) return null;
+        return { ...res, member: res.Members[0] };
     }),
+    getActiveTimeEntry: publicProcedure.input(z.object({ memberId: z.string() })).query(async ({ input: { memberId } }) => {
+        const session = await getSession();
+        if (!session) return null;
+        return await prisma.timeEntry.findFirst({
+            where: { memberId, end: null },
+        });
+    }),
+    getMemberTimeEntries: publicProcedure
+        .input(
+            z.object({
+                memberId: z.string(),
+                page: z.string().nullish(),
+                limit: z.string().nullish(),
+                order_column: z.string().nullish(),
+                order_direction: z.string().nullish(),
+            }),
+        )
+        .query(async ({ input: { memberId, limit: limitInput, page: pageInput, order_column, order_direction } }) => {
+            const limit = Number(limitInput) || 25;
+            const page = Number(pageInput) || 1;
+            const skip = (page - 1) * limit;
+            const session = await getSession();
+            if (!session) return null;
+            const total = await prisma.timeEntry.count({ where: { memberId } });
+            const data = await prisma.timeEntry.findMany({
+                where: { memberId },
+                include: { Project: { select: { id: true, name: true } } },
+                take: limit,
+                skip,
+                orderBy: { end: 'desc' },
+                ...(order_column && { orderBy: { [order_column]: order_direction } }),
+            });
+            const totalPages = Math.ceil(total / limit);
+            return { totalPages, total, page, limit, data };
+        }),
     getOrganizationInvitations: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
         const session = await getSession();
         if (!session) return null;
@@ -51,11 +91,22 @@ export const appRouter = createTRPCRouter({
         });
 
         return res?.Members.map((member) => {
-            const totalMinutes = member.TimeEntries.reduce((sum, entry) => {
-                return sum + getDiffInMinutes({ start: entry.start, end: entry.end });
-            }, 0);
             const hourlyRate = member.HourlyRates.length > 0 ? member.HourlyRates[0].value : undefined;
-            return { ...member, loggedTime: formatMinutes(totalMinutes), hourlyRate };
+            return { ...member, loggedTime: sumTimeEntries(member.TimeEntries), hourlyRate };
+        });
+    }),
+    getProjects: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
+        const session = await getSession();
+        if (!session) return null;
+        const res = await prisma.organization.findUnique({
+            where: { id: organizationId, Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } },
+            select: {
+                Projects: { select: { _count: true, TimeEntries: { select: { start: true, end: true } }, name: true, createdAt: true, id: true } },
+            },
+        });
+
+        return res?.Projects.map((project) => {
+            return { ...project, loggedTime: sumTimeEntries(project.TimeEntries) };
         });
     }),
     getUserOrganizations: publicProcedure.query(async () => {
@@ -72,11 +123,7 @@ export const appRouter = createTRPCRouter({
         });
 
         return res.map((organization) => {
-            const totalMinutes = organization.TimeEntries.reduce((sum, entry) => {
-                return sum + getDiffInMinutes({ start: entry.start, end: entry.end });
-            }, 0);
-
-            return { ...organization, loggedTime: formatMinutes(totalMinutes) };
+            return { ...organization, loggedTime: sumTimeEntries(organization.TimeEntries) };
         });
     }),
 });

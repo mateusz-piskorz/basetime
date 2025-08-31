@@ -25,6 +25,7 @@ export const NavOrganizations = ({ organizationId }: Props) => {
     const selectedOrganization = data?.find((e) => e.id === organizationId);
 
     return (
+        // TODO: it might be select instead of dropdown
         <SidebarMenu>
             <SidebarMenuItem>
                 <DropdownMenu>

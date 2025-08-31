@@ -13,9 +13,11 @@ type Props<T extends FieldValues> = {
     name: TypedFieldPath<T, FieldType>;
     className?: React.HTMLAttributes<'div'>['className'];
     selectOptions: { label: string; value: string }[];
-    label: string;
+    label?: string;
     placeholder?: string;
     errorMessage?: boolean;
+    disabled?: boolean;
+    size?: 'sm' | 'default';
 };
 
 export const SelectField = <T extends FieldValues>({
@@ -25,6 +27,8 @@ export const SelectField = <T extends FieldValues>({
     label,
     name: propsName,
     placeholder,
+    disabled,
+    size,
     errorMessage = true,
 }: Props<T>) => {
     const name = propsName as string;
@@ -36,10 +40,10 @@ export const SelectField = <T extends FieldValues>({
             name={name}
             render={({ field }) => (
                 <FormItem className={className}>
-                    <FormLabel>{label}</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value || ''}>
+                    {label && <FormLabel>{label}</FormLabel>}
+                    <Select onValueChange={field.onChange} value={field.value || ''} disabled={disabled}>
                         <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger size={size}>
                                 <SelectValue placeholder={placeholder} />
                             </SelectTrigger>
                         </FormControl>

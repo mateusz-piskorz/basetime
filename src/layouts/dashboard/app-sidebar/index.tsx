@@ -12,7 +12,7 @@ import {
     SidebarSeparator,
     useSidebar,
 } from '@/components/ui/sidebar';
-import { ArrowLeftFromLineIcon, LayoutGrid, Settings } from 'lucide-react';
+import { ArrowLeftFromLineIcon, FolderClosed, LayoutGrid, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { NavItem, NavMain } from './nav-main';
@@ -33,6 +33,11 @@ export function AppSidebar() {
             title: 'Dashboard',
             href: `/dashboard/organization/${organizationId}`,
             icon: LayoutGrid,
+        },
+        {
+            title: 'Projects',
+            href: `/dashboard/organization/${organizationId}/projects`,
+            icon: FolderClosed,
         },
         {
             title: 'Settings',

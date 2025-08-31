@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { trpc } from '@/lib/trpc/client';
 import { MEMBER_ROLE } from '@prisma/client';
-import { ClipboardCheck, Clock, FolderClosed } from 'lucide-react';
+import { Clock, FolderClosed } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { UpdateMemberHourlyRateDialog } from './update-member-hourly-rate-dialog';
@@ -71,9 +71,6 @@ export const SectionMembers = () => {
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <FolderClosed size={16} className="text-muted-foreground" /> {_count.Projects}
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <ClipboardCheck size={16} className="text-muted-foreground" /> {_count.Tasks}
                                                 </div>
                                             </div>
                                             <Button

@@ -18,10 +18,8 @@ export function DataTablePagination<TData>({ table, totalPages }: DataTablePagin
     const searchParams = useSearchParams();
     const limit = searchParams.get('limit');
     const page = searchParams.get('page') ?? 1;
-    console.log('limit', limit);
 
     const handlePageChange = (action: 'prev' | 'next') => {
-        console.log('dwa');
         const params = new URLSearchParams(searchParams.toString());
         params.set('page', String(Number(page) + (action === 'next' ? 1 : -1)));
 

@@ -21,7 +21,7 @@ export const SectionProjects = () => {
             <CreateProjectDialog open={open} setOpen={setOpen} />
             <Button onClick={() => setOpen(true)}>Add new project</Button>
             <div className="space-y-8 px-4 md:px-8">
-                <DashboardHeading className="mb-8" title="Members" description="Preview and Manage organization members" />
+                <DashboardHeading className="mb-8" title="Projects" description="Preview and Manage organization Projects" />
                 <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:gap-8">
                     {error && <p className="text-red-500">Error loading members</p>}
                     {!error && isLoading && <SpinLoader />}

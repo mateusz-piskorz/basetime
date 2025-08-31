@@ -73,14 +73,14 @@ export const manualTimeEntry = async ({ data }: { data: z.infer<typeof manualTim
             return { success: false, message: 'Error session invalid' };
         }
 
-        const { name, projectId, memberId, organizationId } = validated.data;
+        const { name, projectId, memberId, organizationId, end, start } = validated.data;
 
         await prisma.timeEntry.create({
-            data: { start: new Date(), memberId, name: name || 'unnamed time entry', organizationId, projectId },
+            data: { start, end, memberId, name: name || 'unnamed time entry', organizationId, projectId },
         });
 
         return { success: true };
     } catch {
-        return { success: false, message: 'Error something went wrong - startTimeTracker' };
+        return { success: false, message: 'Error something went wrong - manualTimeEntry' };
     }
 };

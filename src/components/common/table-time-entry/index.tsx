@@ -24,9 +24,6 @@ export const TableTimeEntry = () => {
     const order_column = searchParams.get('order_column');
     const order_direction = searchParams.get('order_direction');
 
-    console.log(order_column);
-    console.log(order_direction);
-
     const { data, isLoading, error, refetch } = trpc.getMemberTimeEntries.useQuery({ memberId: id, limit, page, order_column, order_direction });
 
     // const q = searchParams.get('q');

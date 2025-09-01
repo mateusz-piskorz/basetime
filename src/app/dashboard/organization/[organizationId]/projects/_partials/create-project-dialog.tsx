@@ -1,4 +1,5 @@
 import { InputField } from '@/components/common/form-fields/input-field';
+import { SelectField } from '@/components/common/form-fields/select-field';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
@@ -6,6 +7,7 @@ import { createProject } from '@/lib/server-actions/project';
 import { trpc } from '@/lib/trpc/client';
 import { createProjectSchema } from '@/lib/zod/project-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { PROJECT_COLOR } from '@prisma/client';
 import { useParams } from 'next/navigation';
 import durationParser from 'parse-duration';
 import { useState } from 'react';
@@ -50,7 +52,13 @@ export const CreateProjectDialog = ({ open, setOpen }: Props) => {
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" style={{ marginBottom: '16px' }}>
                         <InputField form={form} type="text" name="name" label="organization name" placeholder="My organization 123" />
                         <InputField form={form} type="text" name="estimatedDuration" label="Duration" placeholder="2h 30min" />
-                        {/* <SelectField form={form} label='members' /> */}
+                        <SelectField
+                            form={form}
+                            name="color"
+                            label="Color"
+                            selectOptions={Object.values(PROJECT_COLOR).map((e) => ({ label: e, value: e }))}
+                        />
+
                         <p className="text-muted-foreground">member ids goes here</p>
                         {error && <p className="text-red-500">{error}</p>}
                         <Button disabled={form.formState.isSubmitting} type="submit">

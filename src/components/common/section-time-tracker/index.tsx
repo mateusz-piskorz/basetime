@@ -1,35 +1,51 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { DashboardHeading } from '@/components/common/dashboard-heading';
 import { Form } from '@/components/ui/form';
+import { Separator } from '@/components/ui/separator';
 import { useMember } from '@/lib/hooks/use-member';
 import { startTimeTracker, stopTimeTracker } from '@/lib/server-actions/time-entry';
 import { trpc } from '@/lib/trpc/client';
+import { cn } from '@/lib/utils';
 import { startTimeTrackerSchema } from '@/lib/zod/time-entry-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
+import { DashboardHeading } from '../dashboard-heading';
 import { InputField } from '../form-fields/input-field';
-import { SelectField } from '../form-fields/select-field';
 import { StartButton } from '../start-button';
+import { SelectProject } from './select-project';
+import { Timer } from './timer';
 
 export const SectionTimeTracker = () => {
     const trpcUtils = trpc.useUtils();
-    const { id } = useMember().member;
-    const { data: activeTimeEntry, isLoading: activeTimeEntryLoading, refetch } = trpc.getActiveTimeEntry.useQuery({ memberId: id });
-    const { member } = useMember();
-    const { data: projects, isLoading, isError } = trpc.getProjects.useQuery({ organizationId: member.organizationId });
+    const {
+        member: { id: memberId, organizationId },
+    } = useMember();
+
+    const { data: activeTimeEntry, isPending } = trpc.getActiveTimeEntry.useQuery({ memberId });
+
+    useEffect(() => {
+        if (activeTimeEntry) {
+            form.reset(activeTimeEntry);
+        }
+    }, [isPending]);
+
     const form = useForm({
         resolver: zodResolver(startTimeTrackerSchema),
+        defaultValues: { projectId: 'no-project' },
     });
 
     const onSubmit = async (data: z.infer<typeof startTimeTrackerSchema>) => {
         let res;
         if (activeTimeEntry) {
             res = await stopTimeTracker({ timeEntryId: activeTimeEntry.id });
+            form.reset({ name: '', projectId: 'no-project' });
         } else {
-            res = await startTimeTracker({ data: { ...data, organizationId: member.organizationId, memberId: member.id } });
+            const projectId = data.projectId === 'no-project' ? undefined : data.projectId;
+            res = await startTimeTracker({ data: { ...data, projectId, organizationId, memberId } });
         }
 
         if (!res.success) {
@@ -37,39 +53,54 @@ export const SectionTimeTracker = () => {
             return;
         }
 
-        refetch();
-        trpcUtils.getMemberTimeEntries.refetch({ memberId: member.id });
+        trpcUtils.getActiveTimeEntry.refetch({ memberId });
+        trpcUtils.getMemberTimeEntries.refetch({ memberId });
     };
-
     return (
         <div className="space-y-8 px-4 md:px-8">
-            <DashboardHeading className="mb-8" title="Time Tracker" description="Pick project and start tracking time" />
+            <DashboardHeading className="mb-4" title="Time Tracker" />
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-center gap-8" style={{ marginBottom: '16px' }}>
-                    <div className="relative w-full">
+                <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="flex flex-col gap-x-8 gap-y-4 md:flex-row md:items-center"
+                    style={{ marginBottom: '16px' }}
+                >
+                    <div
+                        className={cn(
+                            'border-input relative flex h-12 w-full rounded border md:h-14',
+                            'focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]',
+                        )}
+                    >
                         <InputField
+                            disabled={Boolean(activeTimeEntry) || isPending || form.formState.isSubmitting}
                             errorMessage={false}
                             form={form}
                             name="name"
                             placeholder="What are you working on?"
-                            classNameInput="h-14 text-xl md:text-xl"
+                            classNameInput={cn(
+                                'h-full border-none bg-transparent md:text-base dark:bg-transparent',
+                                'selection:bg-transparent focus-visible:ring-[0px]',
+                            )}
+                            className="h-full w-full"
                         />
-                        <SelectField
-                            size="sm"
-                            className="absolute top-1/2 right-4 -translate-y-1/2"
-                            disabled={isLoading}
-                            form={form}
-                            name="projectId"
-                            placeholder="No Project"
-                            selectOptions={(projects || [])?.map(({ id, name }) => ({ label: name, value: id }))}
-                        />
+
+                        <div className="flex h-full items-center gap-2 pr-2 sm:gap-4 sm:pr-4">
+                            <SelectProject
+                                disabled={Boolean(activeTimeEntry) || isPending || form.formState.isSubmitting}
+                                size="sm"
+                                control={form.control}
+                                className="hidden md:block"
+                            />
+                            <Separator orientation="vertical" />
+                            <Timer startDate={activeTimeEntry ? new Date(activeTimeEntry.start) : new Date()} isActive={Boolean(activeTimeEntry)} />
+                        </div>
                     </div>
 
-                    <StartButton
-                        disabled={activeTimeEntryLoading || form.formState.isSubmitting}
-                        type="submit"
-                        actionState={activeTimeEntry ? 'stop' : 'start'}
-                    />
+                    <div className="flex flex-wrap items-center justify-between gap-6">
+                        <SelectProject size="lg" control={form.control} className="w-[150px] md:hidden" />
+
+                        <StartButton disabled={form.formState.isSubmitting} type="submit" actionState={activeTimeEntry ? 'stop' : 'start'} />
+                    </div>
                 </form>
             </Form>
         </div>

@@ -109,6 +109,32 @@ export const appRouter = createTRPCRouter({
             return { ...project, loggedTime: sumTimeEntries(project.TimeEntries) };
         });
     }),
+    getMemberProjects: publicProcedure
+        .input(z.object({ organizationId: z.string(), memberId: z.string() }))
+        .query(async ({ input: { organizationId, memberId } }) => {
+            const session = await getSession();
+            if (!session) return null;
+            const res = await prisma.organization.findUnique({
+                where: { id: organizationId, Members: { some: { userId: session.id } } },
+                select: {
+                    Projects: {
+                        where: { Members: { some: { id: memberId } } },
+                        select: {
+                            color: true,
+                            _count: true,
+                            TimeEntries: { select: { start: true, end: true } },
+                            name: true,
+                            createdAt: true,
+                            id: true,
+                        },
+                    },
+                },
+            });
+
+            return res?.Projects.map((project) => {
+                return { ...project, loggedTime: sumTimeEntries(project.TimeEntries) };
+            });
+        }),
     getUserOrganizations: publicProcedure.query(async () => {
         const session = await getSession();
         if (!session) return null;

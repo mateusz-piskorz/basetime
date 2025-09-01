@@ -17,7 +17,7 @@ type Props<T extends FieldValues> = {
     placeholder?: string;
     errorMessage?: boolean;
     disabled?: boolean;
-    size?: 'sm' | 'default';
+    size?: 'sm' | 'default' | 'lg';
 };
 
 export const SelectField = <T extends FieldValues>({
@@ -43,7 +43,7 @@ export const SelectField = <T extends FieldValues>({
                     {label && <FormLabel>{label}</FormLabel>}
                     <Select onValueChange={field.onChange} value={field.value || ''} disabled={disabled}>
                         <FormControl>
-                            <SelectTrigger size={size}>
+                            <SelectTrigger size={size} className="w-full">
                                 <SelectValue placeholder={placeholder} />
                             </SelectTrigger>
                         </FormControl>

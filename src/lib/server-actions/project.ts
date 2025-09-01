@@ -18,11 +18,12 @@ export const createProject = async ({ data, organizationId }: { data: z.infer<ty
             return { success: false, message: 'Error session invalid' };
         }
 
-        const { memberIds, name, estimatedMinutes } = validated.data;
+        const { memberIds, name, estimatedMinutes, color } = validated.data;
 
         await prisma.project.create({
             data: {
                 name,
+                color,
                 estimatedMinutes,
                 Members: { connect: memberIds?.map((id) => ({ id })) },
                 organizationId,

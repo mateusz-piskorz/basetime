@@ -20,6 +20,7 @@ type Props<T extends FieldValues, IT extends InputType> = {
     onFocus?: () => void;
     errorMessage?: boolean;
     placeholder?: string;
+    disabled?: boolean;
 };
 
 export const InputField = <T extends FieldValues, IT extends InputType>({
@@ -33,6 +34,7 @@ export const InputField = <T extends FieldValues, IT extends InputType>({
     classNameInput,
     placeholder,
     errorMessage = true,
+    disabled,
 }: Props<T, IT>) => {
     const name = propsName as string;
     const { control } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
@@ -46,6 +48,7 @@ export const InputField = <T extends FieldValues, IT extends InputType>({
                     {label && <FormLabel>{label}</FormLabel>}
                     <FormControl>
                         <Input
+                            disabled={disabled}
                             className={classNameInput}
                             onFocus={onFocus}
                             placeholder={placeholder || label}

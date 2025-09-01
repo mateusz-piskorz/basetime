@@ -2,12 +2,12 @@ import z from 'zod';
 
 export const startTimeTrackerSchema = z.object({
     name: z.string().optional(),
-    projectId: z.string().optional(),
+    projectId: z.string().nullish(),
 });
 
 export const startTimeTrackerServerSchema = z.object({
     name: z.string().optional(),
-    projectId: z.string().optional(),
+    projectId: z.string().nullish(),
     organizationId: z.string(),
     memberId: z.string(),
 });

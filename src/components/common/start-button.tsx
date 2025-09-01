@@ -14,11 +14,16 @@ export const StartButton = ({ className, onClick, type, actionState, disabled }:
     return (
         <Button
             disabled={disabled}
-            className={cn('bg-accent-secondary/80 hover:bg-accent-secondary/100 size-14 rounded-xl border-6 hover:scale-110', className)}
+            className={cn(
+                'bg-accent-secondary/80 hover:bg-accent-secondary/100 border-accent size-14 rounded-full border-8 hover:scale-110',
+                actionState === 'stop' && 'bg-[#FF0000] hover:bg-[#FF0000] dark:border-[#810000]',
+
+                className,
+            )}
             onClick={onClick}
             type={type}
         >
-            {actionState === 'start' ? <Play className="size-6" /> : <Pause className="size-6" />}
+            {actionState === 'start' ? <Play className="size-6" /> : <Pause color="white" className="size-6" />}
         </Button>
     );
 };

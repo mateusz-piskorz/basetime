@@ -2,39 +2,64 @@
 
 /* eslint-disable react-hooks/exhaustive-deps */
 import { InputField } from '@/components/common/form-fields/input-field';
+import { TimeEntrySelectField } from '@/components/common/form-fields/time-entry-select-field';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import { useMember } from '@/lib/hooks/use-member';
 import { manualTimeEntry } from '@/lib/server-actions/time-entry';
-import { trpc } from '@/lib/trpc/client';
-import { prepareDateTime } from '@/lib/utils';
+import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
+import { formatMinutes, getDiffInMinutes, prepareDateTime } from '@/lib/utils';
 import { manualTimeEntrySchema } from '@/lib/zod/time-entry-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import dayjs from 'dayjs';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
 import { CalendarField } from './form-fields/calendar-field';
-import { SelectField } from './form-fields/select-field';
+import { DurationField } from './form-fields/duration-field';
+import { SelectProjectField } from './form-fields/select-project-field';
 
 type Props = {
     open: boolean;
     setOpen: (val: boolean) => void;
-    defaultValues?: z.infer<typeof manualTimeEntrySchema>;
-    timeEntryId?: string;
+    selectedTimeEntry?: NonNullable<TrpcRouterOutput['getMemberTimeEntries']>['data'][number];
     onSuccess?: () => void;
 };
 
-export const ManualTimeEntryDialog = ({ open, setOpen, defaultValues, timeEntryId, onSuccess }: Props) => {
+export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSuccess }: Props) => {
+    const trpcUtils = trpc.useUtils();
     const { member } = useMember();
     const form = useForm<z.infer<typeof manualTimeEntrySchema>>({
         resolver: zodResolver(manualTimeEntrySchema),
+        defaultValues: {
+            endDate: new Date(),
+            endTime: '08:30',
+            startDate: new Date(),
+            startTime: '07:00',
+            duration: '1h 30min',
+            projectId: 'no-project',
+        },
     });
 
     useEffect(() => {
-        form.reset();
-    }, [defaultValues, form.formState.isSubmitSuccessful]);
+        const ste = selectedTimeEntry;
+
+        form.reset(
+            ste
+                ? {
+                      name: ste.name,
+                      projectId: ste.projectId || 'no-project',
+                      startDate: new Date(ste.start),
+                      startTime: dayjs(ste.start).format('HH:mm'),
+                      endDate: ste.end ? new Date(ste.end) : new Date(),
+                      endTime: dayjs(ste.end || new Date()).format('HH:mm'),
+                      duration: formatMinutes(getDiffInMinutes({ start: new Date(ste.start), end: ste.end ? new Date(ste.end) : new Date() })),
+                  }
+                : undefined,
+        );
+    }, [selectedTimeEntry, form.formState.isSubmitSuccessful]);
 
     async function onSubmit({ endDate, endTime, startDate, startTime, name, projectId }: z.infer<typeof manualTimeEntrySchema>) {
         const start = prepareDateTime(startDate, startTime);
@@ -42,25 +67,33 @@ export const ManualTimeEntryDialog = ({ open, setOpen, defaultValues, timeEntryI
 
         const res = await manualTimeEntry({
             data: { memberId: member.id, organizationId: member.organizationId, name, projectId, start, end },
+            timeEntryId: selectedTimeEntry?.id,
         });
 
         if (!res.success) {
             toast.error(res.message);
             return;
         }
-        toast.success('Added TimeEntry successfully');
+
+        trpcUtils.getMemberTimeEntries.refetch();
+        toast.success(`TimeEntry ${selectedTimeEntry ? 'Updated' : 'Created'} successfully`);
         onSuccess?.();
         setOpen(false);
     }
 
-    const { data: projects, isLoading, isError } = trpc.getProjects.useQuery({ organizationId: member.organizationId });
+    const updateDurationField = () => {
+        const startDate = dayjs(prepareDateTime(form.getValues('startDate'), form.getValues('startTime')));
+        const endDate = dayjs(prepareDateTime(form.getValues('endDate'), form.getValues('endTime')));
+        const minutesDiff = endDate.diff(startDate, 'm');
+        form.setValue('duration', formatMinutes(minutesDiff));
+    };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{timeEntryId ? 'Update' : 'Create'} TimeEntry</DialogTitle>
-                    <DialogDescription>Fill in the details below to {timeEntryId ? 'Update' : 'Create'} TimeEntry</DialogDescription>
+                    <DialogTitle>{selectedTimeEntry ? 'Update' : 'Create'} TimeEntry</DialogTitle>
+                    <DialogDescription>Fill in the details below to {selectedTimeEntry ? 'Update' : 'Create'} TimeEntry</DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                     <form
@@ -68,25 +101,58 @@ export const ManualTimeEntryDialog = ({ open, setOpen, defaultValues, timeEntryI
                             event.stopPropagation();
                             form.handleSubmit(onSubmit)(event);
                         }}
-                        className="space-y-5"
+                        className="flex flex-col gap-y-6"
                     >
-                        <InputField form={form} name="name" label="Name" />
-                        <SelectField
-                            disabled={isLoading}
-                            form={form}
-                            name="projectId"
-                            placeholder="No Project"
-                            selectOptions={(projects || [])?.map(({ id, name }) => ({ label: name, value: id }))}
-                        />
-                        <h2>Start</h2>
-                        <div className="flex gap-4">
-                            <CalendarField form={form} name="startDate" />
-                            <InputField type="time" form={form} name="startTime" />
+                        <div className="flex">
+                            <TimeEntrySelectField
+                                form={form}
+                                name="name"
+                                onSelect={(timeEntry) => {
+                                    if (timeEntry.projectId) form.setValue('projectId', timeEntry.projectId);
+                                }}
+                            />
                         </div>
-                        <h2>End</h2>
-                        <div className="flex gap-4">
-                            <CalendarField form={form} name="endDate" />
-                            <InputField type="time" form={form} name="endTime" />
+                        <div className="flex flex-col gap-6 sm:flex-row-reverse sm:items-end sm:gap-4">
+                            <SelectProjectField form={form} name="projectId" textClassName="max-sm:max-w-full" />
+
+                            <DurationField
+                                className="w-full"
+                                form={form}
+                                name="duration"
+                                onBlur={(minutes) => {
+                                    const endDate = form.getValues('endDate');
+                                    const endTime = form.getValues('endTime');
+                                    const startDate = dayjs(prepareDateTime(endDate, endTime)).add(-(minutes || 90), 'm');
+
+                                    form.setValue('startDate', startDate.toDate());
+                                    form.setValue('startTime', startDate.format('HH:mm'));
+                                }}
+                            />
+                        </div>
+                        <p className="text-muted-foreground -mt-4 text-sm">you can type human language here e.g. 2h 30m</p>
+
+                        <div className="mt-10 flex items-end gap-4">
+                            <CalendarField label="Start" form={form} name="startDate" onSelect={updateDurationField} className="w-full" />
+                            <InputField
+                                type="time"
+                                form={form}
+                                name="startTime"
+                                onBlur={updateDurationField}
+                                className="w-full max-w-[105px]"
+                                classNameInput="h-[42px]"
+                            />
+                        </div>
+
+                        <div className="flex items-end gap-4">
+                            <CalendarField label="End" form={form} name="endDate" onSelect={updateDurationField} className="w-full" />
+                            <InputField
+                                type="time"
+                                form={form}
+                                name="endTime"
+                                onBlur={updateDurationField}
+                                className="w-full max-w-[105px]"
+                                classNameInput="h-[42px]"
+                            />
                         </div>
 
                         <Button type="submit" className="w-full sm:w-auto" size="lg">

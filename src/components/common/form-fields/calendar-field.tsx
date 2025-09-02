@@ -17,9 +17,10 @@ type Props<T extends FieldValues> = {
     className?: React.HTMLAttributes<'div'>['className'];
     saleDate?: Date | undefined;
     label?: string;
+    onSelect?: (val: Date | undefined) => void;
 };
 
-export const CalendarField = <T extends FieldValues>({ form, name: propsName, saleDate, label, className, placeholder }: Props<T>) => {
+export const CalendarField = <T extends FieldValues>({ form, name: propsName, saleDate, label, className, placeholder, onSelect }: Props<T>) => {
     const name = propsName as string;
     const [open, setOpen] = useState(false);
     const { control } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
@@ -49,6 +50,7 @@ export const CalendarField = <T extends FieldValues>({ form, name: propsName, sa
                                 onSelect={(val) => {
                                     field.onChange(val);
                                     setOpen(false);
+                                    onSelect?.(val);
                                 }}
                                 disabled={(date) => date < new Date('1900-01-01')}
                                 captionLayout="dropdown"

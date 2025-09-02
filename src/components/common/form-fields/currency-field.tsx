@@ -76,8 +76,8 @@ export const CurrencyField = <T extends FieldValues>({ form, label, name: propsN
                                     handleChange(_change, ev.target.value);
                                 }}
                             />
-                            {errorMessage && <FormMessage />}
                         </FormControl>
+                        {errorMessage && <FormMessage />}
                     </FormItem>
                 );
             }}

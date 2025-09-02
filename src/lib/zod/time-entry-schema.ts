@@ -22,6 +22,7 @@ export const manualTimeEntryServerSchema = z.object({
 });
 
 export const manualTimeEntrySchema = z.object({
+    duration: z.string(),
     startDate: z.date(),
     endDate: z.date(),
     startTime: z.string(),

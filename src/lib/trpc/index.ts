@@ -1,4 +1,4 @@
-import { sumTimeEntries } from '@/lib/utils';
+import { formatMinutes, getDiffInMinutes, sumTimeEntries } from '@/lib/utils';
 import z from 'zod';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
@@ -43,23 +43,29 @@ export const appRouter = createTRPCRouter({
                 limit: z.string().nullish(),
                 order_column: z.string().nullish(),
                 order_direction: z.string().nullish(),
+                q: z.string().nullish(),
             }),
         )
-        .query(async ({ input: { memberId, limit: limitInput, page: pageInput, order_column, order_direction } }) => {
+        .query(async ({ input: { memberId, limit: limitInput, page: pageInput, order_column, order_direction, q } }) => {
             const limit = Number(limitInput) || 25;
             const page = Number(pageInput) || 1;
             const skip = (page - 1) * limit;
             const session = await getSession();
             if (!session) return null;
             const total = await prisma.timeEntry.count({ where: { memberId } });
-            const data = await prisma.timeEntry.findMany({
-                where: { memberId },
-                include: { Project: { select: { id: true, name: true } } },
+            const res = await prisma.timeEntry.findMany({
+                where: { memberId, ...(q && { name: { contains: q } }) },
+                include: { Project: { select: { id: true, name: true, color: true } } },
                 take: limit,
                 skip,
                 orderBy: { end: 'desc' },
                 ...(order_column && { orderBy: { [order_column]: order_direction } }),
             });
+
+            const data = res.map((timeEntry) => {
+                return { ...timeEntry, duration: formatMinutes(getDiffInMinutes({ start: timeEntry.start, end: timeEntry.end })) };
+            });
+
             const totalPages = Math.ceil(total / limit);
             return { totalPages, total, page, limit, data };
         }),

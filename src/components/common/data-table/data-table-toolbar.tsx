@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { MultiOptionsFilter } from '@/components/common/multi-options-filter';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table } from '@tanstack/react-table';
 import { debounce } from 'lodash';
-import { X } from 'lucide-react';
+import { Trash2, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ComponentProps } from 'react';
@@ -24,9 +25,10 @@ interface DataTableToolbarProps<TData> {
           };
     filters: ComponentProps<typeof MultiOptionsFilter>[];
     displaySearchBar?: boolean;
+    onSelectedRemove?: (selectedIds: string[]) => void;
 }
 
-export function DataTableToolbar<TData>({ table, addNewRecord, filters, displaySearchBar = true }: DataTableToolbarProps<TData>) {
+export function DataTableToolbar<TData>({ table, addNewRecord, filters, displaySearchBar = true, onSelectedRemove }: DataTableToolbarProps<TData>) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -52,6 +54,8 @@ export function DataTableToolbar<TData>({ table, addNewRecord, filters, displayS
         router.replace(pathname + '?' + params.toString());
     };
 
+    const selected = table.getFilteredSelectedRowModel().rows;
+
     return (
         <div className="flex flex-col items-center justify-between gap-4 overflow-x-auto pt-1 pr-1 pb-4 md:flex-row">
             {displaySearchBar && (
@@ -59,8 +63,22 @@ export function DataTableToolbar<TData>({ table, addNewRecord, filters, displayS
                     placeholder="Search"
                     onChange={debounce((event) => setQParam(event.target.value), 500)}
                     defaultValue={q || ''}
-                    className="min-w-[150px] rounded max-md:h-[50px] md:max-w-xs"
+                    className="min-w-[150px] rounded md:max-w-xs"
                 />
+            )}
+            {selected.length > 0 && (
+                <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                    <p>{selected.length} selected</p>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                            onSelectedRemove?.(selected.map((e) => (e.original as any).id));
+                        }}
+                    >
+                        <Trash2 color="red" />
+                    </Button>
+                </div>
             )}
             <div className="mr-auto flex items-center gap-2">
                 {filters.map((e) => (

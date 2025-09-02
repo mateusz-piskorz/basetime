@@ -2,6 +2,7 @@
 
 import { DataTableColumnHeader } from '@/components/common/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/common/data-table/data-table-row-actions';
+import { Checkbox } from '@/components/ui/checkbox';
 import { TrpcRouterOutput } from '@/lib/trpc/client';
 import { ColumnDef } from '@tanstack/react-table';
 import dayjs from 'dayjs';
@@ -13,6 +14,21 @@ export const getTimeEntryColumns = ({
     handleEditTimeEntry: (TimeEntryId: string) => void;
     handleDeleteTimeEntry: (TimeEntryId: string) => void;
 }): ColumnDef<NonNullable<TrpcRouterOutput['getMemberTimeEntries']>['data'][number]>[] => [
+    {
+        id: 'select',
+        header: ({ table }) => (
+            <Checkbox
+                checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
+                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                aria-label="Select all"
+            />
+        ),
+        cell: ({ row }) => (
+            <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
+        ),
+        enableSorting: false,
+        enableHiding: false,
+    },
     {
         accessorKey: 'name',
         meta: { title: 'Name' },
@@ -26,6 +42,12 @@ export const getTimeEntryColumns = ({
         header: ({ column }) => <DataTableColumnHeader column={column} />,
         cell: ({ row }) => row.original.Project?.name,
         enableSorting: false,
+    },
+    {
+        accessorKey: 'duration',
+        meta: { title: 'Duration' },
+        header: ({ column }) => <DataTableColumnHeader column={column} />,
+        cell: ({ row }) => row.original.duration,
     },
     {
         accessorKey: 'start',

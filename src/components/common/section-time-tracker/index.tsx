@@ -14,9 +14,9 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
 import { DashboardHeading } from '../dashboard-heading';
-import { InputField } from '../form-fields/input-field';
+import { SelectProjectField } from '../form-fields/select-project-field';
+import { TimeEntrySelectField } from '../form-fields/time-entry-select-field';
 import { StartButton } from '../start-button';
-import { SelectProject } from './select-project';
 import { Timer } from './timer';
 
 export const SectionTimeTracker = () => {
@@ -71,12 +71,14 @@ export const SectionTimeTracker = () => {
                             'focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]',
                         )}
                     >
-                        <InputField
-                            disabled={Boolean(activeTimeEntry) || isPending || form.formState.isSubmitting}
-                            errorMessage={false}
+                        <TimeEntrySelectField
                             form={form}
                             name="name"
-                            placeholder="What are you working on?"
+                            onSelect={async (timeEntry) => {
+                                if (timeEntry.projectId) form.setValue('projectId', timeEntry.projectId);
+                                form.handleSubmit(onSubmit)();
+                            }}
+                            disabled={Boolean(activeTimeEntry) || isPending || form.formState.isSubmitting}
                             classNameInput={cn(
                                 'h-full border-none bg-transparent md:text-base dark:bg-transparent',
                                 'selection:bg-transparent focus-visible:ring-[0px]',
@@ -85,19 +87,27 @@ export const SectionTimeTracker = () => {
                         />
 
                         <div className="flex h-full items-center gap-2 pr-2 sm:gap-4 sm:pr-4">
-                            <SelectProject
+                            <SelectProjectField
+                                form={form}
+                                name="projectId"
                                 disabled={Boolean(activeTimeEntry) || isPending || form.formState.isSubmitting}
                                 size="sm"
-                                control={form.control}
                                 className="hidden md:block"
                             />
+
                             <Separator orientation="vertical" />
                             <Timer startDate={activeTimeEntry ? new Date(activeTimeEntry.start) : new Date()} isActive={Boolean(activeTimeEntry)} />
                         </div>
                     </div>
 
                     <div className="flex flex-wrap items-center justify-between gap-6">
-                        <SelectProject size="lg" control={form.control} className="w-[150px] md:hidden" />
+                        <SelectProjectField
+                            form={form}
+                            name="projectId"
+                            disabled={Boolean(activeTimeEntry) || isPending || form.formState.isSubmitting}
+                            size="lg"
+                            className="w-[150px] md:hidden"
+                        />
 
                         <StartButton disabled={form.formState.isSubmitting} type="submit" actionState={activeTimeEntry ? 'stop' : 'start'} />
                     </div>

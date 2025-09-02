@@ -45,14 +45,14 @@ export const stopTimeTracker = async ({ timeEntryId }: { timeEntryId: string }) 
     }
 };
 
-export const removeTimeEntry = async ({ timeEntryId }: { timeEntryId: string }) => {
+export const removeTimeEntries = async ({ timeEntryId }: { timeEntryId: string[] }) => {
     try {
         const session = await getSession();
         if (!session) {
             return { success: false, message: 'Error session invalid' };
         }
 
-        await prisma.timeEntry.delete({ where: { id: timeEntryId } });
+        await prisma.timeEntry.deleteMany({ where: { id: { in: timeEntryId } } });
 
         return { success: true };
     } catch {
@@ -60,7 +60,7 @@ export const removeTimeEntry = async ({ timeEntryId }: { timeEntryId: string }) 
     }
 };
 
-export const manualTimeEntry = async ({ data }: { data: z.infer<typeof manualTimeEntryServerSchema> }) => {
+export const manualTimeEntry = async ({ data, timeEntryId }: { data: z.infer<typeof manualTimeEntryServerSchema>; timeEntryId?: string }) => {
     try {
         const validated = manualTimeEntryServerSchema.safeParse(data);
 
@@ -75,12 +75,15 @@ export const manualTimeEntry = async ({ data }: { data: z.infer<typeof manualTim
 
         const { name, projectId, memberId, organizationId, end, start } = validated.data;
 
-        await prisma.timeEntry.create({
-            data: { start, end, memberId, name: name || 'unnamed time entry', organizationId, projectId },
+        await prisma.timeEntry.upsert({
+            create: { start, end, memberId, name: name || 'unnamed time entry', organizationId, projectId },
+            update: { start, end, memberId, name: name || 'unnamed time entry', organizationId, projectId },
+            where: { id: timeEntryId || '' },
         });
 
         return { success: true };
-    } catch {
+    } catch (e) {
+        console.log(e);
         return { success: false, message: 'Error something went wrong - manualTimeEntry' };
     }
 };

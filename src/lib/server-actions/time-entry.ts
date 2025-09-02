@@ -82,8 +82,7 @@ export const manualTimeEntry = async ({ data, timeEntryId }: { data: z.infer<typ
         });
 
         return { success: true };
-    } catch (e) {
-        console.log(e);
+    } catch {
         return { success: false, message: 'Error something went wrong - manualTimeEntry' };
     }
 };

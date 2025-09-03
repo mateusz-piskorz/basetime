@@ -102,8 +102,7 @@ export const appRouter = createTRPCRouter({
                 include: { User: { select: { name: true, email: true } } },
                 take: limit,
                 skip,
-                orderBy: { createdAt: 'desc' },
-                ...(order_column && { orderBy: { [order_column]: order_direction } }),
+                orderBy: order_column ? { [order_column]: order_direction } : { createdAt: 'desc' },
             });
 
             const totalPages = Math.ceil(total / limit);

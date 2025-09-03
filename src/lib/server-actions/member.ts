@@ -36,7 +36,7 @@ export const updateMember = async ({ data, memberId }: { data: z.infer<typeof up
         return { success: true };
     } catch (error) {
         console.log(error);
-        return { success: false, message: 'Error something went wrong - updateRole' };
+        return { success: false, message: 'Error something went wrong - updateMember' };
     }
 };
 

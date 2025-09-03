@@ -4,15 +4,15 @@ import { DashboardHeading } from '@/components/common/dashboard-heading';
 import { SpinLoader } from '@/components/common/spin-loader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { Clock, Users2 } from 'lucide-react';
-import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { CreateProjectDialog } from './create-project-dialog';
 
 export const SectionProjects = () => {
     const [open, setOpen] = useState(false);
-    const { organizationId } = useParams<{ organizationId: string }>();
+    const { organizationId } = useMember();
 
     const { data, error, isLoading } = trpc.getProjects.useQuery({ organizationId });
 

@@ -1,31 +1,42 @@
 'use client';
 
-import { MEMBER_ROLE } from '@prisma/client';
+import { CURRENCY, MEMBER_ROLE } from '@prisma/client';
 import { createContext, ReactNode, useContext } from 'react';
 
 type Member = {
-    organizationId: string;
     id: string;
     userId: string;
     role: MEMBER_ROLE;
 };
 
 type MemberContextType = {
-    member: Member | null;
-};
+    organizationId: string;
+    currency: CURRENCY;
+    member: Member;
+} | null;
 
-const MemberContext = createContext<MemberContextType>({ member: null });
+const MemberContext = createContext<MemberContextType>(null);
 
-export const MemberProvider = ({ member, children }: { member: Member; children: ReactNode }) => {
-    return <MemberContext.Provider value={{ member }}>{children}</MemberContext.Provider>;
+export const MemberProvider = ({
+    member,
+    currency,
+    organizationId,
+    children,
+}: {
+    member: Member;
+    currency: CURRENCY;
+    organizationId: string;
+    children: ReactNode;
+}) => {
+    return <MemberContext.Provider value={{ member, currency, organizationId }}>{children}</MemberContext.Provider>;
 };
 
 export const useMember = () => {
     const context = useContext(MemberContext);
 
-    if (!context.member) {
+    if (!context) {
         throw new Error('useMember must be used within a <MemberProvider />');
     }
 
-    return { member: context.member };
+    return context;
 };

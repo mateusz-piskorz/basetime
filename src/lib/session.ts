@@ -23,7 +23,7 @@ const decrypt = async (session: string | undefined = '') => {
 type CreateSession = { userId: string; userAgent: string };
 
 export async function createSession({ userId, userAgent }: CreateSession) {
-    const expiresAt = new Date(Date.now() + 1 * 60 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     const sessionId = (await prisma.session.create({ data: { expiresAt, userAgent, userId } })).id;
 
@@ -102,7 +102,7 @@ export const verifySession = async () => {
             return null;
         }
 
-        const expires = new Date(Date.now() + 1 * 60 * 60 * 1000);
+        const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
         const res = await prisma.session.update({
             where: { id: session.sessionId as string, expiresAt: { gte: new Date() } },

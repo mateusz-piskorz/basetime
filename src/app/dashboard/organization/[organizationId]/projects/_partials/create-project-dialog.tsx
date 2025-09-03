@@ -3,12 +3,12 @@ import { SelectField } from '@/components/common/form-fields/select-field';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
+import { useMember } from '@/lib/hooks/use-member';
 import { createProject } from '@/lib/server-actions/project';
 import { trpc } from '@/lib/trpc/client';
 import { createProjectSchema } from '@/lib/zod/project-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PROJECT_COLOR } from '@prisma/client';
-import { useParams } from 'next/navigation';
 import durationParser from 'parse-duration';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -22,7 +22,8 @@ type Props = {
 
 export const CreateProjectDialog = ({ open, setOpen }: Props) => {
     const [error, setError] = useState<string | null>(null);
-    const { organizationId } = useParams<{ organizationId: string }>();
+
+    const { organizationId } = useMember();
     const trpcUtils = trpc.useUtils();
 
     // const members = trpc.getMembers.useQuery({ organizationId });

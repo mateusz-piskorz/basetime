@@ -101,23 +101,22 @@ export const appRouter = createTRPCRouter({
             const totalPages = Math.ceil(total / limit);
             return { totalPages, total, page, limit, data };
         }),
-    // getOrganizationInvitations: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
-    //     const session = await getSession();
-    //     if (!session) return null;
-    //     return await prisma.invitation.findMany({
-    //         select: { id: true, status: true, createdAt: true, User: { select: { id: true, name: true, email: true } } },
-    //         where: { Organization: { id: organizationId, Members: { some: { userId: session.id } } } },
-    //     });
-    // }),
     getMembers: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
         const session = await getSession();
         if (!session) return null;
+
+        const userMember = await prisma.member.findFirst({ where: { userId: session.id, organizationId } });
+        if (!userMember) {
+            return null;
+        }
+
         const res = await prisma.organization.findUnique({
-            where: { id: organizationId, Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } },
+            where: { id: organizationId },
             select: {
                 Members: {
                     select: {
-                        HourlyRates: { take: 1 },
+                        ...(userMember.role !== 'EMPLOYEE' && { HourlyRates: { take: 1 } }),
+                        Projects: { select: { id: true } },
                         id: true,
                         _count: true,
                         TimeEntries: { select: { start: true, end: true } },
@@ -152,11 +151,17 @@ export const appRouter = createTRPCRouter({
         .query(async ({ input: { organizationId, memberId } }) => {
             const session = await getSession();
             if (!session) return null;
+
+            const currentMember = await prisma.member.findFirst({ where: { userId: session.id, organizationId } });
+            if (!currentMember) {
+                return null;
+            }
+
             const res = await prisma.organization.findUnique({
                 where: { id: organizationId, Members: { some: { userId: session.id } } },
                 select: {
                     Projects: {
-                        where: { Members: { some: { id: memberId } } },
+                        ...(currentMember.role !== 'EMPLOYEE' && { where: { Members: { some: { id: memberId } } } }),
                         select: {
                             color: true,
                             _count: true,

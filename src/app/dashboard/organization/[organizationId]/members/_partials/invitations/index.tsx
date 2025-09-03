@@ -9,11 +9,11 @@ import { INVITATION_STATUS } from '@prisma/client';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { CreateInvitationDialog } from '../create-invitation-dialog';
+import { CreateInvitationDialog } from '../common/create-invitation-dialog';
 import { getInvitationsColumns } from './invitations-columns';
 
 export const TableInvitations = () => {
-    const { organizationId } = useMember().member;
+    const { organizationId } = useMember();
     const searchParams = useSearchParams();
     const page = searchParams.get('page');
     const limit = searchParams.get('limit');

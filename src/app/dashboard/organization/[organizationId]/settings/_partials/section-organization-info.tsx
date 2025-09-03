@@ -6,18 +6,18 @@ import { SelectField } from '@/components/common/form-fields/select-field';
 import { SpinLoader } from '@/components/common/spin-loader';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
+import { useMember } from '@/lib/hooks/use-member';
 import { upsertOrganization } from '@/lib/server-actions/organization';
 import { trpc } from '@/lib/trpc/client';
 import { upsertOrganizationSchema } from '@/lib/zod/organization-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CURRENCY } from '@prisma/client';
-import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
 
 export const SectionOrganizationInfo = () => {
-    const { organizationId } = useParams<{ organizationId: string }>();
+    const { organizationId } = useMember();
 
     const { data, isLoading, error } = trpc.getOrganization.useQuery({ organizationId });
 

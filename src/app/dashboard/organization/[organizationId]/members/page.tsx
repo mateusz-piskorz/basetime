@@ -1,7 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
-import { TableInvitations } from './_partials/table-invitations';
+import { TableInvitations } from './_partials/invitations';
+import { MemberList } from './_partials/members';
 
 export default async function OrganizationSettingsPage() {
     const user = await getSession();
@@ -27,7 +28,9 @@ export default async function OrganizationSettingsPage() {
                         Invitations
                     </TabsTrigger>
                 </TabsList>
-                <TabsContent value="members">Make changes to your account here.</TabsContent>
+                <TabsContent value="members">
+                    <MemberList />
+                </TabsContent>
                 <TabsContent value="invitations">
                     <TableInvitations />
                 </TabsContent>

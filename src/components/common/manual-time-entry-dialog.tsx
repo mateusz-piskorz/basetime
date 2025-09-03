@@ -30,7 +30,7 @@ type Props = {
 
 export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSuccess }: Props) => {
     const trpcUtils = trpc.useUtils();
-    const { member } = useMember();
+    const { member, organizationId } = useMember();
     const form = useForm<z.infer<typeof manualTimeEntrySchema>>({
         resolver: zodResolver(manualTimeEntrySchema),
         defaultValues: {
@@ -66,7 +66,7 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
         const end = prepareDateTime(endDate, endTime);
 
         const res = await manualTimeEntry({
-            data: { memberId: member.id, organizationId: member.organizationId, name, projectId, start, end },
+            data: { memberId: member.id, organizationId, name, projectId, start, end },
             timeEntryId: selectedTimeEntry?.id,
         });
 
@@ -110,6 +110,7 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
                                 onSelect={(timeEntry) => {
                                     if (timeEntry.projectId) form.setValue('projectId', timeEntry.projectId);
                                 }}
+                                placeholder="What did you work on?"
                             />
                         </div>
                         <div className="flex flex-col gap-6 sm:flex-row-reverse sm:items-end sm:gap-4">

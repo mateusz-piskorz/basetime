@@ -25,9 +25,10 @@ type Props<T extends FieldValues> = {
     disabled?: boolean;
     className?: string;
     classNameInput?: string;
+    placeholder?: string;
 };
 
-export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, name, disabled, className, classNameInput }: Props<T>) => {
+export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, name, disabled, className, classNameInput, placeholder }: Props<T>) => {
     const [open, setOpen] = useState(false);
     const { control } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
     const memberId = useMember().member.id;
@@ -64,7 +65,7 @@ export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, na
                                                 debouncedSetQ(e.target.value);
                                             }}
                                             disabled={disabled}
-                                            placeholder="What did you work on?"
+                                            placeholder={placeholder}
                                             value={field.value || ''}
                                             role="combobox"
                                             aria-expanded={open}

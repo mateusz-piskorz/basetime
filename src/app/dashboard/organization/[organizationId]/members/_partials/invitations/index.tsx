@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
@@ -12,12 +13,17 @@ import { toast } from 'sonner';
 import { CreateInvitationDialog } from '../common/create-invitation-dialog';
 import { getInvitationsColumns } from './invitations-columns';
 
-export const TableInvitations = () => {
+type Props = {
+    open: boolean;
+    setOpen: (val: boolean) => void;
+};
+
+export const TableInvitations = ({ open, setOpen }: Props) => {
     const { organizationId } = useMember();
     const searchParams = useSearchParams();
+
     const page = searchParams.get('page');
     const limit = searchParams.get('limit');
-    const [open, setOpen] = useState(false);
     const [openConfirm, setOpenConfirm] = useState(false);
     const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
     const order_column = searchParams.get('order_column');
@@ -62,7 +68,7 @@ export const TableInvitations = () => {
 
             <DataTable
                 displaySearchBar={false}
-                className="rounded-none"
+                className="my-4"
                 totalPages={data?.totalPages}
                 data={data?.data ?? []}
                 columns={columns}

@@ -18,6 +18,11 @@ export const createInvitation = async ({ data, organizationId }: { data: z.infer
             return { success: false, message: 'Error session invalid' };
         }
 
+        const userMember = await prisma.member.findFirst({ where: { userId: session.id, organizationId, role: { in: ['MANAGER', 'OWNER'] } } });
+        if (!userMember) {
+            return { success: false, message: `Error: permission` };
+        }
+
         const { email } = validated.data;
 
         const user = await prisma.user.findUnique({
@@ -51,6 +56,30 @@ export const createInvitation = async ({ data, organizationId }: { data: z.infer
     }
 };
 
+export const cancelInvitation = async ({ invitationId }: { invitationId: string }) => {
+    try {
+        const session = await getSession();
+        if (!session) {
+            return { success: false, message: 'Error session invalid' };
+        }
+
+        await prisma.invitation.update({
+            where: {
+                id: invitationId,
+                status: { in: ['SENT'] },
+                Organization: { Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } },
+            },
+            data: { status: 'CANCELED' },
+        });
+
+        return { success: true };
+    } catch (e) {
+        console.log(e);
+        return { success: false, message: 'Error something went wrong - cancelInvitation' };
+    }
+};
+
+// todo: check security
 export const acceptInvitation = async ({ invitationId, organizationId }: { invitationId: string; organizationId: string }) => {
     try {
         const session = await getSession();
@@ -73,6 +102,7 @@ export const acceptInvitation = async ({ invitationId, organizationId }: { invit
     }
 };
 
+// todo: check security
 export const rejectInvitation = async ({ invitationId }: { invitationId: string }) => {
     try {
         const session = await getSession();
@@ -85,20 +115,5 @@ export const rejectInvitation = async ({ invitationId }: { invitationId: string 
     } catch (e) {
         console.log(e);
         return { success: false, message: 'Error something went wrong - rejectInvitation' };
-    }
-};
-
-export const cancelInvitation = async ({ invitationId }: { invitationId: string }) => {
-    try {
-        const session = await getSession();
-        if (!session) {
-            return { success: false, message: 'Error session invalid' };
-        }
-
-        await prisma.invitation.update({ where: { id: invitationId }, data: { status: 'CANCELED' } });
-        return { success: true };
-    } catch (e) {
-        console.log(e);
-        return { success: false, message: 'Error something went wrong - deleteInvitation' };
     }
 };

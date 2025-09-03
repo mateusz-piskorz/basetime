@@ -84,7 +84,7 @@ export const getSession = cache(async () => {
     if (!res) {
         return null;
     }
-
+    // refactor it to userId/sessionId
     return { ...res.User, sessionId: res.id };
 });
 

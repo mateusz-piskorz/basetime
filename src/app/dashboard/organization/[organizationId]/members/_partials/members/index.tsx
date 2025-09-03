@@ -2,16 +2,26 @@
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { SpinLoader } from '@/components/common/spin-loader';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { useMember } from '@/lib/hooks/use-member';
 import { removeMember } from '@/lib/server-actions/member';
 import { trpc } from '@/lib/trpc/client';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { MemberCard } from './member-card';
 import { UpdateMemberDialog } from './update-member-dialog';
 
-export const MemberList = () => {
-    const { organizationId } = useMember();
+type Props = {
+    openInvitationDialog: () => void;
+};
+
+export const MemberList = ({ openInvitationDialog }: Props) => {
+    const {
+        organizationId,
+        member: { role },
+    } = useMember();
 
     const [open, setOpen] = useState(false);
     const [openConfirm, setOpenConfirm] = useState(false);
@@ -57,14 +67,13 @@ export const MemberList = () => {
                 </>
             )}
 
-            <div className="space-y-8 px-4 md:px-8">
+            <div className="space-y-8 py-4">
                 <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:gap-8">
                     {error && <p className="text-red-500">Error loading members</p>}
                     {!error && isLoading && <SpinLoader />}
-                    {!error &&
-                        !isLoading &&
-                        data?.map((member) => {
-                            return (
+                    {!error && !isLoading && (
+                        <>
+                            {data?.map((member) => (
                                 <MemberCard
                                     key={member.id}
                                     member={member}
@@ -77,8 +86,18 @@ export const MemberList = () => {
                                         setOpen(true);
                                     }}
                                 />
-                            );
-                        })}
+                            ))}
+                            {role !== 'EMPLOYEE' && (
+                                <Card className="w-full md:max-w-[325px]">
+                                    <CardContent className="flex h-full min-h-[200px] items-center justify-center">
+                                        <Button onClick={openInvitationDialog} className="h-14 w-14">
+                                            <Plus className="size-8" />
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </>
+                    )}
                 </div>
             </div>
         </>

@@ -33,6 +33,12 @@ export const getInvitationsColumns = ({
     },
     {
         id: 'actions',
-        cell: ({ row }) => <DataTableRowActions actions={[{ label: 'Cancel invitation', action: () => handleCancel(row.original.id) }]} />,
+        cell: ({ row }) => (
+            <DataTableRowActions
+                actions={[
+                    { disabled: !['SENT'].includes(row.original.status), label: 'Cancel invitation', action: () => handleCancel(row.original.id) },
+                ]}
+            />
+        ),
     },
 ];

@@ -1,11 +1,11 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
-import { TypedFieldPath } from '@/lib/types/common';
+import { Nullable, TypedFieldPath } from '@/lib/types/common';
 import { useEffect, useReducer } from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { Input } from '../../ui/input';
 
-type FieldType = number;
+type FieldType = Nullable<number>;
 
 type Props<T extends FieldValues> = {
     form: UseFormReturn<T>;
@@ -29,7 +29,7 @@ export const CurrencyField = <T extends FieldValues>({ form, label, name: propsN
     const name = propsName as string;
     const { control, getValues, watch } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
 
-    const initialValue = getValues(name) ? moneyFormatter.format(getValues(name)) : 0;
+    const initialValue = getValues(name) ? moneyFormatter.format(getValues(name) || 0) : 0;
 
     /* eslint-disable @typescript-eslint/no-explicit-any */
     const [value, setValue] = useReducer((_: any, next: string) => {
@@ -59,7 +59,8 @@ export const CurrencyField = <T extends FieldValues>({ form, label, name: propsN
             control={control}
             name={name}
             render={({ field }) => {
-                field.value = Number(value);
+                field.value = typeof value === 'string' ? parseFloat(value.replace(',', '.')) : value;
+
                 const _change = field.onChange;
                 return (
                     <FormItem className={className}>

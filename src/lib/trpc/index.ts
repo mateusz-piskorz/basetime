@@ -11,6 +11,7 @@ export const appRouter = createTRPCRouter({
         if (!session) return null;
         return await prisma.session.findMany({ where: { userId: session.id, expiresAt: { gte: new Date() } }, orderBy: { createdAt: 'asc' } });
     }),
+
     getUserInvitations: publicProcedure.query(async () => {
         const session = await getSession();
         if (!session) return null;
@@ -19,6 +20,7 @@ export const appRouter = createTRPCRouter({
             where: { userId: session.id },
         });
     }),
+
     getOrganization: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
         const session = await getSession();
         if (!session) return null;
@@ -29,6 +31,7 @@ export const appRouter = createTRPCRouter({
         if (!res?.Members[0]) return null;
         return { ...res, member: res.Members[0] };
     }),
+
     getActiveTimeEntry: publicProcedure.input(z.object({ memberId: z.string() })).query(async ({ input: { memberId } }) => {
         const session = await getSession();
         if (!session) return null;
@@ -36,6 +39,7 @@ export const appRouter = createTRPCRouter({
             where: { memberId, end: null },
         });
     }),
+
     getMemberTimeEntries: publicProcedure
         .input(
             z.object({
@@ -90,7 +94,11 @@ export const appRouter = createTRPCRouter({
             if (!session) return null;
             const total = await prisma.invitation.count({ where: { organizationId } });
             const data = await prisma.invitation.findMany({
-                where: { organizationId, ...(statusArr?.length && { status: { in: statusArr } }) },
+                where: {
+                    organizationId,
+                    Organization: { Members: { some: { role: { in: ['MANAGER', 'OWNER'] }, User: { id: session.id } } } },
+                    ...(statusArr?.length && { status: { in: statusArr } }),
+                },
                 include: { User: { select: { name: true, email: true } } },
                 take: limit,
                 skip,
@@ -101,6 +109,7 @@ export const appRouter = createTRPCRouter({
             const totalPages = Math.ceil(total / limit);
             return { totalPages, total, page, limit, data };
         }),
+
     getMembers: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
         const session = await getSession();
         if (!session) return null;
@@ -115,7 +124,7 @@ export const appRouter = createTRPCRouter({
             select: {
                 Members: {
                     select: {
-                        ...(userMember.role !== 'EMPLOYEE' && { HourlyRates: { take: 1 } }),
+                        HourlyRates: { take: 1, ...(userMember.role === 'EMPLOYEE' && { where: { memberId: userMember.id } }) },
                         Projects: { select: { id: true } },
                         id: true,
                         _count: true,
@@ -128,10 +137,11 @@ export const appRouter = createTRPCRouter({
         });
 
         return res?.Members.map((member) => {
-            const hourlyRate = member.HourlyRates.length > 0 ? member.HourlyRates[0].value : undefined;
+            const hourlyRate = member.HourlyRates?.length > 0 ? member.HourlyRates[0].value : undefined;
             return { ...member, loggedTime: sumTimeEntries(member.TimeEntries), hourlyRate };
         });
     }),
+
     getProjects: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
         const session = await getSession();
         if (!session) return null;
@@ -146,6 +156,7 @@ export const appRouter = createTRPCRouter({
             return { ...project, loggedTime: sumTimeEntries(project.TimeEntries) };
         });
     }),
+
     getMemberProjects: publicProcedure
         .input(z.object({ organizationId: z.string(), memberId: z.string() }))
         .query(async ({ input: { organizationId, memberId } }) => {
@@ -178,6 +189,7 @@ export const appRouter = createTRPCRouter({
                 return { ...project, loggedTime: sumTimeEntries(project.TimeEntries) };
             });
         }),
+
     getUserOrganizations: publicProcedure.query(async () => {
         const session = await getSession();
         if (!session) return null;

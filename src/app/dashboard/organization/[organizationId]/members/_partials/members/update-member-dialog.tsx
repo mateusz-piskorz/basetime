@@ -27,14 +27,14 @@ export const UpdateMemberDialog = ({ open, setOpen, onSuccess, member }: Props) 
     const trpcUtils = trpc.useUtils();
     const { organizationId } = useMember();
     const { data: projects } = trpc.getProjects.useQuery({ organizationId });
+
     const form = useForm({
         resolver: zodResolver(updateMemberSchema),
-        defaultValues: { projectIds: member.Projects.map((e) => e.id) },
     });
 
     useEffect(() => {
-        form.reset();
-    }, [form, form.formState.isSubmitSuccessful]);
+        form.reset({ projectIds: member.Projects.map((e) => e.id), role: member.role, hourlyRate: member.hourlyRate });
+    }, [form, form.formState.isSubmitSuccessful, member]);
 
     const onSubmit = async (data: z.infer<typeof updateMemberSchema>) => {
         const res = await updateMember({ data, memberId: member.id });
@@ -61,7 +61,11 @@ export const UpdateMemberDialog = ({ open, setOpen, onSuccess, member }: Props) 
                             form={form}
                             label="Role"
                             name="role"
-                            selectOptions={Object.values(MEMBER_ROLE).map((e) => ({ label: e, value: e }))}
+                            selectOptions={Object.values(MEMBER_ROLE).map((e) => ({
+                                label: e,
+                                value: e,
+                                disabled: (member.role === 'OWNER' && e !== 'OWNER') || (member.role !== 'OWNER' && e == 'OWNER'),
+                            }))}
                         />
                         <CurrencyField form={form} label={`Hourly Rate ${currency}`} name="hourlyRate" />
                         <MultiSelectField

@@ -22,7 +22,8 @@ import { Timer } from './timer';
 export const SectionTimeTracker = () => {
     const trpcUtils = trpc.useUtils();
     const {
-        member: { id: memberId, organizationId },
+        member: { id: memberId },
+        organizationId,
     } = useMember();
 
     const { data: activeTimeEntry, isPending } = trpc.getActiveTimeEntry.useQuery({ memberId });
@@ -84,6 +85,7 @@ export const SectionTimeTracker = () => {
                                 'selection:bg-transparent focus-visible:ring-[0px]',
                             )}
                             className="h-full w-full"
+                            placeholder="What you working on?"
                         />
 
                         <div className="flex h-full items-center gap-2 pr-2 sm:gap-4 sm:pr-4">

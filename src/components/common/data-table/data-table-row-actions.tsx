@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 interface DataTableRowActionsProps {
-    actions: { label: string; action: () => void }[];
+    actions: { label: string; action: () => void; disabled?: boolean }[];
 }
 
 export function DataTableRowActions({ actions }: DataTableRowActionsProps) {
@@ -29,8 +29,8 @@ export function DataTableRowActions({ actions }: DataTableRowActionsProps) {
                 <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {actions.map(({ action, label }) => (
-                        <DropdownMenuItem key={label} onClick={action}>
+                    {actions.map(({ action, label, disabled }) => (
+                        <DropdownMenuItem disabled={disabled} key={label} onClick={action}>
                             {label}
                         </DropdownMenuItem>
                     ))}

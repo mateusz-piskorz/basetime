@@ -1,4 +1,5 @@
 import { formatMinutes, getDiffInMinutes, sumTimeEntries } from '@/lib/utils';
+import { INVITATION_STATUS } from '@prisma/client';
 import z from 'zod';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
@@ -10,6 +11,7 @@ export const appRouter = createTRPCRouter({
         if (!session) return null;
         return await prisma.session.findMany({ where: { userId: session.id, expiresAt: { gte: new Date() } }, orderBy: { createdAt: 'asc' } });
     }),
+
     getUserInvitations: publicProcedure.query(async () => {
         const session = await getSession();
         if (!session) return null;
@@ -18,6 +20,7 @@ export const appRouter = createTRPCRouter({
             where: { userId: session.id },
         });
     }),
+
     getOrganization: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
         const session = await getSession();
         if (!session) return null;
@@ -28,6 +31,7 @@ export const appRouter = createTRPCRouter({
         if (!res?.Members[0]) return null;
         return { ...res, member: res.Members[0] };
     }),
+
     getActiveTimeEntry: publicProcedure.input(z.object({ memberId: z.string() })).query(async ({ input: { memberId } }) => {
         const session = await getSession();
         if (!session) return null;
@@ -35,6 +39,7 @@ export const appRouter = createTRPCRouter({
             where: { memberId, end: null },
         });
     }),
+
     getMemberTimeEntries: publicProcedure
         .input(
             z.object({
@@ -69,23 +74,57 @@ export const appRouter = createTRPCRouter({
             const totalPages = Math.ceil(total / limit);
             return { totalPages, total, page, limit, data };
         }),
-    getOrganizationInvitations: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
-        const session = await getSession();
-        if (!session) return null;
-        return await prisma.invitation.findMany({
-            select: { id: true, status: true, createdAt: true, User: { select: { id: true, name: true, email: true } } },
-            where: { Organization: { id: organizationId, Members: { some: { userId: session.id } } } },
-        });
-    }),
+
+    getOrganizationInvitations: publicProcedure
+        .input(
+            z.object({
+                organizationId: z.string(),
+                page: z.string().nullish(),
+                limit: z.string().nullish(),
+                order_column: z.string().nullish(),
+                order_direction: z.string().nullish(),
+                statusArr: z.array(z.nativeEnum(INVITATION_STATUS)).nullish(),
+            }),
+        )
+        .query(async ({ input: { organizationId, limit: limitInput, page: pageInput, order_column, order_direction, statusArr } }) => {
+            const limit = Number(limitInput) || 25;
+            const page = Number(pageInput) || 1;
+            const skip = (page - 1) * limit;
+            const session = await getSession();
+            if (!session) return null;
+            const total = await prisma.invitation.count({ where: { organizationId } });
+            const data = await prisma.invitation.findMany({
+                where: {
+                    organizationId,
+                    Organization: { Members: { some: { role: { in: ['MANAGER', 'OWNER'] }, User: { id: session.id } } } },
+                    ...(statusArr?.length && { status: { in: statusArr } }),
+                },
+                include: { User: { select: { name: true, email: true } } },
+                take: limit,
+                skip,
+                orderBy: order_column ? { [order_column]: order_direction } : { createdAt: 'desc' },
+            });
+
+            const totalPages = Math.ceil(total / limit);
+            return { totalPages, total, page, limit, data };
+        }),
+
     getMembers: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
         const session = await getSession();
         if (!session) return null;
+
+        const userMember = await prisma.member.findFirst({ where: { userId: session.id, organizationId } });
+        if (!userMember) {
+            return null;
+        }
+
         const res = await prisma.organization.findUnique({
-            where: { id: organizationId, Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } },
+            where: { id: organizationId },
             select: {
                 Members: {
                     select: {
-                        HourlyRates: { take: 1 },
+                        HourlyRates: { take: 1, ...(userMember.role === 'EMPLOYEE' && { where: { memberId: userMember.id } }) },
+                        Projects: { select: { id: true } },
                         id: true,
                         _count: true,
                         TimeEntries: { select: { start: true, end: true } },
@@ -97,10 +136,11 @@ export const appRouter = createTRPCRouter({
         });
 
         return res?.Members.map((member) => {
-            const hourlyRate = member.HourlyRates.length > 0 ? member.HourlyRates[0].value : undefined;
+            const hourlyRate = member.HourlyRates?.length > 0 ? member.HourlyRates[0].value : undefined;
             return { ...member, loggedTime: sumTimeEntries(member.TimeEntries), hourlyRate };
         });
     }),
+
     getProjects: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
         const session = await getSession();
         if (!session) return null;
@@ -115,16 +155,23 @@ export const appRouter = createTRPCRouter({
             return { ...project, loggedTime: sumTimeEntries(project.TimeEntries) };
         });
     }),
+
     getMemberProjects: publicProcedure
         .input(z.object({ organizationId: z.string(), memberId: z.string() }))
         .query(async ({ input: { organizationId, memberId } }) => {
             const session = await getSession();
             if (!session) return null;
+
+            const currentMember = await prisma.member.findFirst({ where: { userId: session.id, organizationId } });
+            if (!currentMember) {
+                return null;
+            }
+
             const res = await prisma.organization.findUnique({
                 where: { id: organizationId, Members: { some: { userId: session.id } } },
                 select: {
                     Projects: {
-                        where: { Members: { some: { id: memberId } } },
+                        ...(currentMember.role !== 'EMPLOYEE' && { where: { Members: { some: { id: memberId } } } }),
                         select: {
                             color: true,
                             _count: true,
@@ -141,6 +188,7 @@ export const appRouter = createTRPCRouter({
                 return { ...project, loggedTime: sumTimeEntries(project.TimeEntries) };
             });
         }),
+
     getUserOrganizations: publicProcedure.query(async () => {
         const session = await getSession();
         if (!session) return null;

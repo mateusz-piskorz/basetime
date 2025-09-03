@@ -1,12 +1,12 @@
 import { InputField } from '@/components/common/form-fields/input-field';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
+import { useMember } from '@/lib/hooks/use-member';
 import { createInvitation } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
 import { createInvitationSchema } from '@/lib/zod/invitation-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -19,7 +19,8 @@ type Props = {
 
 export const CreateInvitationDialog = ({ open, setOpen }: Props) => {
     const [error, setError] = useState<string | null>(null);
-    const { organizationId } = useParams<{ organizationId: string }>();
+    const { organizationId } = useMember();
+
     const trpcUtils = trpc.useUtils();
 
     const form = useForm({
@@ -44,7 +45,6 @@ export const CreateInvitationDialog = ({ open, setOpen }: Props) => {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>Send invitation</DialogTitle>
-                <DialogDescription>Here you can invite members to Your team</DialogDescription>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" style={{ marginBottom: '16px' }}>
                         <InputField form={form} type="text" name="email" label="Email" placeholder="JohnDoe@yahoo.com" />

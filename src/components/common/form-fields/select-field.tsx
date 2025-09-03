@@ -12,7 +12,7 @@ type Props<T extends FieldValues> = {
     form: UseFormReturn<T>;
     name: TypedFieldPath<T, FieldType>;
     className?: React.HTMLAttributes<'div'>['className'];
-    selectOptions: { label: string; value: string }[];
+    selectOptions: { label: string; value: string; disabled?: boolean }[];
     label?: string;
     placeholder?: string;
     errorMessage?: boolean;
@@ -48,8 +48,8 @@ export const SelectField = <T extends FieldValues>({
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                            {selectOptions.map(({ label, value }) => (
-                                <SelectItem key={value} value={value}>
+                            {selectOptions.map(({ label, value, disabled }) => (
+                                <SelectItem disabled={disabled} key={value} value={value}>
                                     {label}
                                 </SelectItem>
                             ))}

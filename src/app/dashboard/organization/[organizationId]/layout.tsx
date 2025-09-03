@@ -35,5 +35,9 @@ export default function OrganizationLayout({
         );
     }
 
-    return <MemberProvider member={data.member}>{children}</MemberProvider>;
+    return (
+        <MemberProvider member={data.member} currency={data.currency} organizationId={data.id}>
+            {children}
+        </MemberProvider>
+    );
 }

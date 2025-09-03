@@ -10,10 +10,10 @@ import { MEMBER_ROLE } from '@prisma/client';
 import { Clock, FolderClosed } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
-import { UpdateMemberHourlyRateDialog } from '../../members/_partials/update-member-hourly-rate-dialog';
-import { UpdateMemberRoleDialog } from '../../members/_partials/update-member-role-dialog';
+import { UpdateMemberHourlyRateDialog } from './update-member-hourly-rate-dialog';
+import { UpdateMemberRoleDialog } from './update-member-role-dialog';
 
-export const SectionMembers = () => {
+export const MembersTab = () => {
     const [openRole, setOpenRole] = useState(false);
     const [open, setOpen] = useState(false);
     const { organizationId } = useParams<{ organizationId: string }>();

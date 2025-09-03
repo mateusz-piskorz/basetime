@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator';
 
 import { cn } from '@/lib/utils';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type Props = {
     title: string;
@@ -28,13 +28,16 @@ type Props = {
 export function MultiOptionsFilter({ filterKey, title, options, singleChoice }: Props) {
     const router = useRouter();
     const pathname = usePathname();
-    const searchParams = useParams<{ [filterKey]: string[] }>();
-    const values = searchParams[filterKey];
+    const searchParams = useSearchParams();
+    const values = searchParams.getAll(filterKey);
 
     const setValues = (val: string[] | null) => {
         const params = new URLSearchParams(searchParams.toString());
         if (val) {
-            params.set(filterKey, val.join('","'));
+            params.delete(filterKey);
+            val.forEach((singleVal) => {
+                params.append(filterKey, singleVal);
+            });
         } else {
             params.delete(filterKey);
         }

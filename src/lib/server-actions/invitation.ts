@@ -22,11 +22,15 @@ export const createInvitation = async ({ data, organizationId }: { data: z.infer
 
         const user = await prisma.user.findUnique({
             where: { email },
-            select: { id: true, Invitations: { select: { organizationId: true, status: true } } },
+            select: { Members: { select: { organizationId: true } }, id: true, Invitations: { select: { organizationId: true, status: true } } },
         });
 
         if (!user) {
             return { success: false, message: `Error: couldn't find user with email ${email}` };
+        }
+
+        if (user.Members.some((e) => e.organizationId === organizationId)) {
+            return { success: false, message: `Error: ${email} is already a member of this organization` };
         }
 
         if (user.Invitations.find((e) => e.organizationId === organizationId && e.status === 'SENT')) {
@@ -84,14 +88,14 @@ export const rejectInvitation = async ({ invitationId }: { invitationId: string 
     }
 };
 
-export const deleteInvitation = async ({ invitationId }: { invitationId: string }) => {
+export const cancelInvitation = async ({ invitationId }: { invitationId: string }) => {
     try {
         const session = await getSession();
         if (!session) {
             return { success: false, message: 'Error session invalid' };
         }
 
-        await prisma.invitation.delete({ where: { id: invitationId } });
+        await prisma.invitation.update({ where: { id: invitationId }, data: { status: 'CANCELED' } });
         return { success: true };
     } catch (e) {
         console.log(e);

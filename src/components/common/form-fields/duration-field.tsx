@@ -1,11 +1,11 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { TypedFieldPath } from '@/lib/types/common';
+import { Nullable, TypedFieldPath } from '@/lib/types/common';
 import { formatMinutes } from '@/lib/utils';
 import durationParser from 'parse-duration';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { Input } from '../../ui/input';
 
-type FieldType = string;
+type FieldType = Nullable<string>;
 
 type Props<T extends FieldValues> = {
     form: UseFormReturn<T>;
@@ -14,11 +14,12 @@ type Props<T extends FieldValues> = {
     errorMessage?: boolean;
     placeholder?: string;
     onBlur?: (minutes: number) => void;
+    label?: string;
 };
 
 export const DurationField = <T extends FieldValues>({
     form,
-
+    label,
     name: propsName,
     className,
     placeholder,
@@ -35,7 +36,7 @@ export const DurationField = <T extends FieldValues>({
             render={({ field }) => {
                 return (
                     <FormItem className={className}>
-                        <FormLabel>Duration</FormLabel>
+                        {label && <FormLabel>{label}</FormLabel>}
                         <FormControl>
                             <Input
                                 type="text"

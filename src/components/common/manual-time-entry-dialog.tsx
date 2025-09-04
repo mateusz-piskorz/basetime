@@ -90,7 +90,11 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
+            <DialogContent
+            // onOpenAutoFocus={(e) => {
+            //     e.preventDefault();
+            // }}
+            >
                 <DialogHeader>
                     <DialogTitle>{selectedTimeEntry ? 'Update' : 'Create'} TimeEntry</DialogTitle>
                     <DialogDescription>Fill in the details below to {selectedTimeEntry ? 'Update' : 'Create'} TimeEntry</DialogDescription>
@@ -117,6 +121,7 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
                             <SelectProjectField form={form} name="projectId" textClassName="max-sm:max-w-full" />
 
                             <DurationField
+                                label="Duration"
                                 className="w-full"
                                 form={form}
                                 name="duration"

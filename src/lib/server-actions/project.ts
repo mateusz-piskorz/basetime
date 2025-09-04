@@ -5,7 +5,7 @@ import { prisma } from '../prisma';
 import { getSession } from '../session';
 import { createProjectServerSchema } from '../zod/project-schema';
 
-export const createProject = async ({ data, organizationId }: { data: z.infer<typeof createProjectServerSchema>; organizationId: string }) => {
+export const upsertProject = async ({ data }: { data: z.infer<typeof createProjectServerSchema> }) => {
     try {
         const validated = createProjectServerSchema.safeParse(data);
 
@@ -18,10 +18,23 @@ export const createProject = async ({ data, organizationId }: { data: z.infer<ty
             return { success: false, message: 'Error session invalid' };
         }
 
-        const { memberIds, name, estimatedMinutes, color } = validated.data;
+        const { memberIds, name, estimatedMinutes, color, organizationId, projectId } = validated.data;
 
-        await prisma.project.create({
-            data: {
+        const userMember = await prisma.member.findFirst({ where: { userId: session.id, organizationId, role: { in: ['MANAGER', 'OWNER'] } } });
+        if (!userMember) {
+            return { success: false, message: `Error: permission` };
+        }
+
+        await prisma.project.upsert({
+            where: { id: projectId || '' },
+            update: {
+                name,
+                color,
+                estimatedMinutes,
+                Members: { connect: memberIds?.map((id) => ({ id })) },
+                organizationId,
+            },
+            create: {
                 name,
                 color,
                 estimatedMinutes,
@@ -32,6 +45,23 @@ export const createProject = async ({ data, organizationId }: { data: z.infer<ty
 
         return { success: true };
     } catch {
-        return { success: false, message: 'Error something went wrong - createProject' };
+        return { success: false, message: 'Error something went wrong - upsertProject' };
+    }
+};
+
+export const deleteProject = async ({ projectId }: { projectId: string }) => {
+    try {
+        const session = await getSession();
+        if (!session) {
+            return { success: false, message: 'Error session invalid' };
+        }
+
+        await prisma.project.delete({
+            where: { id: projectId, Organization: { Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } } },
+        });
+
+        return { success: true };
+    } catch {
+        return { success: false, message: 'Error something went wrong - deleteProject' };
     }
 };

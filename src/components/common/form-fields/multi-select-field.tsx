@@ -63,37 +63,33 @@ export const MultiSelectField = <T extends FieldValues>({
                 };
 
                 return (
-                    <FormItem className={className}>
+                    <FormItem className={cn('flex min-w-0 flex-col', className)}>
                         {label && <FormLabel>{label}</FormLabel>}
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="outline" size={size ?? 'sm'} className="group h-9 bg-transparent" disabled={disabled}>
+                                <Button
+                                    variant="outline"
+                                    size={size ?? 'sm'}
+                                    className="group flex h-9 justify-around bg-transparent"
+                                    disabled={disabled}
+                                >
                                     <PlusCircle />
                                     {title}
                                     {values.length > 0 && (
                                         <>
                                             <Separator orientation="vertical" className="group-hover:bg-card mx-2 h-4" />
-                                            <Badge variant="secondary" className="group-hover:bg-card rounded-xs px-1 font-normal lg:hidden">
-                                                {values.length}
-                                            </Badge>
-                                            <div className="hidden gap-1 lg:flex">
-                                                {values.length > 2 ? (
-                                                    <Badge variant="secondary" className="group-hover:bg-card rounded-xs px-1 font-normal">
-                                                        {values.length} selected
-                                                    </Badge>
-                                                ) : (
-                                                    options
-                                                        .filter((option) => values.includes(option.value))
-                                                        .map((option) => (
-                                                            <Badge
-                                                                variant="secondary"
-                                                                key={option.value}
-                                                                className="group-hover:bg-card rounded-xs px-1 font-normal"
-                                                            >
-                                                                {option.label}
-                                                            </Badge>
-                                                        ))
-                                                )}
+                                            <div className="flex gap-1 truncate">
+                                                {options
+                                                    .filter((option) => values.includes(option.value))
+                                                    .map((option) => (
+                                                        <Badge
+                                                            variant="secondary"
+                                                            key={option.value}
+                                                            className="group-hover:bg-card rounded-xs px-1 font-normal"
+                                                        >
+                                                            {option.label}
+                                                        </Badge>
+                                                    ))}
                                             </div>
                                         </>
                                     )}

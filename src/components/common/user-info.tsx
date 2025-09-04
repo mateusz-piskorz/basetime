@@ -10,6 +10,7 @@ type Props = {
         email: string;
     };
     showEmail?: boolean;
+    showCurrentUserIndicator?: boolean;
 };
 
 export function UserInfo(props: Props) {
@@ -30,7 +31,10 @@ export function UserInfo(props: Props) {
                 </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{name}</span>
+                <span className="truncate font-medium">
+                    {name}
+                    {props.showCurrentUserIndicator && <span className="text-muted-foreground font-normal"> (You)</span>}
+                </span>
                 {props.showEmail && <span className="text-muted-foreground truncate text-xs">{user?.email}</span>}
             </div>
         </>

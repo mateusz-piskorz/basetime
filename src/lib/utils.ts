@@ -25,10 +25,9 @@ type Input = {
 }[];
 
 export const sumTimeEntries = (entries: Input) => {
-    const totalMinutes = entries.reduce((sum, entry) => {
+    return entries.reduce((sum, entry) => {
         return sum + getDiffInMinutes({ start: entry.start, end: entry.end });
     }, 0);
-    return formatMinutes(totalMinutes);
 };
 
 export const prepareDateTime = (date: string | Date | Dayjs, time: string) => {

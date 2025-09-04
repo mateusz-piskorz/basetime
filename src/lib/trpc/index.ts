@@ -137,7 +137,7 @@ export const appRouter = createTRPCRouter({
 
         return res?.Members.map((member) => {
             const hourlyRate = member.HourlyRates?.length > 0 ? member.HourlyRates[0].value : undefined;
-            return { ...member, loggedTime: sumTimeEntries(member.TimeEntries), hourlyRate };
+            return { ...member, loggedTime: formatMinutes(sumTimeEntries(member.TimeEntries)), hourlyRate };
         });
     }),
 
@@ -145,14 +145,27 @@ export const appRouter = createTRPCRouter({
         const session = await getSession();
         if (!session) return null;
         const res = await prisma.organization.findUnique({
-            where: { id: organizationId, Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } },
+            where: { id: organizationId },
             select: {
-                Projects: { select: { _count: true, TimeEntries: { select: { start: true, end: true } }, name: true, createdAt: true, id: true } },
+                Projects: {
+                    select: {
+                        color: true,
+                        Members: true,
+                        estimatedMinutes: true,
+                        _count: true,
+                        TimeEntries: { select: { start: true, end: true } },
+                        name: true,
+                        createdAt: true,
+                        id: true,
+                    },
+                },
             },
         });
-
         return res?.Projects.map((project) => {
-            return { ...project, loggedTime: sumTimeEntries(project.TimeEntries) };
+            const loggedMinutes = sumTimeEntries(project.TimeEntries);
+            const percentCompleted = project.estimatedMinutes ? ((loggedMinutes / project.estimatedMinutes) * 100).toFixed(2) : undefined;
+
+            return { ...project, loggedTime: formatMinutes(loggedMinutes), loggedMinutes, percentCompleted };
         });
     }),
 
@@ -171,7 +184,7 @@ export const appRouter = createTRPCRouter({
                 where: { id: organizationId, Members: { some: { userId: session.id } } },
                 select: {
                     Projects: {
-                        ...(currentMember.role !== 'EMPLOYEE' && { where: { Members: { some: { id: memberId } } } }),
+                        ...(currentMember.role === 'EMPLOYEE' && { where: { Members: { some: { id: memberId } } } }),
                         select: {
                             color: true,
                             _count: true,
@@ -185,7 +198,7 @@ export const appRouter = createTRPCRouter({
             });
 
             return res?.Projects.map((project) => {
-                return { ...project, loggedTime: sumTimeEntries(project.TimeEntries) };
+                return { ...project, loggedTime: formatMinutes(sumTimeEntries(project.TimeEntries)) };
             });
         }),
 
@@ -203,7 +216,7 @@ export const appRouter = createTRPCRouter({
         });
 
         return res.map((organization) => {
-            return { ...organization, loggedTime: sumTimeEntries(organization.TimeEntries) };
+            return { ...organization, loggedTime: formatMinutes(sumTimeEntries(organization.TimeEntries)) };
         });
     }),
 });

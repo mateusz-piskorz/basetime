@@ -15,13 +15,13 @@ type Props = {
 
 export const MemberCard = ({ member: { id, User, _count, loggedTime, role, hourlyRate }, manageMember, deleteMember }: Props) => {
     const {
-        member: { role: currentUserRole },
+        member: { role: currentUserRole, id: currentMemberId },
     } = useMember();
     return (
-        <Card className="w-full md:max-w-[325px]">
+        <Card className={cn('relative w-full overflow-hidden md:max-w-[325px]', currentMemberId === id && 'border-green-500/70')}>
             <CardContent className={cn('min-h-[200px] space-y-6', currentUserRole === 'EMPLOYEE' && 'min-h-[150px]')}>
                 <div className="flex gap-2">
-                    <UserInfo showEmail user={User} />
+                    <UserInfo showEmail user={User} showCurrentUserIndicator={currentMemberId === id} />
                     {role}
                 </div>
 

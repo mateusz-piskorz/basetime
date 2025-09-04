@@ -67,13 +67,17 @@ export const UpdateMemberDialog = ({ open, setOpen, onSuccess, member }: Props) 
                                 disabled: (member.role === 'OWNER' && e !== 'OWNER') || (member.role !== 'OWNER' && e == 'OWNER'),
                             }))}
                         />
-                        <CurrencyField form={form} label={`Hourly Rate ${currency}`} name="hourlyRate" />
-                        <MultiSelectField
-                            form={form}
-                            name="projectIds"
-                            options={(projects || []).map(({ name, id }) => ({ label: name, value: id }))}
-                            label="Projects"
-                        />
+                        <div className="flex flex-col gap-4 sm:flex-row">
+                            <CurrencyField form={form} label={`Hourly Rate ${currency}`} name="hourlyRate" className="min-w-[150px] flex-1" />
+
+                            <MultiSelectField
+                                className="flex-1"
+                                form={form}
+                                name="projectIds"
+                                options={(projects || []).map(({ name, id }) => ({ label: name, value: id }))}
+                                label="Projects"
+                            />
+                        </div>
 
                         <Button disabled={form.formState.isSubmitting} type="submit">
                             Save

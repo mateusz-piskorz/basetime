@@ -72,7 +72,7 @@ export const SectionDeleteOrganization = () => {
                                     </DialogClose>
 
                                     <Button variant="destructive" disabled={form.formState.isSubmitting} type="submit">
-                                        Delete account
+                                        Delete organization
                                     </Button>
                                 </DialogFooter>
                             </form>

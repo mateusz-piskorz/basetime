@@ -1,9 +1,10 @@
 'use server';
 
+import bcrypt from 'bcrypt';
 import z from 'zod';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
-import { upsertOrganizationSchema } from '../zod/organization-schema';
+import { deleteOrganizationSchema, upsertOrganizationSchema } from '../zod/organization-schema';
 
 export const upsertOrganization = async ({ data, organizationId }: { data: z.infer<typeof upsertOrganizationSchema>; organizationId?: string }) => {
     try {
@@ -29,5 +30,41 @@ export const upsertOrganization = async ({ data, organizationId }: { data: z.inf
     } catch (error) {
         console.log(error);
         return { success: false, message: 'Error something went wrong - createOrganization' };
+    }
+};
+
+export const deleteOrganization = async ({ data, organizationId }: { data: z.infer<typeof deleteOrganizationSchema>; organizationId: string }) => {
+    try {
+        const validated = deleteOrganizationSchema.safeParse(data);
+
+        if (validated.error) {
+            return { success: false, message: 'Error validating fields' };
+        }
+
+        const session = await getSession();
+        if (!session) {
+            return { success: false, message: 'Error session invalid' };
+        }
+
+        const { password } = validated.data;
+
+        const user = await prisma.user.findUnique({
+            where: { id: session.id },
+            select: { password: true },
+        });
+
+        if (!user) {
+            return { success: false, message: 'Error user not found' };
+        }
+
+        if (!(await bcrypt.compare(password, user?.password))) {
+            return { success: false, message: 'Error password incorrect' };
+        }
+
+        await prisma.organization.delete({ where: { id: organizationId, Members: { some: { userId: session.id, role: 'OWNER' } } } });
+
+        return { success: true };
+    } catch {
+        return { success: false, message: 'Error something went wrong - deleteOrganization' };
     }
 };

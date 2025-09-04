@@ -10,7 +10,7 @@ import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
 import { cn } from '@/lib/utils';
 import { debounce } from 'lodash';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { ProjectBadge } from '../project-badge';
 
@@ -44,6 +44,12 @@ export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, na
     const hasOptions = data && data.data.length > 0;
 
     const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (disabled) {
+            setOpen(false);
+        }
+    }, [disabled]);
 
     return (
         <>

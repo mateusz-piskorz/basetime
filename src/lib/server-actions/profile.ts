@@ -68,7 +68,6 @@ export const updatePassword = async ({ data }: { data: z.infer<typeof updatePass
     }
 };
 
-// TODO: check if organizations are also removed
 export const deleteUserAccount = async ({ data }: { data: z.infer<typeof deleteUserAccountSchema> }) => {
     try {
         const validated = deleteUserAccountSchema.safeParse(data);
@@ -84,7 +83,10 @@ export const deleteUserAccount = async ({ data }: { data: z.infer<typeof deleteU
 
         const { password } = validated.data;
 
-        const user = await prisma.user.findUnique({ where: { id: session.id } });
+        const user = await prisma.user.findUnique({
+            where: { id: session.id },
+            select: { password: true, Members: { select: { organizationId: true }, where: { role: 'OWNER' } } },
+        });
 
         if (!user) {
             return { success: false, message: 'Error user not found' };
@@ -93,6 +95,14 @@ export const deleteUserAccount = async ({ data }: { data: z.infer<typeof deleteU
         if (!(await bcrypt.compare(password, user?.password))) {
             return { success: false, message: 'Error password incorrect' };
         }
+
+        await prisma.organization.deleteMany({
+            where: {
+                id: {
+                    in: user.Members.map((member) => member.organizationId),
+                },
+            },
+        });
 
         await prisma.user.delete({ where: { id: session?.id } });
 

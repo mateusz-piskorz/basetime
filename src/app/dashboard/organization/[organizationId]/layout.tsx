@@ -1,13 +1,14 @@
 'use client';
 
+import { NotFound } from '@/components/common/not-found';
 import { SpinLoader } from '@/components/common/spin-loader';
+import { AppLayout } from '@/layouts/dashboard/app-layout';
 import { MemberProvider } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
-import { Rabbit } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
 // todo: make this component server side and check session
-export default function OrganizationLayout({
+export default function OrganizationDashboardLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
@@ -20,24 +21,25 @@ export default function OrganizationLayout({
     }
 
     if (isLoading) {
-        return <SpinLoader />;
+        return (
+            <div className="mt-[100px] flex w-full justify-center">
+                <SpinLoader />
+            </div>
+        );
     }
 
     if (!data) {
         return (
-            <div className="mx-auto mt-20 space-y-4 text-center">
-                <Rabbit size={90} className="mx-auto" />
-                <h1 className="text-2xl">Organization not found</h1>
-                <p className="text-muted-foreground max-w-[500px]">
-                    Ensure that the organization ID in the address bar matches an existing organization. You may also need to verify your permissions.
-                </p>
-            </div>
+            <NotFound
+                title="Organization not found"
+                description="Ensure that the organization ID in the address bar matches an existing organization. You may also need to verify your permissions."
+            />
         );
     }
 
     return (
         <MemberProvider member={data.member} currency={data.currency} organizationId={data.id}>
-            {children}
+            <AppLayout type="organization">{children}</AppLayout>
         </MemberProvider>
     );
 }

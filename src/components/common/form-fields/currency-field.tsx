@@ -1,6 +1,7 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
+import { CURRENCY } from '@prisma/client';
 import { useEffect, useReducer } from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { Input } from '../../ui/input';
@@ -14,18 +15,25 @@ type Props<T extends FieldValues> = {
     className?: React.HTMLAttributes<'div'>['className'];
     errorMessage?: boolean;
     placeholder?: string;
+    currency: CURRENCY;
 };
 
-const moneyFormatter = Intl.NumberFormat('pl-PL', {
-    // currency: 'PLN',
-    // currencyDisplay: 'symbol',
-    // currencySign: 'standard',
-    // style: 'currency',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-});
-
-export const CurrencyField = <T extends FieldValues>({ form, label, name: propsName, className, placeholder, errorMessage = true }: Props<T>) => {
+export const CurrencyField = <T extends FieldValues>({
+    form,
+    label,
+    name: propsName,
+    className,
+    placeholder,
+    currency,
+    errorMessage = true,
+}: Props<T>) => {
+    const moneyFormatter = Intl.NumberFormat('en', {
+        currency: currency,
+        currencyDisplay: 'code',
+        style: 'currency',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
     const name = propsName as string;
     const { control, getValues, watch } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
 

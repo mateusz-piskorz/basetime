@@ -3,11 +3,11 @@
 import z from 'zod';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
-import { createInvitationSchema } from '../zod/invitation-schema';
+import { cancelInvitationServerSchema, createInvitationServerSchema } from '../zod/invitation-schema';
 
-export const createInvitation = async ({ data, organizationId }: { data: z.infer<typeof createInvitationSchema>; organizationId: string }) => {
+export const createInvitation = async ({ data }: { data: z.infer<typeof createInvitationServerSchema> }) => {
     try {
-        const validated = createInvitationSchema.safeParse(data);
+        const validated = createInvitationServerSchema.safeParse(data);
 
         if (validated.error) {
             return { success: false, message: 'Error validating fields' };
@@ -18,12 +18,12 @@ export const createInvitation = async ({ data, organizationId }: { data: z.infer
             return { success: false, message: 'Error session invalid' };
         }
 
+        const { email, organizationId } = validated.data;
+
         const userMember = await prisma.member.findFirst({ where: { userId: session.id, organizationId, role: { in: ['MANAGER', 'OWNER'] } } });
         if (!userMember) {
             return { success: false, message: `Error: permission` };
         }
-
-        const { email } = validated.data;
 
         const user = await prisma.user.findUnique({
             where: { email },
@@ -56,8 +56,13 @@ export const createInvitation = async ({ data, organizationId }: { data: z.infer
     }
 };
 
-export const cancelInvitation = async ({ invitationId }: { invitationId: string }) => {
+export const cancelInvitation = async ({ data }: { data: z.infer<typeof cancelInvitationServerSchema> }) => {
     try {
+        const validated = cancelInvitationServerSchema.safeParse(data);
+        if (validated.error) {
+            return { success: false, message: 'Error validating fields' };
+        }
+
         const session = await getSession();
         if (!session) {
             return { success: false, message: 'Error session invalid' };
@@ -65,7 +70,7 @@ export const cancelInvitation = async ({ invitationId }: { invitationId: string 
 
         await prisma.invitation.update({
             where: {
-                id: invitationId,
+                id: validated.data.invitationId,
                 status: { in: ['SENT'] },
                 Organization: { Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } },
             },

@@ -3,7 +3,12 @@
 import z from 'zod';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
-import { manualTimeEntryServerSchema, startTimeTrackerServerSchema } from '../zod/time-entry-schema';
+import {
+    manualTimeEntryServerSchema,
+    removeTimeEntriesServerSchema,
+    startTimeTrackerServerSchema,
+    stopTimeTrackerServerSchema,
+} from '../zod/time-entry-schema';
 
 export const startTimeTracker = async ({ data }: { data: z.infer<typeof startTimeTrackerServerSchema> }) => {
     try {
@@ -30,14 +35,20 @@ export const startTimeTracker = async ({ data }: { data: z.infer<typeof startTim
     }
 };
 
-export const stopTimeTracker = async ({ timeEntryId }: { timeEntryId: string }) => {
+export const stopTimeTracker = async ({ data }: { data: z.infer<typeof stopTimeTrackerServerSchema> }) => {
     try {
+        const validated = stopTimeTrackerServerSchema.safeParse(data);
+
+        if (validated.error) {
+            return { success: false, message: 'Error validating fields' };
+        }
+
         const session = await getSession();
         if (!session) {
             return { success: false, message: 'Error session invalid' };
         }
 
-        await prisma.timeEntry.update({ where: { id: timeEntryId }, data: { end: new Date() } });
+        await prisma.timeEntry.update({ where: { id: validated.data.timeEntryId }, data: { end: new Date() } });
 
         return { success: true };
     } catch {
@@ -45,14 +56,20 @@ export const stopTimeTracker = async ({ timeEntryId }: { timeEntryId: string }) 
     }
 };
 
-export const removeTimeEntries = async ({ timeEntryId }: { timeEntryId: string[] }) => {
+export const removeTimeEntries = async ({ data }: { data: z.infer<typeof removeTimeEntriesServerSchema> }) => {
     try {
+        const validated = removeTimeEntriesServerSchema.safeParse(data);
+
+        if (validated.error) {
+            return { success: false, message: 'Error validating fields' };
+        }
+
         const session = await getSession();
         if (!session) {
             return { success: false, message: 'Error session invalid' };
         }
 
-        await prisma.timeEntry.deleteMany({ where: { id: { in: timeEntryId } } });
+        await prisma.timeEntry.deleteMany({ where: { id: { in: validated.data.timeEntryIds } } });
 
         return { success: true };
     } catch {
@@ -60,7 +77,7 @@ export const removeTimeEntries = async ({ timeEntryId }: { timeEntryId: string[]
     }
 };
 
-export const manualTimeEntry = async ({ data, timeEntryId }: { data: z.infer<typeof manualTimeEntryServerSchema>; timeEntryId?: string }) => {
+export const manualTimeEntry = async ({ data }: { data: z.infer<typeof manualTimeEntryServerSchema> }) => {
     try {
         const validated = manualTimeEntryServerSchema.safeParse(data);
 
@@ -73,7 +90,7 @@ export const manualTimeEntry = async ({ data, timeEntryId }: { data: z.infer<typ
             return { success: false, message: 'Error session invalid' };
         }
 
-        const { name, projectId, memberId, organizationId, end, start } = validated.data;
+        const { name, projectId, memberId, organizationId, end, start, timeEntryId } = validated.data;
 
         await prisma.timeEntry.upsert({
             create: { start, end, memberId, name: name || 'unnamed time entry', organizationId, projectId },

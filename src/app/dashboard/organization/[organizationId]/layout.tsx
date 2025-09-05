@@ -7,7 +7,6 @@ import { MemberProvider } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { useParams } from 'next/navigation';
 
-// todo: make this component server side and check session
 export default function OrganizationDashboardLayout({
     children,
 }: Readonly<{

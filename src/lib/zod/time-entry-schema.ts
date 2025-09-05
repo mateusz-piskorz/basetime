@@ -13,6 +13,7 @@ export const startTimeTrackerServerSchema = z.object({
 });
 
 export const manualTimeEntryServerSchema = z.object({
+    timeEntryId: z.string().optional(),
     name: z.string().optional(),
     start: z.date(),
     end: z.date(),
@@ -29,4 +30,12 @@ export const manualTimeEntrySchema = z.object({
     endTime: z.string(),
     name: z.string().optional(),
     projectId: z.string().optional(),
+});
+
+export const stopTimeTrackerServerSchema = z.object({
+    timeEntryId: z.string().nonempty(),
+});
+
+export const removeTimeEntriesServerSchema = z.object({
+    timeEntryIds: z.array(z.string()),
 });

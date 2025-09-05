@@ -6,6 +6,17 @@ export const upsertOrganizationSchema = z.object({
     currency: z.nativeEnum(CURRENCY),
 });
 
+export const upsertOrganizationServerSchema = z.object({
+    organizationId: z.string().optional(),
+    name: z.string().nonempty(),
+    currency: z.nativeEnum(CURRENCY),
+});
+
 export const deleteOrganizationSchema = z.object({
+    password: z.string().nonempty("Password can't be empty"),
+});
+
+export const deleteOrganizationServerSchema = z.object({
+    organizationId: z.string().nonempty(),
     password: z.string().nonempty("Password can't be empty"),
 });

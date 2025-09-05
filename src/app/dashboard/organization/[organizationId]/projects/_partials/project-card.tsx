@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const ProjectCard = ({
-    project: { name, id, _count, loggedTime, estimatedMinutes, loggedMinutes, percentCompleted },
+    project: { name, id, _count, loggedTime, estimatedMinutes, percentCompleted },
     manageProject,
     deleteProject,
 }: Props) => {

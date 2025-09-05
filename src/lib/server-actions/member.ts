@@ -3,11 +3,11 @@
 import z from 'zod';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
-import { updateMemberSchema } from '../zod/member-schema';
+import { removeMemberServerSchema, updateMemberServerSchema } from '../zod/member-schema';
 
-export const updateMember = async ({ data, memberId }: { data: z.infer<typeof updateMemberSchema>; memberId: string }) => {
+export const updateMember = async ({ data }: { data: z.infer<typeof updateMemberServerSchema> }) => {
     try {
-        const validated = updateMemberSchema.safeParse(data);
+        const validated = updateMemberServerSchema.safeParse(data);
 
         if (validated.error) {
             return { success: false, message: 'Error validating fields' };
@@ -18,7 +18,7 @@ export const updateMember = async ({ data, memberId }: { data: z.infer<typeof up
             return { success: false, message: 'Error session invalid' };
         }
 
-        const { role, hourlyRate, projectIds } = validated.data;
+        const { role, hourlyRate, projectIds, memberId } = validated.data;
 
         await prisma.member.update({
             where: {
@@ -34,14 +34,19 @@ export const updateMember = async ({ data, memberId }: { data: z.infer<typeof up
         });
 
         return { success: true };
-    } catch (error) {
-        console.log(error);
+    } catch {
         return { success: false, message: 'Error something went wrong - updateMember' };
     }
 };
 
-export const removeMember = async ({ memberId }: { memberId: string }) => {
+export const removeMember = async ({ data }: { data: z.infer<typeof removeMemberServerSchema> }) => {
     try {
+        const validated = removeMemberServerSchema.safeParse(data);
+
+        if (validated.error) {
+            return { success: false, message: 'Error validating fields' };
+        }
+
         const session = await getSession();
         if (!session) {
             return { success: false, message: 'Error session invalid' };
@@ -49,15 +54,14 @@ export const removeMember = async ({ memberId }: { memberId: string }) => {
 
         await prisma.member.delete({
             where: {
-                id: memberId,
+                id: validated.data.memberId,
                 role: { not: 'OWNER' },
                 Organization: { Members: { some: { role: { in: ['MANAGER', 'OWNER'] }, User: { id: session.id } } } },
             },
         });
 
         return { success: true };
-    } catch (error) {
-        console.log(error);
+    } catch {
         return { success: false, message: 'Error something went wrong - removeMember' };
     }
 };

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
@@ -10,7 +9,7 @@ import { INVITATION_STATUS } from '@prisma/client';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { CreateInvitationDialog } from '../common/create-invitation-dialog';
+import { CreateInvitationDialog } from './create-invitation-dialog';
 import { getInvitationsColumns } from './invitations-columns';
 
 type Props = {
@@ -33,7 +32,7 @@ export const TableInvitations = ({ open, setOpen }: Props) => {
     const { data, refetch } = trpc.getOrganizationInvitations.useQuery({ organizationId, limit, page, order_column, order_direction, statusArr });
 
     const handleCancelInvitation = async (invitationId: string) => {
-        const res = await cancelInvitation({ invitationId });
+        const res = await cancelInvitation({ data: { invitationId } });
         if (!res.success) {
             toast.error(res.message);
             return;

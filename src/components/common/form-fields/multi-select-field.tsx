@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 type FieldType = Nullable<string[]>;
 
 type Option = {
-    label: string;
+    label: string | React.ReactNode;
     value: string;
     icon?: React.ComponentType<{ className?: string }>;
 };
@@ -127,7 +127,7 @@ export const MultiSelectField = <T extends FieldValues>({
                                                             <Check className="text-primary-foreground size-3.5" />
                                                         </div>
                                                         {option.icon && <option.icon className="text-muted-foreground size-4" />}
-                                                        <span>{option.label}</span>
+                                                        {typeof option.label === 'string' ? <span>{option.label}</span> : option.label}
                                                     </CommandItem>
                                                 );
                                             })}

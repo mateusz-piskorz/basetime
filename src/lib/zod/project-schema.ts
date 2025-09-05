@@ -16,3 +16,7 @@ export const createProjectServerSchema = z.object({
     memberIds: z.array(z.string()).optional(),
     estimatedMinutes: z.number().nullable(),
 });
+
+export const deleteProjectServerSchema = z.object({
+    projectId: z.string().nonempty(),
+});

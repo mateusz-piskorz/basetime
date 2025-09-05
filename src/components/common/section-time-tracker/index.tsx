@@ -26,7 +26,7 @@ export const SectionTimeTracker = () => {
         organizationId,
     } = useMember();
 
-    const { data: activeTimeEntry, isPending } = trpc.getActiveTimeEntry.useQuery({ memberId });
+    const { data: activeTimeEntry, isPending, refetch } = trpc.getActiveTimeEntry.useQuery({ memberId });
 
     useEffect(() => {
         if (activeTimeEntry) {
@@ -42,7 +42,7 @@ export const SectionTimeTracker = () => {
     const onSubmit = async (data: z.infer<typeof startTimeTrackerSchema>) => {
         let res;
         if (activeTimeEntry) {
-            res = await stopTimeTracker({ timeEntryId: activeTimeEntry.id });
+            res = await stopTimeTracker({ data: { timeEntryId: activeTimeEntry.id } });
             form.reset({ name: '', projectId: 'no-project' });
         } else {
             const projectId = data.projectId === 'no-project' ? undefined : data.projectId;
@@ -53,8 +53,7 @@ export const SectionTimeTracker = () => {
             toast.error(res.message);
             return;
         }
-
-        trpcUtils.getActiveTimeEntry.refetch({ memberId });
+        refetch();
         trpcUtils.getMemberTimeEntries.refetch({ memberId });
     };
     return (

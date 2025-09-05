@@ -26,7 +26,7 @@ export const SectionDeleteOrganization = () => {
     });
 
     const onSubmit = async (data: z.infer<typeof deleteOrganizationSchema>) => {
-        const res = await deleteOrganization({ data, organizationId });
+        const res = await deleteOrganization({ data: { ...data, organizationId } });
 
         if (!res.success) {
             toast.error(res.message);

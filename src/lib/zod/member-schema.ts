@@ -6,3 +6,14 @@ export const updateMemberSchema = z.object({
     hourlyRate: z.coerce.number().optional(),
     projectIds: z.array(z.string()).optional(),
 });
+
+export const updateMemberServerSchema = z.object({
+    memberId: z.string().nonempty(),
+    role: z.nativeEnum(MEMBER_ROLE),
+    hourlyRate: z.coerce.number().optional(),
+    projectIds: z.array(z.string()).optional(),
+});
+
+export const removeMemberServerSchema = z.object({
+    memberId: z.string().nonempty(),
+});

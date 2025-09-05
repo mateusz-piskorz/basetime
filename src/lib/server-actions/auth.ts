@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { loginSchema, registerSchema } from '@/lib/zod/auth-schema';
+import { loginSchema, logoutServerSchema, registerSchema } from '@/lib/zod/auth-schema';
 import bcrypt from 'bcrypt';
 import { headers } from 'next/headers';
 import z from 'zod';
@@ -93,9 +93,15 @@ export const signin = async (data: z.infer<typeof loginSchema>) => {
     }
 };
 
-export const logout = async ({ sessionId }: { sessionId?: string }) => {
+export const logout = async ({ data }: { data: z.infer<typeof logoutServerSchema> }) => {
     try {
-        await deleteSession(sessionId);
+        const validated = logoutServerSchema.safeParse(data);
+
+        if (validated.error) {
+            return { success: false, message: 'Error validating fields' };
+        }
+
+        await deleteSession(validated.data.sessionId);
         return { success: true };
     } catch {
         return { success: false, message: 'Error something went wrong - logout' };

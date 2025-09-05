@@ -4,6 +4,7 @@ import { SelectField } from '@/components/common/form-fields/select-field';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
+import { projectColor } from '@/lib/constants/project-color';
 import { useMember } from '@/lib/hooks/use-member';
 import { updateMember } from '@/lib/server-actions/member';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
@@ -37,7 +38,7 @@ export const UpdateMemberDialog = ({ open, setOpen, onSuccess, member }: Props) 
     }, [form, form.formState.isSubmitSuccessful, member]);
 
     const onSubmit = async (data: z.infer<typeof updateMemberSchema>) => {
-        const res = await updateMember({ data, memberId: member.id });
+        const res = await updateMember({ data: { ...data, memberId: member.id } });
 
         if (!res.success) {
             toast.error(res.message);
@@ -68,13 +69,21 @@ export const UpdateMemberDialog = ({ open, setOpen, onSuccess, member }: Props) 
                             }))}
                         />
                         <div className="flex flex-col gap-4 sm:flex-row">
-                            <CurrencyField form={form} label={`Hourly Rate ${currency}`} name="hourlyRate" className="min-w-[150px] flex-1" />
+                            <CurrencyField currency={currency} form={form} label="Hourly Rate" name="hourlyRate" className="min-w-[150px] flex-1" />
 
                             <MultiSelectField
                                 className="flex-1"
                                 form={form}
                                 name="projectIds"
-                                options={(projects || []).map(({ name, id }) => ({ label: name, value: id }))}
+                                options={(projects || []).map(({ name, id, color }) => ({
+                                    label: (
+                                        <>
+                                            <span className="max-w-[100px] truncate">{name}</span>
+                                            <span className="h-2 min-w-2 rounded-full" style={{ backgroundColor: projectColor[color] }} />
+                                        </>
+                                    ),
+                                    value: id,
+                                }))}
                                 label="Projects"
                             />
                         </div>

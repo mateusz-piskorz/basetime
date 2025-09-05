@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { MultiOptionsFilter } from '@/components/common/multi-options-filter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table } from '@tanstack/react-table';
@@ -10,6 +9,7 @@ import { Trash2, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { ComponentProps } from 'react';
+import { DataTableOptionsFilter } from './data-table-options-filter';
 import { DataTableViewOptions } from './data-table-view-options';
 
 interface DataTableToolbarProps<TData> {
@@ -23,7 +23,7 @@ interface DataTableToolbarProps<TData> {
               label: string;
               href: string;
           };
-    filters: ComponentProps<typeof MultiOptionsFilter>[];
+    filters: ComponentProps<typeof DataTableOptionsFilter>[];
     displaySearchBar?: boolean;
     onSelectedRemove?: (selectedIds: string[]) => void;
 }
@@ -82,7 +82,7 @@ export function DataTableToolbar<TData>({ table, addNewRecord, filters, displayS
             )}
             <div className="mr-auto flex items-center gap-2">
                 {filters.map((e) => (
-                    <MultiOptionsFilter key={e.filterKey} title={e.title} options={e.options} filterKey={e.filterKey} />
+                    <DataTableOptionsFilter key={e.filterKey} title={e.title} options={e.options} filterKey={e.filterKey} />
                 ))}
 
                 {searchParams.keys().some((e) => filterKeys.includes(e)) && (

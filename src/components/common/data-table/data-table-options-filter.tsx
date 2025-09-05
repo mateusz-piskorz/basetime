@@ -23,9 +23,7 @@ type Props = {
     singleChoice?: boolean;
 };
 
-// todo: fixme
-
-export function MultiOptionsFilter({ filterKey, title, options, singleChoice }: Props) {
+export function DataTableOptionsFilter({ filterKey, title, options, singleChoice }: Props) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();

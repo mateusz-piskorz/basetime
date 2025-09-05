@@ -66,8 +66,7 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
         const end = prepareDateTime(endDate, endTime);
 
         const res = await manualTimeEntry({
-            data: { memberId: member.id, organizationId, name, projectId, start, end },
-            timeEntryId: selectedTimeEntry?.id,
+            data: { memberId: member.id, organizationId, name, projectId, start, end, timeEntryId: selectedTimeEntry?.id },
         });
 
         if (!res.success) {

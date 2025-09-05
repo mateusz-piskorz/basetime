@@ -4,11 +4,11 @@ import bcrypt from 'bcrypt';
 import z from 'zod';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
-import { deleteOrganizationSchema, upsertOrganizationSchema } from '../zod/organization-schema';
+import { deleteOrganizationServerSchema, upsertOrganizationServerSchema } from '../zod/organization-schema';
 
-export const upsertOrganization = async ({ data, organizationId }: { data: z.infer<typeof upsertOrganizationSchema>; organizationId?: string }) => {
+export const upsertOrganization = async ({ data }: { data: z.infer<typeof upsertOrganizationServerSchema> }) => {
     try {
-        const validated = upsertOrganizationSchema.safeParse(data);
+        const validated = upsertOrganizationServerSchema.safeParse(data);
 
         if (validated.error) {
             return { success: false, message: 'Error validating fields' };
@@ -19,7 +19,8 @@ export const upsertOrganization = async ({ data, organizationId }: { data: z.inf
             return { success: false, message: 'Error session invalid' };
         }
 
-        const { currency, name } = validated.data;
+        const { currency, name, organizationId } = validated.data;
+
         if (organizationId) {
             await prisma.organization.update({ where: { id: organizationId }, data: { currency, name } });
         } else {
@@ -27,15 +28,14 @@ export const upsertOrganization = async ({ data, organizationId }: { data: z.inf
         }
 
         return { success: true };
-    } catch (error) {
-        console.log(error);
+    } catch {
         return { success: false, message: 'Error something went wrong - createOrganization' };
     }
 };
 
-export const deleteOrganization = async ({ data, organizationId }: { data: z.infer<typeof deleteOrganizationSchema>; organizationId: string }) => {
+export const deleteOrganization = async ({ data }: { data: z.infer<typeof deleteOrganizationServerSchema> }) => {
     try {
-        const validated = deleteOrganizationSchema.safeParse(data);
+        const validated = deleteOrganizationServerSchema.safeParse(data);
 
         if (validated.error) {
             return { success: false, message: 'Error validating fields' };
@@ -46,7 +46,7 @@ export const deleteOrganization = async ({ data, organizationId }: { data: z.inf
             return { success: false, message: 'Error session invalid' };
         }
 
-        const { password } = validated.data;
+        const { password, organizationId } = validated.data;
 
         const user = await prisma.user.findUnique({
             where: { id: session.id },

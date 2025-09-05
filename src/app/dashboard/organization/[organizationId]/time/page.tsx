@@ -12,7 +12,6 @@ export default async function TimePage() {
     return (
         <div className="space-y-14 pt-8">
             <SectionTimeTracker />
-
             <TableTimeEntry />
         </div>
     );

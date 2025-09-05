@@ -28,7 +28,7 @@ export const CreateInvitationDialog = ({ open, setOpen }: Props) => {
     });
 
     const onSubmit = async (data: z.infer<typeof createInvitationSchema>) => {
-        const res = await createInvitation({ data, organizationId });
+        const res = await createInvitation({ data: { ...data, organizationId } });
 
         if (!res.success) {
             toast.error(res.message);

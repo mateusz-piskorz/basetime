@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { useMember } from '@/lib/hooks/use-member';
 import { startTimeTracker, stopTimeTracker } from '@/lib/server-actions/time-entry';
 import { trpc } from '@/lib/trpc/client';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/common';
 import { startTimeTrackerSchema } from '@/lib/zod/time-entry-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
@@ -19,7 +19,11 @@ import { TimeEntrySelectField } from '../form-fields/time-entry-select-field';
 import { StartButton } from '../start-button';
 import { Timer } from './timer';
 
-export const SectionTimeTracker = () => {
+type Props = {
+    className?: string;
+};
+
+export const SectionTimeTracker = ({ className }: Props) => {
     const trpcUtils = trpc.useUtils();
     const {
         member: { id: memberId },
@@ -54,10 +58,10 @@ export const SectionTimeTracker = () => {
             return;
         }
         refetch();
-        trpcUtils.getMemberTimeEntries.refetch({ memberId });
+        trpcUtils.getTimeEntriesPaginated.refetch({ memberId });
     };
     return (
-        <div className="space-y-8 px-4 md:px-8">
+        <div className={cn('space-y-8 px-4 md:px-6 lg:px-8', className)}>
             <DashboardHeading className="mb-4" title="Time Tracker" />
             <Form {...form}>
                 <form

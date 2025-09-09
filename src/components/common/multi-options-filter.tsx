@@ -9,7 +9,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/common';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 type Props = {
@@ -23,7 +23,7 @@ type Props = {
     singleChoice?: boolean;
 };
 
-export function DataTableOptionsFilter({ filterKey, title, options, singleChoice }: Props) {
+export function MultiOptionsFilter({ filterKey, title, options, singleChoice }: Props) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();

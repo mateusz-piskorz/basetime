@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useMember } from '@/lib/hooks/use-member';
 import { TrpcRouterOutput } from '@/lib/trpc/client';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/common';
 import { Clock, DollarSign, FolderClosed } from 'lucide-react';
 
 type Props = {

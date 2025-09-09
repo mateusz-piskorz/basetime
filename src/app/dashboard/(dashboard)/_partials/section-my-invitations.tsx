@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { acceptInvitation, rejectInvitation } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/common';
 import { MailOpen } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';

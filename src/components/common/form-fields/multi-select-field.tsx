@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator';
 
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/common';
 
 type FieldType = Nullable<string[]>;
 

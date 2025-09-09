@@ -32,6 +32,6 @@ export const sumTimeEntries = (entries: Input) => {
 
 export const prepareDateTime = (date: string | Date | Dayjs, time: string) => {
     const [hours, minutes] = time.split(':');
-    const prepared = dayjs(date).hour(parseInt(hours, 10)).minute(parseInt(minutes, 10)).second(0).millisecond(0);
+    const prepared = dayjs(date).hour(Number(hours)).minute(Number(minutes)).second(0).millisecond(0);
     return prepared.toDate();
 };

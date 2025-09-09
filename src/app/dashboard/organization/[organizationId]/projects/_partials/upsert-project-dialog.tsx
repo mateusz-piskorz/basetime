@@ -8,7 +8,7 @@ import { Form } from '@/components/ui/form';
 import { useMember } from '@/lib/hooks/use-member';
 import { upsertProject } from '@/lib/server-actions/project';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
-import { formatMinutes } from '@/lib/utils';
+import { formatMinutes } from '@/lib/utils/common';
 import { upsertProjectSchema } from '@/lib/zod/project-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PROJECT_COLOR } from '@prisma/client';

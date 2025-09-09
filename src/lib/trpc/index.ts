@@ -1,4 +1,4 @@
-import { formatMinutes, getDiffInMinutes, sumTimeEntries } from '@/lib/utils';
+import { formatMinutes, getDiffInMinutes, sumTimeEntries } from '@/lib/utils/common';
 import { INVITATION_STATUS } from '@prisma/client';
 import z from 'zod';
 import { prisma } from '../prisma';
@@ -40,7 +40,68 @@ export const appRouter = createTRPCRouter({
         });
     }),
 
-    getMemberTimeEntries: publicProcedure
+    getTimeEntryDashboard: publicProcedure
+        .input(
+            z.object({
+                organizationId: z.string().nullish(),
+                startDate: z.string(),
+                endDate: z.string(),
+            }),
+        )
+        .query(async ({ input: { organizationId, startDate, endDate } }) => {
+            const session = await getSession();
+            if (!session) return null;
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+
+            const res = await prisma.timeEntry.findMany({
+                where: {
+                    ...(!organizationId && { Member: { userId: session.id } }),
+                    ...(organizationId && {
+                        Organization: { id: organizationId, Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } },
+                    }),
+                    OR: [
+                        { end: { lte: end }, start: { gte: start } },
+                        { end: null, start: { lte: end } },
+                    ],
+                },
+                orderBy: { end: 'desc' },
+            });
+
+            return res;
+        }),
+
+    getTimeEntryReport: publicProcedure
+        .input(
+            z.object({
+                memberId: z.string(),
+                startDate: z.date(),
+                endDate: z.date(),
+            }),
+        )
+        .query(async ({ input: { memberId, startDate, endDate } }) => {
+            const session = await getSession();
+            if (!session) return null;
+
+            const res = await prisma.timeEntry.findMany({
+                where: {
+                    memberId,
+                    OR: [
+                        { end: { lte: endDate }, start: { gte: startDate } },
+                        { end: null, start: { lte: endDate } },
+                    ],
+                },
+                orderBy: { end: 'desc' },
+            });
+
+            const data = res.map((timeEntry) => {
+                return { ...timeEntry, duration: formatMinutes(getDiffInMinutes({ start: timeEntry.start, end: timeEntry.end })) };
+            });
+            return data;
+        }),
+
+    // todo add permissions, check if we need organizationId/memberId, maybe session is enough
+    getTimeEntriesPaginated: publicProcedure
         .input(
             z.object({
                 memberId: z.string(),
@@ -49,9 +110,11 @@ export const appRouter = createTRPCRouter({
                 order_column: z.string().nullish(),
                 order_direction: z.string().nullish(),
                 q: z.string().nullish(),
+                startDate: z.date().nullish(),
+                endDate: z.date().nullish(),
             }),
         )
-        .query(async ({ input: { memberId, limit: limitInput, page: pageInput, order_column, order_direction, q } }) => {
+        .query(async ({ input: { memberId, limit: limitInput, page: pageInput, order_column, order_direction, q, endDate, startDate } }) => {
             const limit = Number(limitInput) || 25;
             const page = Number(pageInput) || 1;
             const skip = (page - 1) * limit;
@@ -59,7 +122,14 @@ export const appRouter = createTRPCRouter({
             if (!session) return null;
             const total = await prisma.timeEntry.count({ where: { memberId } });
             const res = await prisma.timeEntry.findMany({
-                where: { memberId, ...(q && { name: { contains: q } }) },
+                where: {
+                    memberId,
+                    OR: [
+                        { ...(endDate && { end: { lte: endDate } }), ...(startDate && { start: { gte: startDate } }) },
+                        { end: null, ...(endDate && { start: { lte: endDate } }) },
+                    ],
+                    ...(q && { name: { contains: q } }),
+                },
                 include: { Project: { select: { id: true, name: true, color: true } } },
                 take: limit,
                 skip,

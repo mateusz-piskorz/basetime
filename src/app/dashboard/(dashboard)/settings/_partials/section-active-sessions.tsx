@@ -13,6 +13,7 @@ import { Monitor, Smartphone } from 'lucide-react';
 import { toast } from 'sonner';
 import { UAParser } from 'ua-parser-js';
 
+// todo: dayjs extend
 dayjs.extend(relativeTime);
 
 export const SectionActiveSessions = () => {
@@ -38,7 +39,6 @@ export const SectionActiveSessions = () => {
                     !isLoading &&
                     data?.map((session) => {
                         const useragent = new UAParser(session.userAgent).getResult();
-                        console.log(useragent);
                         const isMobileDevice = ['mobile', 'tablet'].includes(useragent.device.type || '');
                         const deviceName = isMobileDevice ? useragent.device.model : useragent.browser.name;
                         const isCurrentSession = session.id === user?.sessionId;

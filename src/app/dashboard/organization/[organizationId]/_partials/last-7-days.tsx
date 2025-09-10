@@ -1,15 +1,24 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { cn, formatMinutes } from '@/lib/utils/common';
 import { timeEntrySegments } from '@/lib/utils/timeEntrySegments';
 import dayjs from 'dayjs';
 import { CalendarRange } from 'lucide-react';
 import { useMemo } from 'react';
+import { Scope } from './types';
 
-export const Last7Days = () => {
-    const { data } = trpc.getTimeEntryDashboard.useQuery({
+type Props = {
+    scope: Scope;
+};
+
+export const Last7Days = ({ scope }: Props) => {
+    const { organizationId, member } = useMember();
+    const { data } = trpc.getTimeEntries.useQuery({
+        organizationId,
+        ...(scope === 'member' && { memberIds: [member.id] }),
         startDate: dayjs().subtract(7, 'day').toDate().toString(),
         endDate: new Date().toString(),
     });
@@ -17,10 +26,9 @@ export const Last7Days = () => {
     const segments = useMemo(
         () =>
             timeEntrySegments({
-                timeEntries: data || [],
+                timeEntries: data?.timeEntries || [],
                 start: dayjs().toDate(),
                 end: dayjs().subtract(6, 'day').toDate(),
-                roundUpSecondsThreshold: 0,
                 granularity: 'day',
                 nameFormatter: ({ index }) => (index === 0 ? 'Today' : index === 1 ? 'Yesterday' : `${index + 1} days ago`),
             }),

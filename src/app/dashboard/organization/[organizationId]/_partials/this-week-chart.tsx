@@ -1,20 +1,30 @@
 'use client';
 
 import { TimeEntryReportChart } from '@/components/common/time-entry-report-chart';
+import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { timeEntrySegments } from '@/lib/utils/timeEntrySegments';
 import dayjs from 'dayjs';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import { Clock } from 'lucide-react';
 import { useMemo } from 'react';
+import { Scope } from './types';
 
+// todo: this is working only here
 dayjs.extend(updateLocale);
 dayjs.updateLocale('en', {
     weekStart: 1,
 });
 
-export const ThisWeekChart = () => {
-    const { data } = trpc.getTimeEntryDashboard.useQuery({
+type Props = {
+    scope: Scope;
+};
+
+export const ThisWeekChart = ({ scope }: Props) => {
+    const { organizationId, member } = useMember();
+    const { data } = trpc.getTimeEntries.useQuery({
+        organizationId,
+        ...(scope === 'member' && { memberIds: [member.id] }),
         startDate: dayjs().startOf('week').toDate().toString(),
         endDate: dayjs().endOf('week').toDate().toString(),
     });
@@ -22,10 +32,9 @@ export const ThisWeekChart = () => {
     const segments = useMemo(
         () =>
             timeEntrySegments({
-                timeEntries: data || [],
-                start: dayjs().startOf('week').toDate().toString(),
-                end: dayjs().endOf('week').toDate().toString(),
-                roundUpSecondsThreshold: 0,
+                timeEntries: data?.timeEntries || [],
+                start: dayjs().startOf('week').toDate(),
+                end: dayjs().endOf('week').toDate(),
                 granularity: 'day',
                 nameFormatter: ({ date }) => dayjs(date).format('dddd'),
             }),

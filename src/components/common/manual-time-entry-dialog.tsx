@@ -9,7 +9,7 @@ import { Form } from '@/components/ui/form';
 import { useMember } from '@/lib/hooks/use-member';
 import { manualTimeEntry } from '@/lib/server-actions/time-entry';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
-import { formatMinutes, getDiffInMinutes, prepareDateTime } from '@/lib/utils/common';
+import { formatMinutes, getDurationInMinutes, prepareDateTime } from '@/lib/utils/common';
 import { manualTimeEntrySchema } from '@/lib/zod/time-entry-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
@@ -55,7 +55,7 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
                       startTime: dayjs(ste.start).format('HH:mm'),
                       endDate: ste.end ? new Date(ste.end) : new Date(),
                       endTime: dayjs(ste.end || new Date()).format('HH:mm'),
-                      duration: formatMinutes(getDiffInMinutes({ start: new Date(ste.start), end: ste.end ? new Date(ste.end) : new Date() })),
+                      duration: formatMinutes(getDurationInMinutes({ start: new Date(ste.start), end: ste.end ? new Date(ste.end) : new Date() })),
                   }
                 : undefined,
         );

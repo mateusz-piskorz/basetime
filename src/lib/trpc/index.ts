@@ -1,4 +1,4 @@
-import { formatMinutes, getDiffInMinutes, sumTimeEntries } from '@/lib/utils/common';
+import { formatMinutes, getDurationInMinutes, sumTimeEntries } from '@/lib/utils/common';
 import { INVITATION_STATUS } from '@prisma/client';
 import z from 'zod';
 import { prisma } from '../prisma';
@@ -40,64 +40,72 @@ export const appRouter = createTRPCRouter({
         });
     }),
 
-    getTimeEntryDashboard: publicProcedure
+    getTimeEntries: publicProcedure
         .input(
             z.object({
-                organizationId: z.string().nullish(),
-                startDate: z.string(),
-                endDate: z.string(),
+                organizationId: z.string(),
+                projectIds: z.array(z.string()).nullish(),
+                memberIds: z.array(z.string()).nullish(),
+                startDate: z.string().nullish(),
+                endDate: z.string().nullish(),
+                limit: z.number().nullish(),
             }),
         )
-        .query(async ({ input: { organizationId, startDate, endDate } }) => {
-            const session = await getSession();
-            if (!session) return null;
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-
-            const res = await prisma.timeEntry.findMany({
-                where: {
-                    ...(!organizationId && { Member: { userId: session.id } }),
-                    ...(organizationId && {
-                        Organization: { id: organizationId, Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } },
-                    }),
-                    OR: [
-                        { end: { lte: end }, start: { gte: start } },
-                        { end: null, start: { lte: end } },
-                    ],
-                },
-                orderBy: { end: 'desc' },
-            });
-
-            return res;
-        }),
-
-    getTimeEntryReport: publicProcedure
-        .input(
-            z.object({
-                memberId: z.string(),
-                startDate: z.date(),
-                endDate: z.date(),
-            }),
-        )
-        .query(async ({ input: { memberId, startDate, endDate } }) => {
+        .query(async ({ input: { organizationId, memberIds, projectIds, limit, startDate, endDate } }) => {
             const session = await getSession();
             if (!session) return null;
 
-            const res = await prisma.timeEntry.findMany({
+            console.log('projectIds', projectIds);
+
+            const start = startDate ? new Date(startDate) : undefined;
+            const end = endDate ? new Date(endDate) : undefined;
+
+            const res = await prisma.member.findMany({
                 where: {
-                    memberId,
-                    OR: [
-                        { end: { lte: endDate }, start: { gte: startDate } },
-                        { end: null, start: { lte: endDate } },
-                    ],
+                    organizationId,
+
+                    //member
+                    ...(memberIds?.length && { id: { in: memberIds } }),
+                    OR: [{ userId: session.id }, { Organization: { Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } } }],
                 },
-                orderBy: { end: 'desc' },
+                select: {
+                    id: true,
+                    HourlyRates: { take: 1 },
+                    TimeEntries: {
+                        where: {
+                            // project
+                            ...(projectIds?.length && {
+                                Project: {
+                                    id: { in: projectIds },
+                                    OR: [
+                                        { Members: { some: { userId: session.id } } },
+                                        { Organization: { Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } } },
+                                    ],
+                                },
+                            }),
+
+                            //date
+                            ...((start || end) && {
+                                OR: [
+                                    { ...(end && { end: { lte: end } }), ...(start && { start: { gte: start } }) },
+                                    ...(end ? [{ end: null, start: { lte: end } }] : []),
+                                ],
+                            }),
+                        },
+                        select: { id: true, name: true, start: true, end: true, Project: { select: { id: true, name: true, color: true } } },
+                        orderBy: { createdAt: 'desc' },
+                        ...(limit && { take: limit }),
+                    },
+                },
             });
 
-            const data = res.map((timeEntry) => {
-                return { ...timeEntry, duration: formatMinutes(getDiffInMinutes({ start: timeEntry.start, end: timeEntry.end })) };
-            });
-            return data;
+            return {
+                timeEntriesByMembers: res.map((member) => {
+                    const hourlyRate = member.HourlyRates?.length > 0 ? member.HourlyRates[0].value : undefined;
+                    return { TimeEntries: member.TimeEntries, hourlyRate, id: member.id };
+                }),
+                timeEntries: res.flatMap((member) => member.TimeEntries),
+            };
         }),
 
     // todo add permissions, check if we need organizationId/memberId, maybe session is enough
@@ -138,7 +146,7 @@ export const appRouter = createTRPCRouter({
             });
 
             const data = res.map((timeEntry) => {
-                return { ...timeEntry, duration: formatMinutes(getDiffInMinutes({ start: timeEntry.start, end: timeEntry.end })) };
+                return { ...timeEntry, duration: formatMinutes(getDurationInMinutes({ start: timeEntry.start, end: timeEntry.end })) };
             });
 
             const totalPages = Math.ceil(total / limit);

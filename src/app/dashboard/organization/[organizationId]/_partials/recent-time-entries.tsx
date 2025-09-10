@@ -3,18 +3,30 @@
 import { ProjectBadge } from '@/components/common/project-badge';
 import { StartButton } from '@/components/common/start-button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useMember } from '@/lib/hooks/use-member';
+import { trpc } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
-import { PROJECT_COLOR } from '@prisma/client';
 import { CircleCheckBig } from 'lucide-react';
-
-type Entry = { id: string; name: string; projectName?: string; projectColor?: PROJECT_COLOR };
+import { useMemo } from 'react';
+import { Scope } from './types';
 
 type Props = {
-    recentTimeEntries: Entry[];
+    scope: Scope;
 };
 
-export const RecentTimeEntries = ({ recentTimeEntries }: Props) => {
-    const paddedEntries: (Entry | null)[] = [...recentTimeEntries.slice(0, 4), ...Array(Math.max(0, 4 - recentTimeEntries.length)).fill(null)];
+export const RecentTimeEntries = ({ scope }: Props) => {
+    const { organizationId, member } = useMember();
+    const { data } = trpc.getTimeEntries.useQuery({
+        organizationId,
+        ...(scope === 'member' && { memberIds: [member.id] }),
+        limit: 4,
+    });
+
+    const paddedEntries = useMemo(() => {
+        const entries = (data?.timeEntries ?? []).slice(0, 4);
+        const emptySlots = Array(Math.max(0, 4 - entries.length)).fill(null);
+        return [...entries, ...emptySlots];
+    }, [data]) as NonNullable<typeof data>['timeEntries'];
 
     return (
         <div className="h-[300px] flex-1 md:min-w-[330px] lg:min-w-[300px]">
@@ -33,7 +45,7 @@ export const RecentTimeEntries = ({ recentTimeEntries }: Props) => {
                                 <>
                                     <div className="flex flex-col gap-1">
                                         <span className="text-sm">{entry.name}</span>
-                                        <ProjectBadge size="sm" name={entry.projectName || 'No Project'} color={entry.projectColor || 'GRAY'} />
+                                        <ProjectBadge size="sm" name={entry.Project?.name || 'No Project'} color={entry.Project?.color || 'GRAY'} />
                                     </div>
                                     <StartButton size="sm" actionState="start" />
                                 </>

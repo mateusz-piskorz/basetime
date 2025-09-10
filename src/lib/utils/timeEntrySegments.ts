@@ -3,13 +3,14 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isoWeek from 'dayjs/plugin/isoWeek';
+import { getDurationInMinutes } from './common';
 
 dayjs.extend(isoWeek);
 dayjs.extend(advancedFormat);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-type Granularity = 'day' | 'week' | 'month';
+export type Granularity = 'day' | 'week' | 'month';
 
 const dayBoundary = ({ boundary, date }: { date: string | Date | Dayjs; boundary: 'start' | 'end' }): Date => {
     const hour = boundary === 'start' ? 0 : 23;
@@ -55,13 +56,11 @@ type TimeEntrySegments = {
     start: Date | string | Dayjs;
     end: Date | string | Dayjs;
     timeEntries: { start: string; end: string | null }[];
-    /** 0-60, amount of seconds rounded up to full minute (0=everything rounded up) */
-    roundUpSecondsThreshold: number;
     granularity?: Granularity;
     nameFormatter?: (val: { index: number; date: Date }) => string;
 };
 
-export const timeEntrySegments = ({ start, end, timeEntries, roundUpSecondsThreshold, granularity = 'day', nameFormatter }: TimeEntrySegments) => {
+export const timeEntrySegments = ({ start, end, timeEntries, granularity = 'day', nameFormatter }: TimeEntrySegments) => {
     return dateSegments({ start, end, granularity, nameFormatter }).map((segment) => {
         let { loggedMinutes } = segment;
         let { timeEntriesCount } = segment;
@@ -73,16 +72,7 @@ export const timeEntrySegments = ({ start, end, timeEntries, roundUpSecondsThres
             const overlapStart = entryStart > segment.start ? entryStart : segment.start;
             const overlapEnd = entryEnd < segment.end ? entryEnd : segment.end;
 
-            const durationSeconds = dayjs(overlapEnd).diff(overlapStart, 's');
-            const fullMinutes = Math.floor(durationSeconds / 60);
-            const remainingSeconds = durationSeconds % 60;
-
-            let duration;
-            if (remainingSeconds >= roundUpSecondsThreshold) {
-                duration = fullMinutes + 1;
-            } else {
-                duration = fullMinutes;
-            }
+            const duration = getDurationInMinutes({ end: overlapEnd, start: overlapStart });
 
             if (duration > 0) {
                 loggedMinutes += duration;

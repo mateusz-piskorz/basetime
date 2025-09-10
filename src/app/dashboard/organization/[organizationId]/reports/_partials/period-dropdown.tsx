@@ -34,6 +34,7 @@ export const PeriodDropdown = ({ endDate, setEndDate, startDate, setStartDate }:
                         onClick={() => {
                             setStartDate(dayjs().startOf('week').toDate());
                             setEndDate(dayjs().endOf('week').toDate());
+
                             setOpen(false);
                         }}
                     >
@@ -45,6 +46,7 @@ export const PeriodDropdown = ({ endDate, setEndDate, startDate, setStartDate }:
                         onClick={() => {
                             setStartDate(dayjs().subtract(1, 'week').startOf('week').toDate());
                             setEndDate(dayjs().subtract(1, 'week').endOf('week').toDate());
+
                             setOpen(false);
                         }}
                     >
@@ -56,6 +58,7 @@ export const PeriodDropdown = ({ endDate, setEndDate, startDate, setStartDate }:
                         onClick={() => {
                             setStartDate(dayjs().startOf('month').toDate());
                             setEndDate(dayjs().endOf('month').toDate());
+
                             setOpen(false);
                         }}
                     >
@@ -67,6 +70,7 @@ export const PeriodDropdown = ({ endDate, setEndDate, startDate, setStartDate }:
                         onClick={() => {
                             setStartDate(dayjs().subtract(1, 'month').startOf('month').toDate());
                             setEndDate(dayjs().subtract(1, 'month').endOf('month').toDate());
+
                             setOpen(false);
                         }}
                     >
@@ -76,8 +80,21 @@ export const PeriodDropdown = ({ endDate, setEndDate, startDate, setStartDate }:
                         variant="ghost"
                         className="h-8 min-h-0"
                         onClick={() => {
+                            setStartDate(dayjs().subtract(90, 'day').toDate());
+                            setEndDate(dayjs().toDate());
+
+                            setOpen(false);
+                        }}
+                    >
+                        Last 90 days
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        className="h-8 min-h-0"
+                        onClick={() => {
                             setStartDate(dayjs().startOf('year').toDate());
                             setEndDate(dayjs().endOf('year').toDate());
+
                             setOpen(false);
                         }}
                     >
@@ -89,6 +106,7 @@ export const PeriodDropdown = ({ endDate, setEndDate, startDate, setStartDate }:
                         onClick={() => {
                             setStartDate(dayjs().subtract(1, 'year').startOf('year').toDate());
                             setEndDate(dayjs().subtract(1, 'year').endOf('year').toDate());
+
                             setOpen(false);
                         }}
                     >

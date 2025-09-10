@@ -85,7 +85,7 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
                         />
 
                         <Button disabled={form.formState.isSubmitting} type="submit">
-                            Send
+                            Save
                         </Button>
                     </form>
                 </Form>

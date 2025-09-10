@@ -19,7 +19,7 @@ export const upsertProject = async ({ data }: { data: z.infer<typeof createProje
         }
 
         const { memberIds, name, estimatedMinutes, color, organizationId, projectId } = validated.data;
-
+        console.log('validated', validated);
         const userMember = await prisma.member.findFirst({ where: { userId: session.id, organizationId, role: { in: ['MANAGER', 'OWNER'] } } });
         if (!userMember) {
             return { success: false, message: `Error: permission` };
@@ -31,7 +31,7 @@ export const upsertProject = async ({ data }: { data: z.infer<typeof createProje
                 name,
                 color,
                 estimatedMinutes,
-                Members: { connect: memberIds?.map((id) => ({ id })) },
+                Members: { set: [], connect: memberIds?.map((id) => ({ id })) },
                 organizationId,
             },
             create: {

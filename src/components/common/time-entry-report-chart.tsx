@@ -6,7 +6,6 @@ import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 
 type Props = {
     className?: string;
-    withFilters?: boolean;
     data: { loggedMinutes: number; name: string }[];
 };
 
@@ -22,7 +21,7 @@ export const TimeEntryReportChart = ({ className, data }: Props) => {
         <ChartContainer config={chartConfig} className={cn('aspect-auto h-[350px] w-full', className)}>
             <BarChart accessibilityLayer data={data}>
                 <CartesianGrid vertical={false} stroke="var(--border)" />
-                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => value.slice(0, 3)} />
+                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <ChartTooltip
                     content={
                         <ChartTooltipContent

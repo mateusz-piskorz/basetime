@@ -18,7 +18,7 @@ export const ActivityGraph = () => {
                             className={cn('flex h-full items-center justify-between px-4', idx !== paddedEntries.length - 1 && 'border-b-1')}
                             key={`empty-${idx}`}
                         >
-                            <span className="text-muted-foreground mx-auto tracking-widest">-------</span>
+                            <span className="text-muted-foreground mx-auto tracking-widest">TODO</span>
                         </div>
                     ))}
                 </CardContent>

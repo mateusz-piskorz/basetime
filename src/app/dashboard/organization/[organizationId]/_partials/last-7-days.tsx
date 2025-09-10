@@ -1,11 +1,11 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { dayjs } from '@/lib/dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { cn, formatMinutes } from '@/lib/utils/common';
 import { timeEntrySegments } from '@/lib/utils/timeEntrySegments';
-import dayjs from 'dayjs';
 import { CalendarRange } from 'lucide-react';
 import { useMemo } from 'react';
 import { Scope } from './types';

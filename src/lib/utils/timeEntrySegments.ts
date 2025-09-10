@@ -1,14 +1,5 @@
-import dayjs, { Dayjs } from 'dayjs';
-import advancedFormat from 'dayjs/plugin/advancedFormat';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import isoWeek from 'dayjs/plugin/isoWeek';
+import { dayjs, Dayjs } from '@/lib/dayjs';
 import { getDurationInMinutes } from './common';
-
-dayjs.extend(isoWeek);
-dayjs.extend(advancedFormat);
-dayjs.extend(isSameOrBefore);
-dayjs.extend(isSameOrAfter);
 
 export type Granularity = 'day' | 'week' | 'month';
 

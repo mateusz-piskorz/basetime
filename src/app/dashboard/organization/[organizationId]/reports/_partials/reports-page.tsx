@@ -6,11 +6,11 @@ import { MultiOptionsFilterState } from '@/components/common/multi-options-filte
 import { TimeEntryReportChart } from '@/components/common/time-entry-report-chart';
 import { Card, CardContent } from '@/components/ui/card';
 import { projectColor } from '@/lib/constants/project-color';
+import { dayjs } from '@/lib/dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { formatMinutes, sumBillableAmount, sumTimeEntries } from '@/lib/utils/common';
 import { timeEntrySegments } from '@/lib/utils/timeEntrySegments';
-import dayjs from 'dayjs';
 import { User2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { PeriodDropdown } from './period-dropdown';

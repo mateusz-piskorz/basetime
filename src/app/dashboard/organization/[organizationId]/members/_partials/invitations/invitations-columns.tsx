@@ -2,9 +2,9 @@
 
 import { DataTableColumnHeader } from '@/components/common/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/common/data-table/data-table-row-actions';
+import { dayjs } from '@/lib/dayjs';
 import { TrpcRouterOutput } from '@/lib/trpc/client';
 import { ColumnDef } from '@tanstack/react-table';
-import dayjs from 'dayjs';
 import { InvitationStatusBadge } from './invitation-status-badge';
 
 export const getInvitationsColumns = ({

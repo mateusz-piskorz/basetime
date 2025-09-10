@@ -1,5 +1,5 @@
+import { dayjs, Dayjs } from '@/lib/dayjs';
 import { clsx, type ClassValue } from 'clsx';
-import dayjs, { Dayjs } from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 
 /** 0-60, amount of minutes rounded up to full hour (0=everything rounded up) */

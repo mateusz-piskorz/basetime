@@ -2,10 +2,10 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { dayjs } from '@/lib/dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { formatMinutes, sumBillableAmount, sumTimeEntries } from '@/lib/utils/common';
-import dayjs from 'dayjs';
 import { useMemo } from 'react';
 import { Scope } from './types';
 

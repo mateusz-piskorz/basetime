@@ -55,8 +55,6 @@ export const appRouter = createTRPCRouter({
             const session = await getSession();
             if (!session) return null;
 
-            console.log('projectIds', projectIds);
-
             const start = startDate ? new Date(startDate) : undefined;
             const end = endDate ? new Date(endDate) : undefined;
 

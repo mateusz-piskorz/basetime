@@ -3,7 +3,7 @@
 import { CalendarInput } from '@/components/common/calendar-input';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import dayjs from 'dayjs';
+import { dayjs } from '@/lib/dayjs';
 import { CalendarClockIcon } from 'lucide-react';
 import { useState } from 'react';
 

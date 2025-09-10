@@ -1,20 +1,13 @@
 'use client';
 
 import { TimeEntryReportChart } from '@/components/common/time-entry-report-chart';
+import { dayjs } from '@/lib/dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { timeEntrySegments } from '@/lib/utils/timeEntrySegments';
-import dayjs from 'dayjs';
-import updateLocale from 'dayjs/plugin/updateLocale';
 import { Clock } from 'lucide-react';
 import { useMemo } from 'react';
 import { Scope } from './types';
-
-// todo: this is working only here
-dayjs.extend(updateLocale);
-dayjs.updateLocale('en', {
-    weekStart: 1,
-});
 
 type Props = {
     scope: Scope;

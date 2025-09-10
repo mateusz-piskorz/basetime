@@ -78,8 +78,7 @@ export const cancelInvitation = async ({ data }: { data: z.infer<typeof cancelIn
         });
 
         return { success: true };
-    } catch (e) {
-        console.log(e);
+    } catch {
         return { success: false, message: 'Error something went wrong - cancelInvitation' };
     }
 };
@@ -101,8 +100,7 @@ export const acceptInvitation = async ({ invitationId, organizationId }: { invit
         });
 
         return { success: true };
-    } catch (e) {
-        console.log(e);
+    } catch {
         return { success: false, message: 'Error something went wrong - acceptInvitation' };
     }
 };
@@ -117,8 +115,7 @@ export const rejectInvitation = async ({ invitationId }: { invitationId: string 
 
         await prisma.invitation.update({ where: { id: invitationId }, data: { status: 'REJECTED' } });
         return { success: true };
-    } catch (e) {
-        console.log(e);
+    } catch {
         return { success: false, message: 'Error something went wrong - rejectInvitation' };
     }
 };

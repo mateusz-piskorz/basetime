@@ -25,7 +25,7 @@ export const TableTimeEntry = () => {
     const order_direction = searchParams.get('order_direction');
     const q = searchParams.get('q');
 
-    const { data, refetch } = trpc.getMemberTimeEntries.useQuery({ memberId: id, limit, page, order_column, order_direction, q });
+    const { data, refetch } = trpc.getTimeEntriesPaginated.useQuery({ memberId: id, limit, page, order_column, order_direction, q });
 
     const handleDeleteTimeEntries = async (timeEntryIds: string[]) => {
         const res = await removeTimeEntries({ data: { timeEntryIds } });

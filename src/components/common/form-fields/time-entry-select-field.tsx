@@ -8,13 +8,13 @@ import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/common';
 import { debounce } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { ProjectBadge } from '../project-badge';
 
-type TimeEntry = NonNullable<TrpcRouterOutput['getMemberTimeEntries']>['data'][number];
+type TimeEntry = NonNullable<TrpcRouterOutput['getTimeEntriesPaginated']>['data'][number];
 
 type FieldType = Nullable<string>;
 
@@ -34,7 +34,7 @@ export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, na
     const memberId = useMember().member.id;
     const [q, setQ] = useState('');
 
-    const { data } = trpc.getMemberTimeEntries.useQuery({ memberId, limit: '7', q, order_column: 'createdAt', order_direction: 'desc' });
+    const { data } = trpc.getTimeEntriesPaginated.useQuery({ memberId, limit: '7', q, order_column: 'createdAt', order_direction: 'desc' });
 
     const debouncedSetQ = useCallback(
         debounce((q) => setQ(q), 400),

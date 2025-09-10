@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/common';
 import { useEffect, useState } from 'react';
 
 type Props = {

@@ -4,16 +4,13 @@ import { DashboardHeading } from '@/components/common/dashboard-heading';
 import { SpinLoader } from '@/components/common/spin-loader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { dayjs } from '@/lib/dayjs';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { logout } from '@/lib/server-actions/auth';
 import { trpc } from '@/lib/trpc/client';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import { Monitor, Smartphone } from 'lucide-react';
 import { toast } from 'sonner';
 import { UAParser } from 'ua-parser-js';
-
-dayjs.extend(relativeTime);
 
 export const SectionActiveSessions = () => {
     const { data, isLoading, error, refetch } = trpc.getUserActiveSessions.useQuery();
@@ -38,7 +35,6 @@ export const SectionActiveSessions = () => {
                     !isLoading &&
                     data?.map((session) => {
                         const useragent = new UAParser(session.userAgent).getResult();
-                        console.log(useragent);
                         const isMobileDevice = ['mobile', 'tablet'].includes(useragent.device.type || '');
                         const deviceName = isMobileDevice ? useragent.device.model : useragent.browser.name;
                         const isCurrentSession = session.id === user?.sessionId;

@@ -87,8 +87,7 @@ export const signin = async (data: z.infer<typeof loginSchema>) => {
         await createSession({ userAgent, userId: user.id });
 
         return { success: true };
-    } catch (e) {
-        console.log(e);
+    } catch {
         return { success: false, message: 'Error something went wrong - signin' };
     }
 };

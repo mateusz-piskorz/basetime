@@ -6,7 +6,7 @@ import { projectColor } from '@/lib/constants/project-color';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/common';
 
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 

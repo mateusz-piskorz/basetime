@@ -1,6 +1,6 @@
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
-import { formatMinutes } from '@/lib/utils';
+import { formatMinutes } from '@/lib/utils/common';
 import durationParser from 'parse-duration';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { Input } from '../../ui/input';

@@ -1,4 +1,4 @@
-import { formatMinutes, getDiffInMinutes, sumTimeEntries } from '@/lib/utils';
+import { formatMinutes, getDurationInMinutes, sumTimeEntries } from '@/lib/utils/common';
 import { INVITATION_STATUS } from '@prisma/client';
 import z from 'zod';
 import { prisma } from '../prisma';
@@ -40,7 +40,74 @@ export const appRouter = createTRPCRouter({
         });
     }),
 
-    getMemberTimeEntries: publicProcedure
+    getTimeEntries: publicProcedure
+        .input(
+            z.object({
+                organizationId: z.string(),
+                projectIds: z.array(z.string()).nullish(),
+                memberIds: z.array(z.string()).nullish(),
+                startDate: z.string().nullish(),
+                endDate: z.string().nullish(),
+                limit: z.number().nullish(),
+            }),
+        )
+        .query(async ({ input: { organizationId, memberIds, projectIds, limit, startDate, endDate } }) => {
+            const session = await getSession();
+            if (!session) return null;
+
+            const start = startDate ? new Date(startDate) : undefined;
+            const end = endDate ? new Date(endDate) : undefined;
+
+            const res = await prisma.member.findMany({
+                where: {
+                    organizationId,
+
+                    //member
+                    ...(memberIds?.length && { id: { in: memberIds } }),
+                    OR: [{ userId: session.id }, { Organization: { Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } } }],
+                },
+                select: {
+                    id: true,
+                    HourlyRates: { take: 1 },
+                    TimeEntries: {
+                        where: {
+                            // project
+                            ...(projectIds?.length && {
+                                Project: {
+                                    id: { in: projectIds },
+                                    OR: [
+                                        { Members: { some: { userId: session.id } } },
+                                        { Organization: { Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } } },
+                                    ],
+                                },
+                            }),
+
+                            //date
+                            ...((start || end) && {
+                                OR: [
+                                    { ...(end && { end: { lte: end } }), ...(start && { start: { gte: start } }) },
+                                    ...(end ? [{ end: null, start: { lte: end } }] : []),
+                                ],
+                            }),
+                        },
+                        select: { id: true, name: true, start: true, end: true, Project: { select: { id: true, name: true, color: true } } },
+                        orderBy: { createdAt: 'desc' },
+                        ...(limit && { take: limit }),
+                    },
+                },
+            });
+
+            return {
+                timeEntriesByMembers: res.map((member) => {
+                    const hourlyRate = member.HourlyRates?.length > 0 ? member.HourlyRates[0].value : undefined;
+                    return { TimeEntries: member.TimeEntries, hourlyRate, id: member.id };
+                }),
+                timeEntries: res.flatMap((member) => member.TimeEntries),
+            };
+        }),
+
+    // todo add permissions, check if we need organizationId/memberId, maybe session is enough
+    getTimeEntriesPaginated: publicProcedure
         .input(
             z.object({
                 memberId: z.string(),
@@ -49,9 +116,11 @@ export const appRouter = createTRPCRouter({
                 order_column: z.string().nullish(),
                 order_direction: z.string().nullish(),
                 q: z.string().nullish(),
+                startDate: z.date().nullish(),
+                endDate: z.date().nullish(),
             }),
         )
-        .query(async ({ input: { memberId, limit: limitInput, page: pageInput, order_column, order_direction, q } }) => {
+        .query(async ({ input: { memberId, limit: limitInput, page: pageInput, order_column, order_direction, q, endDate, startDate } }) => {
             const limit = Number(limitInput) || 25;
             const page = Number(pageInput) || 1;
             const skip = (page - 1) * limit;
@@ -59,7 +128,14 @@ export const appRouter = createTRPCRouter({
             if (!session) return null;
             const total = await prisma.timeEntry.count({ where: { memberId } });
             const res = await prisma.timeEntry.findMany({
-                where: { memberId, ...(q && { name: { contains: q } }) },
+                where: {
+                    memberId,
+                    OR: [
+                        { ...(endDate && { end: { lte: endDate } }), ...(startDate && { start: { gte: startDate } }) },
+                        { end: null, ...(endDate && { start: { lte: endDate } }) },
+                    ],
+                    ...(q && { name: { contains: q } }),
+                },
                 include: { Project: { select: { id: true, name: true, color: true } } },
                 take: limit,
                 skip,
@@ -68,7 +144,7 @@ export const appRouter = createTRPCRouter({
             });
 
             const data = res.map((timeEntry) => {
-                return { ...timeEntry, duration: formatMinutes(getDiffInMinutes({ start: timeEntry.start, end: timeEntry.end })) };
+                return { ...timeEntry, duration: formatMinutes(getDurationInMinutes({ start: timeEntry.start, end: timeEntry.end })) };
             });
 
             const totalPages = Math.ceil(total / limit);

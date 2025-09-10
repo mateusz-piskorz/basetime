@@ -6,13 +6,13 @@ import { TimeEntrySelectField } from '@/components/common/form-fields/time-entry
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
+import { dayjs } from '@/lib/dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { manualTimeEntry } from '@/lib/server-actions/time-entry';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
-import { formatMinutes, getDiffInMinutes, prepareDateTime } from '@/lib/utils';
+import { formatMinutes, getDurationInMinutes, prepareDateTime } from '@/lib/utils/common';
 import { manualTimeEntrySchema } from '@/lib/zod/time-entry-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import dayjs from 'dayjs';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -24,7 +24,7 @@ import { SelectProjectField } from './form-fields/select-project-field';
 type Props = {
     open: boolean;
     setOpen: (val: boolean) => void;
-    selectedTimeEntry?: NonNullable<TrpcRouterOutput['getMemberTimeEntries']>['data'][number];
+    selectedTimeEntry?: NonNullable<TrpcRouterOutput['getTimeEntriesPaginated']>['data'][number];
     onSuccess?: () => void;
 };
 
@@ -55,7 +55,7 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
                       startTime: dayjs(ste.start).format('HH:mm'),
                       endDate: ste.end ? new Date(ste.end) : new Date(),
                       endTime: dayjs(ste.end || new Date()).format('HH:mm'),
-                      duration: formatMinutes(getDiffInMinutes({ start: new Date(ste.start), end: ste.end ? new Date(ste.end) : new Date() })),
+                      duration: formatMinutes(getDurationInMinutes({ start: new Date(ste.start), end: ste.end ? new Date(ste.end) : new Date() })),
                   }
                 : undefined,
         );
@@ -66,7 +66,15 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
         const end = prepareDateTime(endDate, endTime);
 
         const res = await manualTimeEntry({
-            data: { memberId: member.id, organizationId, name, projectId, start, end, timeEntryId: selectedTimeEntry?.id },
+            data: {
+                memberId: member.id,
+                organizationId,
+                name,
+                projectId: projectId === 'no-project' ? undefined : projectId,
+                start,
+                end,
+                timeEntryId: selectedTimeEntry?.id,
+            },
         });
 
         if (!res.success) {
@@ -74,7 +82,7 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
             return;
         }
 
-        trpcUtils.getMemberTimeEntries.refetch();
+        trpcUtils.getTimeEntriesPaginated.refetch();
         toast.success(`TimeEntry ${selectedTimeEntry ? 'Updated' : 'Created'} successfully`);
         onSuccess?.();
         setOpen(false);

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useMember } from '@/lib/hooks/use-member';
 import { TrpcRouterOutput } from '@/lib/trpc/client';
-import { cn, formatMinutes } from '@/lib/utils';
+import { cn, formatMinutes } from '@/lib/utils/common';
 import { Clock, Timer, Users2 } from 'lucide-react';
 
 type Props = {

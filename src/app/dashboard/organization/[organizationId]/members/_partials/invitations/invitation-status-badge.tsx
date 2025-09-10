@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/common';
 import { INVITATION_STATUS } from '@prisma/client';
 
 type Props = {

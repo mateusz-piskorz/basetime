@@ -1,15 +1,11 @@
-import { SectionTimeTracker } from '@/components/common/section-time-tracker';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
+import { OrganizationDashboard } from './_partials/organization-dashboard';
 
 export default async function OrganizationPage() {
     const user = await getSession();
     if (!user) {
         return redirect('/');
     }
-    return (
-        <div className="space-y-8 py-8">
-            <SectionTimeTracker />
-        </div>
-    );
+    return <OrganizationDashboard />;
 }

@@ -9,40 +9,22 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 
-import { cn } from '@/lib/utils';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { cn } from '@/lib/utils/common';
 
 type Props = {
     title: string;
-    filterKey: string;
     options: {
-        label: string;
+        label: React.ReactNode;
         value: string;
         icon?: React.ComponentType<{ className?: string }>;
     }[];
     singleChoice?: boolean;
+    initialValues?: string[];
+    values: string[];
+    setValues: (arg: string[]) => void;
 };
 
-export function DataTableOptionsFilter({ filterKey, title, options, singleChoice }: Props) {
-    const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const values = searchParams.getAll(filterKey);
-
-    const setValues = (val: string[] | null) => {
-        const params = new URLSearchParams(searchParams.toString());
-        if (val) {
-            params.delete(filterKey);
-            val.forEach((singleVal) => {
-                params.append(filterKey, singleVal);
-            });
-        } else {
-            params.delete(filterKey);
-        }
-
-        router.replace(pathname + '?' + params.toString());
-    };
-
+export function MultiOptionsFilterState({ title, options, singleChoice, setValues, values }: Props) {
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -104,7 +86,7 @@ export function DataTableOptionsFilter({ filterKey, title, options, singleChoice
                                             <Check className="text-primary-foreground size-3.5" />
                                         </div>
                                         {option.icon && <option.icon className="text-muted-foreground size-4" />}
-                                        <span>{option.label}</span>
+                                        <div>{option.label}</div>
                                     </CommandItem>
                                 );
                             })}
@@ -113,7 +95,7 @@ export function DataTableOptionsFilter({ filterKey, title, options, singleChoice
                             <>
                                 <CommandSeparator />
                                 <CommandGroup>
-                                    <CommandItem onSelect={() => setValues(null)} className="justify-center text-center">
+                                    <CommandItem onSelect={() => setValues([])} className="justify-center text-center">
                                         Clear filters
                                     </CommandItem>
                                 </CommandGroup>

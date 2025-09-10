@@ -116,7 +116,6 @@ model TimeEntry {
 
   memberId       String
   projectId      String?
-  taskId         String?
   organizationId String
   Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   Member         Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)

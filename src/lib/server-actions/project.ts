@@ -31,7 +31,7 @@ export const upsertProject = async ({ data }: { data: z.infer<typeof createProje
                 name,
                 color,
                 estimatedMinutes,
-                Members: { connect: memberIds?.map((id) => ({ id })) },
+                Members: { set: [], connect: memberIds?.map((id) => ({ id })) },
                 organizationId,
             },
             create: {

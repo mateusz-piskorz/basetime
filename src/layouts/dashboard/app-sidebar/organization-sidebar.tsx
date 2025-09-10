@@ -2,7 +2,7 @@
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarSeparator } from '@/components/ui/sidebar';
 import { useMember } from '@/lib/hooks/use-member';
-import { ArrowLeftFromLineIcon, Clock, FolderClosed, LayoutGrid, Settings, Users2 } from 'lucide-react';
+import { ArrowLeftFromLineIcon, ChartNoAxesColumnIncreasing, Clock, FolderClosed, LayoutGrid, Settings, Users2 } from 'lucide-react';
 import { NavItem, NavMain } from './nav-main';
 import { NavOrganizations } from './nav-organizations';
 import { NavUser } from './nav-user';
@@ -25,6 +25,11 @@ export function OrganizationSidebar() {
             title: 'Time',
             href: `/dashboard/organization/${organizationId}/time`,
             icon: Clock,
+        },
+        {
+            title: 'Reports',
+            href: `/dashboard/organization/${organizationId}/reports`,
+            icon: ChartNoAxesColumnIncreasing,
         },
         {
             title: 'Projects',

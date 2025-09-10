@@ -14,7 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { ProjectBadge } from '../project-badge';
 
-type TimeEntry = NonNullable<TrpcRouterOutput['getMemberTimeEntries']>['data'][number];
+type TimeEntry = NonNullable<TrpcRouterOutput['getTimeEntriesPaginated']>['data'][number];
 
 type FieldType = Nullable<string>;
 

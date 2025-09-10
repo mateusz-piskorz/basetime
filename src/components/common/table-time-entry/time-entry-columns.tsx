@@ -13,7 +13,7 @@ export const getTimeEntryColumns = ({
 }: {
     handleEditTimeEntry: (TimeEntryId: string) => void;
     handleDeleteTimeEntry: (TimeEntryId: string) => void;
-}): ColumnDef<NonNullable<TrpcRouterOutput['getMemberTimeEntries']>['data'][number]>[] => [
+}): ColumnDef<NonNullable<TrpcRouterOutput['getTimeEntriesPaginated']>['data'][number]>[] => [
     {
         id: 'select',
         header: ({ table }) => (

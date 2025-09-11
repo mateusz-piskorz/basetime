@@ -1,13 +1,13 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { getClientIp } from '@/lib/server-utils/get-client-ip';
+import rateLimit from '@/lib/server-utils/rate-limit';
+import { createSession, deleteSession, verifySession } from '@/lib/session';
 import { loginSchema, logoutServerSchema, registerSchema } from '@/lib/zod/auth-schema';
 import bcrypt from 'bcrypt';
 import { headers } from 'next/headers';
 import z from 'zod';
-import { getClientIp } from '../server-utils/get-client-ip';
-import rateLimit from '../server-utils/rate-limit';
-import { createSession, deleteSession, verifySession } from '../session';
 
 const limiter = rateLimit({
     interval: 60 * 1000, // 60 seconds
@@ -47,7 +47,8 @@ export const signup = async (data: z.infer<typeof registerSchema>) => {
         await createSession({ userAgent, userId: user.id });
 
         return { success: true };
-    } catch {
+    } catch (e) {
+        console.log(e);
         return { success: false, message: 'Error something went wrong - signup' };
     }
 };

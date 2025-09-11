@@ -55,8 +55,11 @@ jobs:
       - name: Copy Environment File
         run: cp .env.example .env
 
-      - name: run dev
-        run: npm run dev
+      - name: Start Next.js server
+        run: nohup npm run dev &
+
+      - name: Wait for server to be ready
+        run: npx wait-on http://localhost:3000
 
       - name: test
         run: npm run test

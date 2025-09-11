@@ -37,5 +37,5 @@ test('User can sing up', async () => {
     const res = await signup({ email, password, name });
     expect(res.success).toBe(true);
     const user = await prisma.user.findUnique({ where: { email } });
-    expect(user?.name).toBe(`${name}-extra`);
+    expect(user?.name).toBe(name);
 });

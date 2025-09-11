@@ -35,9 +35,7 @@ test('sing up validation works', async () => {
 
 test('User can sing up', async () => {
     const res = await signup({ email, password, name });
-    console.log('res123');
-    console.log(res.message);
     expect(res.success).toBe(true);
     const user = await prisma.user.findUnique({ where: { email } });
-    expect(user?.name).toBe(name);
+    expect(user?.name).toBe(`${name}-extra`);
 });

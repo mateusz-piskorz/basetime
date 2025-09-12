@@ -6,34 +6,45 @@ import { prisma } from '../prisma';
 import { getSession } from '../session';
 import { deleteOrganizationServerSchema, upsertOrganizationServerSchema } from '../zod/organization-schema';
 
-export const upsertOrganization = async ({ data }: { data: z.infer<typeof upsertOrganizationServerSchema> }) => {
+export const upsertOrganization = async (data: z.infer<typeof upsertOrganizationServerSchema>) => {
     try {
+        const session = await getSession();
+
+        if (!session) {
+            return { success: false, message: 'Error session invalid' };
+        }
+
         const validated = upsertOrganizationServerSchema.safeParse(data);
 
         if (validated.error) {
             return { success: false, message: 'Error validating fields' };
         }
 
-        const session = await getSession();
-        if (!session) {
-            return { success: false, message: 'Error session invalid' };
-        }
-
         const { currency, name, organizationId } = validated.data;
 
+        let res;
         if (organizationId) {
-            await prisma.organization.update({ where: { id: organizationId }, data: { currency, name } });
+            res = await prisma.organization.update({
+                where: { id: organizationId, Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } },
+                data: { currency, name },
+            });
         } else {
-            await prisma.organization.create({ data: { currency, name, Members: { create: { role: 'OWNER', userId: session.id } } } });
+            res = await prisma.organization.create({
+                data: {
+                    currency: currency || 'EUR',
+                    name: name || `${session.name}'s organization`,
+                    Members: { create: { role: 'OWNER', userId: session.userId } },
+                },
+            });
         }
 
-        return { success: true };
+        return { success: true, data: res };
     } catch {
         return { success: false, message: 'Error something went wrong - createOrganization' };
     }
 };
 
-export const deleteOrganization = async ({ data }: { data: z.infer<typeof deleteOrganizationServerSchema> }) => {
+export const deleteOrganization = async (data: z.infer<typeof deleteOrganizationServerSchema>) => {
     try {
         const validated = deleteOrganizationServerSchema.safeParse(data);
 
@@ -49,7 +60,7 @@ export const deleteOrganization = async ({ data }: { data: z.infer<typeof delete
         const { password, organizationId } = validated.data;
 
         const user = await prisma.user.findUnique({
-            where: { id: session.id },
+            where: { id: session.userId },
             select: { password: true },
         });
 
@@ -61,7 +72,7 @@ export const deleteOrganization = async ({ data }: { data: z.infer<typeof delete
             return { success: false, message: 'Error password incorrect' };
         }
 
-        await prisma.organization.delete({ where: { id: organizationId, Members: { some: { userId: session.id, role: 'OWNER' } } } });
+        await prisma.organization.delete({ where: { id: organizationId, Members: { some: { userId: session.userId, role: 'OWNER' } } } });
 
         return { success: true };
     } catch {

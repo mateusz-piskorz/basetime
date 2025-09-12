@@ -25,8 +25,8 @@ export const SectionDeleteOrganization = () => {
         resolver: zodResolver(deleteOrganizationSchema),
     });
 
-    const onSubmit = async (data: z.infer<typeof deleteOrganizationSchema>) => {
-        const res = await deleteOrganization({ data: { ...data, organizationId } });
+    const onSubmit = async ({ password }: z.infer<typeof deleteOrganizationSchema>) => {
+        const res = await deleteOrganization({ organizationId, password });
 
         if (!res.success) {
             toast.error(res.message);

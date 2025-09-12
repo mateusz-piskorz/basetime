@@ -46,11 +46,11 @@ export const SectionTimeTracker = ({ className }: Props) => {
     const onSubmit = async (data: z.infer<typeof startTimeTrackerSchema>) => {
         let res;
         if (activeTimeEntry) {
-            res = await stopTimeTracker({ data: { timeEntryId: activeTimeEntry.id } });
+            res = await stopTimeTracker({ timeEntryId: activeTimeEntry.id });
             form.reset({ name: '', projectId: 'no-project' });
         } else {
             const projectId = data.projectId === 'no-project' ? undefined : data.projectId;
-            res = await startTimeTracker({ data: { ...data, projectId, organizationId, memberId } });
+            res = await startTimeTracker({ ...data, projectId, organizationId, memberId });
         }
 
         if (!res.success) {

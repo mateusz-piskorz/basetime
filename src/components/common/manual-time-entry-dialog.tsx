@@ -30,7 +30,7 @@ type Props = {
 
 export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSuccess }: Props) => {
     const trpcUtils = trpc.useUtils();
-    const { member, organizationId } = useMember();
+    const { organizationId } = useMember();
     const form = useForm<z.infer<typeof manualTimeEntrySchema>>({
         resolver: zodResolver(manualTimeEntrySchema),
         defaultValues: {
@@ -66,15 +66,12 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
         const end = prepareDateTime(endDate, endTime);
 
         const res = await manualTimeEntry({
-            data: {
-                memberId: member.id,
-                organizationId,
-                name,
-                projectId: projectId === 'no-project' ? undefined : projectId,
-                start,
-                end,
-                timeEntryId: selectedTimeEntry?.id,
-            },
+            organizationId,
+            name,
+            projectId: projectId === 'no-project' ? undefined : projectId,
+            start,
+            end,
+            timeEntryId: selectedTimeEntry?.id,
         });
 
         if (!res.success) {

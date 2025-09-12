@@ -22,7 +22,7 @@ export const SectionCreateOrganization = () => {
     });
 
     const onSubmit = async (data: z.infer<typeof upsertOrganizationSchema>) => {
-        const res = await upsertOrganization({ data });
+        const res = await upsertOrganization({ ...data });
 
         if (!res.success) {
             toast.error(res.message);

@@ -11,10 +11,10 @@ export const upsertProjectSchema = z.object({
 export const createProjectServerSchema = z.object({
     projectId: z.string().optional(),
     organizationId: z.string(),
-    name: z.string().nonempty(),
-    color: z.nativeEnum(PROJECT_COLOR),
+    name: z.string().nonempty().optional(),
+    color: z.nativeEnum(PROJECT_COLOR).optional(),
     memberIds: z.array(z.string()).optional(),
-    estimatedMinutes: z.number().nullable(),
+    estimatedMinutes: z.number().nullish(),
 });
 
 export const deleteProjectServerSchema = z.object({

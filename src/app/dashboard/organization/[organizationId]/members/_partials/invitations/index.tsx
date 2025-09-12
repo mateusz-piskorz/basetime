@@ -32,7 +32,7 @@ export const TableInvitations = ({ open, setOpen }: Props) => {
     const { data, refetch } = trpc.getOrganizationInvitations.useQuery({ organizationId, limit, page, order_column, order_direction, statusArr });
 
     const handleCancelInvitation = async (invitationId: string) => {
-        const res = await cancelInvitation({ data: { invitationId } });
+        const res = await cancelInvitation({ invitationId });
         if (!res.success) {
             toast.error(res.message);
             return;

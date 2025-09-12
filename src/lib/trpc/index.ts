@@ -9,7 +9,7 @@ export const appRouter = createTRPCRouter({
     getUserActiveSessions: publicProcedure.query(async () => {
         const session = await getSession();
         if (!session) return null;
-        return await prisma.session.findMany({ where: { userId: session.id, expiresAt: { gte: new Date() } }, orderBy: { createdAt: 'asc' } });
+        return await prisma.session.findMany({ where: { userId: session.userId, expiresAt: { gte: new Date() } }, orderBy: { createdAt: 'asc' } });
     }),
 
     getUserInvitations: publicProcedure.query(async () => {
@@ -17,7 +17,7 @@ export const appRouter = createTRPCRouter({
         if (!session) return null;
         return await prisma.invitation.findMany({
             select: { id: true, status: true, createdAt: true, Organization: { select: { name: true, id: true } } },
-            where: { userId: session.id },
+            where: { userId: session.userId },
         });
     }),
 
@@ -25,8 +25,8 @@ export const appRouter = createTRPCRouter({
         const session = await getSession();
         if (!session) return null;
         const res = await prisma.organization.findUnique({
-            include: { Members: { where: { userId: session.id } } },
-            where: { id: organizationId, Members: { some: { userId: session.id } } },
+            include: { Members: { where: { userId: session.userId } } },
+            where: { id: organizationId, Members: { some: { userId: session.userId } } },
         });
         if (!res?.Members[0]) return null;
         return { ...res, member: res.Members[0] };
@@ -64,7 +64,10 @@ export const appRouter = createTRPCRouter({
 
                     //member
                     ...(memberIds?.length && { id: { in: memberIds } }),
-                    OR: [{ userId: session.id }, { Organization: { Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } } }],
+                    OR: [
+                        { userId: session.userId },
+                        { Organization: { Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } } },
+                    ],
                 },
                 select: {
                     id: true,
@@ -76,8 +79,8 @@ export const appRouter = createTRPCRouter({
                                 Project: {
                                     id: { in: projectIds },
                                     OR: [
-                                        { Members: { some: { userId: session.id } } },
-                                        { Organization: { Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } } },
+                                        { Members: { some: { userId: session.userId } } },
+                                        { Organization: { Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } } },
                                     ],
                                 },
                             }),
@@ -172,7 +175,7 @@ export const appRouter = createTRPCRouter({
             const data = await prisma.invitation.findMany({
                 where: {
                     organizationId,
-                    Organization: { Members: { some: { role: { in: ['MANAGER', 'OWNER'] }, User: { id: session.id } } } },
+                    Organization: { Members: { some: { role: { in: ['MANAGER', 'OWNER'] }, User: { id: session.userId } } } },
                     ...(statusArr?.length && { status: { in: statusArr } }),
                 },
                 include: { User: { select: { name: true, email: true } } },
@@ -189,7 +192,7 @@ export const appRouter = createTRPCRouter({
         const session = await getSession();
         if (!session) return null;
 
-        const userMember = await prisma.member.findFirst({ where: { userId: session.id, organizationId } });
+        const userMember = await prisma.member.findFirst({ where: { userId: session.userId, organizationId } });
         if (!userMember) {
             return null;
         }
@@ -251,13 +254,13 @@ export const appRouter = createTRPCRouter({
             const session = await getSession();
             if (!session) return null;
 
-            const currentMember = await prisma.member.findFirst({ where: { userId: session.id, organizationId } });
+            const currentMember = await prisma.member.findFirst({ where: { userId: session.userId, organizationId } });
             if (!currentMember) {
                 return null;
             }
 
             const res = await prisma.organization.findUnique({
-                where: { id: organizationId, Members: { some: { userId: session.id } } },
+                where: { id: organizationId, Members: { some: { userId: session.userId } } },
                 select: {
                     Projects: {
                         ...(currentMember.role === 'EMPLOYEE' && { where: { Members: { some: { id: memberId } } } }),
@@ -282,7 +285,7 @@ export const appRouter = createTRPCRouter({
         const session = await getSession();
         if (!session) return null;
         const res = await prisma.organization.findMany({
-            where: { Members: { some: { userId: session.id } } },
+            where: { Members: { some: { userId: session.userId } } },
             select: {
                 id: true,
                 name: true,

@@ -5,7 +5,7 @@ import { prisma } from '../prisma';
 import { getSession } from '../session';
 import { removeMemberServerSchema, updateMemberServerSchema } from '../zod/member-schema';
 
-export const updateMember = async ({ data }: { data: z.infer<typeof updateMemberServerSchema> }) => {
+export const updateMember = async (data: z.infer<typeof updateMemberServerSchema>) => {
     try {
         const validated = updateMemberServerSchema.safeParse(data);
 
@@ -20,26 +20,26 @@ export const updateMember = async ({ data }: { data: z.infer<typeof updateMember
 
         const { role, hourlyRate, projectIds, memberId } = validated.data;
 
-        await prisma.member.update({
+        const member = await prisma.member.update({
             where: {
                 id: memberId,
                 ...(role !== 'OWNER' && { role: { not: 'OWNER' } }),
-                Organization: { Members: { some: { role: { in: ['MANAGER', 'OWNER'] }, User: { id: session.id } } } },
+                Organization: { Members: { some: { role: { in: ['MANAGER', 'OWNER'] }, User: { id: session.userId } } } },
             },
             data: {
-                ...(role !== 'OWNER' && { role }),
+                ...(role && role !== 'OWNER' && { role }),
                 ...(hourlyRate && { HourlyRates: { create: { value: hourlyRate } } }),
                 Projects: { set: [], connect: projectIds?.map((id) => ({ id })) },
             },
         });
 
-        return { success: true };
+        return { success: true, data: member };
     } catch {
         return { success: false, message: 'Error something went wrong - updateMember' };
     }
 };
 
-export const removeMember = async ({ data }: { data: z.infer<typeof removeMemberServerSchema> }) => {
+export const removeMember = async (data: z.infer<typeof removeMemberServerSchema>) => {
     try {
         const validated = removeMemberServerSchema.safeParse(data);
 
@@ -56,7 +56,7 @@ export const removeMember = async ({ data }: { data: z.infer<typeof removeMember
             where: {
                 id: validated.data.memberId,
                 role: { not: 'OWNER' },
-                Organization: { Members: { some: { role: { in: ['MANAGER', 'OWNER'] }, User: { id: session.id } } } },
+                Organization: { Members: { some: { role: { in: ['MANAGER', 'OWNER'] }, User: { id: session.userId } } } },
             },
         });
 

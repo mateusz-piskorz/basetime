@@ -13,7 +13,7 @@ jest.mock('@/lib/session', () => ({
 
 jest.mock('server-only', () => ({}));
 
-test('get organization test', async () => {
+test('get organization test example', async () => {
     await prisma.user.create({ data: { email: 'owneremail@spoko.pl', password: 'admin1234', name: 'ownerUser', id: 'ownerUserId' } });
     await prisma.user.create({ data: { email: 'employeeemail@spoko.pl', password: 'admin1234', name: 'employeeUser', id: 'employeeUserId' } });
     await prisma.organization.create({ data: { currency: 'PLN', name: 'organizationName', id: 'organizationID' } });

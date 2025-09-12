@@ -43,7 +43,10 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
 
     const onSubmit = async (data: z.infer<typeof upsertProjectSchema>) => {
         const res = await upsertProject({
-            data: { ...data, estimatedMinutes: durationParser(data.estimatedDuration, 'm'), organizationId, projectId: project?.id },
+            ...data,
+            estimatedMinutes: durationParser(data.estimatedDuration, 'm'),
+            organizationId,
+            projectId: project?.id,
         });
         if (!res.success) {
             toast.error(res.message);

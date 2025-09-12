@@ -9,7 +9,7 @@ export const updateMemberSchema = z.object({
 
 export const updateMemberServerSchema = z.object({
     memberId: z.string().nonempty(),
-    role: z.nativeEnum(MEMBER_ROLE),
+    role: z.nativeEnum(MEMBER_ROLE).optional(),
     hourlyRate: z.coerce.number().optional(),
     projectIds: z.array(z.string()).optional(),
 });

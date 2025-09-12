@@ -26,7 +26,7 @@ export function NavUser() {
     const router = useRouter();
 
     const handleLogout = async () => {
-        const res = await logout({ data: {} });
+        const res = await logout({});
         if (!res.success) {
             toast.error(res.message);
             return;

@@ -44,7 +44,7 @@ test('member setup', async () => {
                     data: [
                         { role: 'OWNER', userId: owner.id, id: owner.memberId },
                         { role: 'MANAGER', userId: manager.id, id: manager.memberId },
-                        { role: 'EMPLOYEE', userId: emp1.id },
+                        { role: 'EMPLOYEE', userId: emp1.id, id: emp1.memberId },
                         { role: 'EMPLOYEE', userId: emp2.id, id: emp2.memberId },
                     ],
                 },
@@ -69,7 +69,7 @@ test('manager can updateMember', async () => {
 });
 
 test('owner can updateMember', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: manager.id });
+    mockedGetSession.mockReturnValueOnce({ userId: owner.id });
     const res = await updateMember({ memberId: emp2.memberId, hourlyRate: 50 });
     expect(res.success).toBe(true);
 });

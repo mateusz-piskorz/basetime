@@ -46,7 +46,7 @@ test('organization setup', async () => {
                     data: [
                         { role: 'OWNER', userId: owner.id, id: owner.memberId },
                         { role: 'MANAGER', userId: manager.id, id: manager.memberId },
-                        { role: 'EMPLOYEE', userId: emp1.id },
+                        { role: 'EMPLOYEE', userId: emp1.id, id: emp1.memberId },
                         { role: 'EMPLOYEE', userId: emp2.id, id: emp2.memberId },
                     ],
                 },

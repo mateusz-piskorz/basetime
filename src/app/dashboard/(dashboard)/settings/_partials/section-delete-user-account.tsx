@@ -22,7 +22,7 @@ export const SectionDeleteUserAccount = () => {
     });
 
     const onSubmit = async (data: z.infer<typeof deleteUserAccountSchema>) => {
-        const res = await deleteUserAccount({ data });
+        const res = await deleteUserAccount(data);
 
         if (!res.success) {
             toast.error(res.message);

@@ -5,7 +5,7 @@ import { createContext, ReactNode, useContext } from 'react';
 type AuthUser = {
     sessionId: string;
     name: string;
-    id: string;
+    userId: string;
     email: string;
 };
 

@@ -19,7 +19,6 @@ export const manualTimeEntryServerSchema = z.object({
     end: z.date(),
     projectId: z.string().optional(),
     organizationId: z.string(),
-    memberId: z.string(),
 });
 
 export const manualTimeEntrySchema = z.object({

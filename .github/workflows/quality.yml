@@ -27,3 +27,39 @@ jobs:
 
       - name: Types
         run: npm run types
+
+  tests:
+    needs: quality
+    runs-on: ubuntu-latest
+    services:
+      db_dev:
+        image: postgres:17.6
+        env:
+          POSTGRES_DB: mydb
+          POSTGRES_USER: johndoe
+          POSTGRES_PASSWORD: randompassword
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Copy Environment File
+        run: cp .env.example .env
+
+      - name: Start Next.js server
+        run: nohup npm run dev &
+
+      - name: Wait for server to be ready
+        run: npx wait-on http://localhost:3000
+
+      - name: test
+        run: npm run test

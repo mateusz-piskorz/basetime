@@ -27,8 +27,8 @@ export const CreateInvitationDialog = ({ open, setOpen }: Props) => {
         resolver: zodResolver(createInvitationSchema),
     });
 
-    const onSubmit = async (data: z.infer<typeof createInvitationSchema>) => {
-        const res = await createInvitation({ data: { ...data, organizationId } });
+    const onSubmit = async ({ email }: z.infer<typeof createInvitationSchema>) => {
+        const res = await createInvitation({ email, organizationId });
 
         if (!res.success) {
             toast.error(res.message);

@@ -25,7 +25,7 @@ export const SectionProjects = () => {
     const selectedProject = data?.find((project) => project.id === selectedId);
 
     const handleRemoveProject = async (projectId: string) => {
-        const res = await deleteProject({ data: { projectId } });
+        const res = await deleteProject({ projectId });
         if (!res.success) {
             toast.error(res.message);
             return;

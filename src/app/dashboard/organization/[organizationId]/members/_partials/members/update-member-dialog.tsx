@@ -38,7 +38,7 @@ export const UpdateMemberDialog = ({ open, setOpen, onSuccess, member }: Props) 
     }, [form, form.formState.isSubmitSuccessful, member]);
 
     const onSubmit = async (data: z.infer<typeof updateMemberSchema>) => {
-        const res = await updateMember({ data: { ...data, memberId: member.id } });
+        const res = await updateMember({ ...data, memberId: member.id });
 
         if (!res.success) {
             toast.error(res.message);

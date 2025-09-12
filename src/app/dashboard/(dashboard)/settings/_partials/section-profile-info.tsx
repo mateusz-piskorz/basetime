@@ -21,7 +21,7 @@ export const SectionProfileInfo = () => {
     });
 
     const onSubmit = async (data: z.infer<typeof updateProfileSchema>) => {
-        const res = await updateProfile({ data });
+        const res = await updateProfile(data);
 
         if (!res.success) {
             toast.error(res.message);

@@ -32,7 +32,7 @@ export const MemberList = ({ openInvitationDialog }: Props) => {
     const selectedMember = data?.find((e) => e.id === selectedId);
 
     const handleRemoveMember = async (memberId: string) => {
-        const res = await removeMember({ data: { memberId } });
+        const res = await removeMember({ memberId });
         if (!res.success) {
             toast.error(res.message);
             return;

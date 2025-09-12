@@ -8,8 +8,8 @@ export const upsertOrganizationSchema = z.object({
 
 export const upsertOrganizationServerSchema = z.object({
     organizationId: z.string().optional(),
-    name: z.string().nonempty(),
-    currency: z.nativeEnum(CURRENCY),
+    name: z.string().nonempty().optional(),
+    currency: z.nativeEnum(CURRENCY).optional(),
 });
 
 export const deleteOrganizationSchema = z.object({

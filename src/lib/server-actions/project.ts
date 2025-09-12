@@ -5,7 +5,7 @@ import { prisma } from '../prisma';
 import { getSession } from '../session';
 import { createProjectServerSchema, deleteProjectServerSchema } from '../zod/project-schema';
 
-export const upsertProject = async ({ data }: { data: z.infer<typeof createProjectServerSchema> }) => {
+export const upsertProject = async (data: z.infer<typeof createProjectServerSchema>) => {
     try {
         const validated = createProjectServerSchema.safeParse(data);
 
@@ -20,36 +20,41 @@ export const upsertProject = async ({ data }: { data: z.infer<typeof createProje
 
         const { memberIds, name, estimatedMinutes, color, organizationId, projectId } = validated.data;
 
-        const userMember = await prisma.member.findFirst({ where: { userId: session.id, organizationId, role: { in: ['MANAGER', 'OWNER'] } } });
-        if (!userMember) {
-            return { success: false, message: `Error: permission` };
+        let res;
+        if (projectId) {
+            res = await prisma.project.update({
+                where: { id: projectId },
+                data: {
+                    name,
+                    color,
+                    estimatedMinutes,
+                    Members: { connect: memberIds?.map((id) => ({ id })) },
+                    Organization: {
+                        connect: { id: organizationId, Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } },
+                    },
+                },
+            });
+        } else {
+            res = await prisma.project.create({
+                data: {
+                    name: name || `${session.name}'s project`,
+                    color: color || 'GRAY',
+                    estimatedMinutes,
+                    Members: { connect: memberIds?.map((id) => ({ id })) },
+                    Organization: {
+                        connect: { id: organizationId, Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } },
+                    },
+                },
+            });
         }
 
-        await prisma.project.upsert({
-            where: { id: projectId || '' },
-            update: {
-                name,
-                color,
-                estimatedMinutes,
-                Members: { set: [], connect: memberIds?.map((id) => ({ id })) },
-                organizationId,
-            },
-            create: {
-                name,
-                color,
-                estimatedMinutes,
-                Members: { connect: memberIds?.map((id) => ({ id })) },
-                organizationId,
-            },
-        });
-
-        return { success: true };
+        return { success: true, data: res };
     } catch {
         return { success: false, message: 'Error something went wrong - upsertProject' };
     }
 };
 
-export const deleteProject = async ({ data }: { data: z.infer<typeof deleteProjectServerSchema> }) => {
+export const deleteProject = async (data: z.infer<typeof deleteProjectServerSchema>) => {
     try {
         const validated = deleteProjectServerSchema.safeParse(data);
 
@@ -63,7 +68,10 @@ export const deleteProject = async ({ data }: { data: z.infer<typeof deleteProje
         }
 
         await prisma.project.delete({
-            where: { id: validated.data.projectId, Organization: { Members: { some: { userId: session.id, role: { in: ['MANAGER', 'OWNER'] } } } } },
+            where: {
+                id: validated.data.projectId,
+                Organization: { Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } },
+            },
         });
 
         return { success: true };

@@ -1,13 +1,13 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
+import { getClientIp } from '@/lib/server-utils/get-client-ip';
+import rateLimit from '@/lib/server-utils/rate-limit';
+import { createSession, deleteSession, getSession, setSessionCookie } from '@/lib/session';
 import { loginSchema, logoutServerSchema, registerSchema } from '@/lib/zod/auth-schema';
 import bcrypt from 'bcrypt';
 import { headers } from 'next/headers';
 import z from 'zod';
-import { getClientIp } from '../server-utils/get-client-ip';
-import rateLimit from '../server-utils/rate-limit';
-import { createSession, deleteSession, verifySession } from '../session';
 
 const limiter = rateLimit({
     interval: 60 * 1000, // 60 seconds
@@ -19,32 +19,30 @@ export const signup = async (data: z.infer<typeof registerSchema>) => {
         const clientIp = await getClientIp();
         const validated = registerSchema.safeParse(data);
 
+        if (!limiter.check(5, clientIp)) {
+            return { success: false, message: 'Error limiter' };
+        }
+
         if (validated.error) {
             return { success: false, message: 'Error validating fields' };
         }
 
-        if (!limiter.check(5, clientIp)) {
-            return { success: false, message: 'Error limiter' };
-        }
         const { email, password, name } = validated.data;
 
         if (await prisma.user.findUnique({ where: { email }, select: { id: true } })) {
             return { success: false, message: 'Error provided email already exists in database' };
         }
 
-        const pwHash = await bcrypt.hash(password, 9);
-
         const user = await prisma.user.create({
             data: {
                 email,
                 name: name || email,
-                password: pwHash,
+                password: await bcrypt.hash(password, 9),
             },
             select: { id: true },
         });
 
-        const userAgent = (await headers()).get('user-agent') || '';
-        await createSession({ userAgent, userId: user.id });
+        await createSession({ userAgent: (await headers()).get('user-agent') || '', userId: user.id });
 
         return { success: true };
     } catch {
@@ -54,21 +52,22 @@ export const signup = async (data: z.infer<typeof registerSchema>) => {
 
 export const signin = async (data: z.infer<typeof loginSchema>) => {
     try {
-        const session = await verifySession();
+        const session = await getSession();
 
         if (session) {
+            await setSessionCookie(session.cookie);
             return { success: true };
         }
 
         const clientIp = await getClientIp();
         const validated = loginSchema.safeParse(data);
 
-        if (validated.error) {
-            return { success: false, message: 'Error validating fields' };
-        }
-
         if (!limiter.check(5, clientIp)) {
             return { success: false, message: 'Error limiter' };
+        }
+
+        if (validated.error) {
+            return { success: false, message: 'Error validating fields' };
         }
 
         const { email, password } = validated.data;
@@ -82,9 +81,7 @@ export const signin = async (data: z.infer<typeof loginSchema>) => {
             return { success: false, message: 'Error credentials incorrect' };
         }
 
-        const userAgent = (await headers()).get('user-agent') || '';
-
-        await createSession({ userAgent, userId: user.id });
+        await createSession({ userAgent: (await headers()).get('user-agent') || '', userId: user.id });
 
         return { success: true };
     } catch {
@@ -92,7 +89,7 @@ export const signin = async (data: z.infer<typeof loginSchema>) => {
     }
 };
 
-export const logout = async ({ data }: { data: z.infer<typeof logoutServerSchema> }) => {
+export const logout = async (data: z.infer<typeof logoutServerSchema>) => {
     try {
         const validated = logoutServerSchema.safeParse(data);
 

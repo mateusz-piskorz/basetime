@@ -17,7 +17,7 @@ export const SectionActiveSessions = () => {
     const { user } = useAuth();
 
     const handleLogoutSession = async (sessionId: string) => {
-        const res = await logout({ data: { sessionId } });
+        const res = await logout({ sessionId });
         if (!res.success) {
             toast.error(res.message);
             return;

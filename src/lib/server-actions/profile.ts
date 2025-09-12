@@ -6,7 +6,7 @@ import { prisma } from '../prisma';
 import { getSession } from '../session';
 import { deleteUserAccountSchema, updatePasswordSchema, updateProfileSchema } from '../zod/profile-schema';
 
-export const updateProfile = async ({ data }: { data: z.infer<typeof updateProfileSchema> }) => {
+export const updateProfile = async (data: z.infer<typeof updateProfileSchema>) => {
     try {
         const validated = updateProfileSchema.safeParse(data);
 
@@ -21,19 +21,19 @@ export const updateProfile = async ({ data }: { data: z.infer<typeof updateProfi
 
         const { name } = validated.data;
 
-        await prisma.user.update({
-            where: { id: session?.id },
+        const res = await prisma.user.update({
+            where: { id: session.userId },
             data: { name },
-            select: { id: true },
+            select: { id: true, name: true },
         });
 
-        return { success: true };
+        return { success: true, data: res };
     } catch {
         return { success: false, message: 'Error something went wrong - updateProfile' };
     }
 };
 
-export const updatePassword = async ({ data }: { data: z.infer<typeof updatePasswordSchema> }) => {
+export const updatePassword = async (data: z.infer<typeof updatePasswordSchema>) => {
     try {
         const validated = updatePasswordSchema.safeParse(data);
 
@@ -48,7 +48,7 @@ export const updatePassword = async ({ data }: { data: z.infer<typeof updatePass
 
         const { password, current_password } = validated.data;
 
-        const user = await prisma.user.findUnique({ where: { id: session.id } });
+        const user = await prisma.user.findUnique({ where: { id: session.userId } });
 
         if (!user) {
             return { success: false, message: 'Error user not found' };
@@ -60,15 +60,15 @@ export const updatePassword = async ({ data }: { data: z.infer<typeof updatePass
 
         const pwHash = await bcrypt.hash(password, 9);
 
-        await prisma.user.update({ where: { id: session?.id }, data: { password: pwHash } });
+        const res = await prisma.user.update({ where: { id: session.userId }, data: { password: pwHash }, select: { id: true } });
 
-        return { success: true };
+        return { success: true, data: res };
     } catch {
         return { success: false, message: 'Error something went wrong - updateProfile' };
     }
 };
 
-export const deleteUserAccount = async ({ data }: { data: z.infer<typeof deleteUserAccountSchema> }) => {
+export const deleteUserAccount = async (data: z.infer<typeof deleteUserAccountSchema>) => {
     try {
         const validated = deleteUserAccountSchema.safeParse(data);
 
@@ -84,7 +84,7 @@ export const deleteUserAccount = async ({ data }: { data: z.infer<typeof deleteU
         const { password } = validated.data;
 
         const user = await prisma.user.findUnique({
-            where: { id: session.id },
+            where: { id: session.userId },
             select: { password: true, Members: { select: { organizationId: true }, where: { role: 'OWNER' } } },
         });
 
@@ -104,7 +104,7 @@ export const deleteUserAccount = async ({ data }: { data: z.infer<typeof deleteU
             },
         });
 
-        await prisma.user.delete({ where: { id: session?.id } });
+        await prisma.user.delete({ where: { id: session.userId } });
 
         return { success: true };
     } catch {

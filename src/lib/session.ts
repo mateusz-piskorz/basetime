@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
@@ -69,7 +70,6 @@ export async function deleteSession(sessionId?: string) {
 
 export const getSession = cache(async () => {
     const cookie = (await cookies()).get('session')?.value;
-
     const session = await decrypt(cookie);
 
     if (!cookie || !session?.sessionId) {
@@ -84,34 +84,13 @@ export const getSession = cache(async () => {
     if (!res) {
         return null;
     }
-    // refactor it to userId/sessionId
-    return { ...res.User, sessionId: res.id };
+    const { id, ...userInfo } = res.User;
+    return { ...userInfo, userId: res.User.id, sessionId: res.id, cookie };
 });
 
-// TODO: fix me
-/**
- * use in server-actions and route-handlers(trpc)
- */
-
-export const verifySession = async () => {
+export const setSessionCookie = async (cookie: string) => {
     try {
-        const cookie = (await cookies()).get('session')?.value;
-        const session = await decrypt(cookie);
-
-        if (!cookie || !session?.sessionId) {
-            return null;
-        }
-
         const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-        const res = await prisma.session.update({
-            where: { id: session.sessionId as string, expiresAt: { gte: new Date() } },
-            select: { id: true, User: { select: { id: true, email: true, name: true } } },
-            data: { expiresAt: expires },
-        });
-        if (!res) {
-            return null;
-        }
 
         const cookieStore = await cookies();
         cookieStore.set('session', cookie, {
@@ -122,9 +101,8 @@ export const verifySession = async () => {
             path: '/',
         });
 
-        return { ...res.User, sessionId: res.id };
-    } catch (e) {
-        console.log(e);
-        return null;
+        return { success: true };
+    } catch {
+        return { success: false };
     }
 };

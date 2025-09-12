@@ -28,7 +28,7 @@ export const TableTimeEntry = () => {
     const { data, refetch } = trpc.getTimeEntriesPaginated.useQuery({ memberId: id, limit, page, order_column, order_direction, q });
 
     const handleDeleteTimeEntries = async (timeEntryIds: string[]) => {
-        const res = await removeTimeEntries({ data: { timeEntryIds } });
+        const res = await removeTimeEntries({ timeEntryIds });
         if (!res.success) {
             toast.error(res.message);
             return;

@@ -35,7 +35,7 @@ export const SectionDeleteOrganization = () => {
         }
 
         toast.success('organization deleted successfully');
-        router.replace('/dashboard');
+        router.replace('/dashboard/organizations');
     };
 
     return (

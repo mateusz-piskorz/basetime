@@ -1,10 +1,10 @@
 'use client';
 
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarSeparator } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenuButton, SidebarSeparator } from '@/components/ui/sidebar';
 import { useMember } from '@/lib/hooks/use-member';
 import { ArrowLeftFromLineIcon, ChartNoAxesColumnIncreasing, Clock, FolderClosed, LayoutGrid, Settings, Users2 } from 'lucide-react';
+import Link from 'next/link';
 import { NavItem, NavMain } from './nav-main';
-import { NavOrganizations } from './nav-organizations';
 import { NavUser } from './nav-user';
 
 export function OrganizationSidebar() {
@@ -12,40 +12,35 @@ export function OrganizationSidebar() {
 
     const organizationNavItems: NavItem[] = [
         {
-            title: 'Back',
-            href: '/dashboard',
-            icon: ArrowLeftFromLineIcon,
-        },
-        {
-            title: 'Dashboard',
-            href: `/dashboard/organization/${organizationId}`,
+            title: 'Overview',
+            href: `/dashboard/${organizationId}/overview`,
             icon: LayoutGrid,
         },
         {
             title: 'Time',
-            href: `/dashboard/organization/${organizationId}/time`,
+            href: `/dashboard/${organizationId}/time`,
             icon: Clock,
         },
         {
             title: 'Reports',
-            href: `/dashboard/organization/${organizationId}/reports`,
+            href: `/dashboard/${organizationId}/reports`,
             icon: ChartNoAxesColumnIncreasing,
         },
         {
             title: 'Projects',
-            href: `/dashboard/organization/${organizationId}/projects`,
+            href: `/dashboard/${organizationId}/projects`,
             icon: FolderClosed,
         },
         {
             title: 'Members',
-            href: `/dashboard/organization/${organizationId}/members`,
+            href: `/dashboard/${organizationId}/members`,
             icon: Users2,
         },
         ...(member.role == 'OWNER'
             ? [
                   {
                       title: 'Settings',
-                      href: `/dashboard/organization/${organizationId}/settings`,
+                      href: `/dashboard/${organizationId}/settings`,
                       icon: Settings,
                   },
               ]
@@ -55,7 +50,12 @@ export function OrganizationSidebar() {
     return (
         <Sidebar collapsible="icon" variant="sidebar">
             <SidebarHeader>
-                <NavOrganizations organizationId={organizationId} />
+                <SidebarMenuButton size="lg" asChild>
+                    <Link href="/dashboard/user">
+                        <ArrowLeftFromLineIcon />
+                        <span>Back to main panel</span>
+                    </Link>
+                </SidebarMenuButton>
             </SidebarHeader>
 
             <SidebarSeparator className="mx-0 mb-2" />

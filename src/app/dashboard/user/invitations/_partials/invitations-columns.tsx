@@ -2,21 +2,21 @@
 
 import { DataTableColumnHeader } from '@/components/common/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/common/data-table/data-table-row-actions';
+import { InvitationStatusBadge } from '@/components/common/invitation-status-badge';
 import { dayjs } from '@/lib/dayjs';
 import { TrpcRouterOutput } from '@/lib/trpc/client';
 import { ColumnDef } from '@tanstack/react-table';
-import { InvitationStatusBadge } from './invitation-status-badge';
 
 export const getInvitationsColumns = ({
-    handleCancel,
+    handleAction,
 }: {
-    handleCancel: (invitationId: string) => void;
-}): ColumnDef<NonNullable<TrpcRouterOutput['getOrganizationInvitations']>['data'][number]>[] => [
+    handleAction: (args: { invitationId: string; action: 'accepted' | 'rejected' }) => void;
+}): ColumnDef<NonNullable<TrpcRouterOutput['getInvitations']>['data'][number]>[] => [
     {
-        accessorKey: 'user_email',
-        meta: { title: 'User Email' },
+        accessorKey: 'Organization_name',
+        meta: { title: 'Organization Name' },
         header: ({ column }) => <DataTableColumnHeader column={column} />,
-        cell: ({ row }) => row.original.User.email,
+        cell: ({ row }) => row.original.Organization.name,
         enableSorting: false,
     },
     {
@@ -36,7 +36,16 @@ export const getInvitationsColumns = ({
         cell: ({ row }) => (
             <DataTableRowActions
                 actions={[
-                    { disabled: !['SENT'].includes(row.original.status), label: 'Cancel invitation', action: () => handleCancel(row.original.id) },
+                    {
+                        disabled: !['SENT'].includes(row.original.status),
+                        label: 'Accept',
+                        action: () => handleAction({ invitationId: row.original.id, action: 'accepted' }),
+                    },
+                    {
+                        disabled: !['SENT'].includes(row.original.status),
+                        label: 'Reject',
+                        action: () => handleAction({ invitationId: row.original.id, action: 'rejected' }),
+                    },
                 ]}
             />
         ),

@@ -8,7 +8,7 @@ export default function Home() {
 
     return (
         <div className="h-[400px] p-4">
-            <Link className="inline-block rounded border p-4" href={user ? '/dashboard' : '/login'}>
+            <Link className="inline-block rounded border p-4" href={user ? '/dashboard/user/organizations' : '/login'}>
                 {user ? 'Dashboard' : 'Login'}
             </Link>
         </div>

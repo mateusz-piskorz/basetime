@@ -12,7 +12,7 @@ import {
     SidebarSeparator,
     useSidebar,
 } from '@/components/ui/sidebar';
-import { LayoutGrid } from 'lucide-react';
+import { BriefcaseBusiness, Send } from 'lucide-react';
 import Link from 'next/link';
 import { NavItem, NavMain } from './nav-main';
 import { NavUser } from './nav-user';
@@ -22,9 +22,14 @@ export function UserSidebar() {
 
     const mainNavItems: NavItem[] = [
         {
-            title: 'Dashboard',
-            href: '/dashboard',
-            icon: LayoutGrid,
+            title: 'Organizations',
+            href: '/dashboard/user/organizations',
+            icon: BriefcaseBusiness,
+        },
+        {
+            title: 'Invitations',
+            href: '/dashboard/user/invitations',
+            icon: Send,
         },
     ];
 
@@ -34,7 +39,7 @@ export function UserSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href="/dashboard" prefetch onClick={() => setOpenMobile(false)}>
+                            <Link href="/dashboard/user/organizations" prefetch onClick={() => setOpenMobile(false)}>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

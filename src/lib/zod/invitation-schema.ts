@@ -1,3 +1,4 @@
+import { INVITATION_STATUS } from '@prisma/client';
 import z from 'zod';
 
 export const createInvitationSchema = z.object({
@@ -15,9 +16,13 @@ export const cancelInvitationServerSchema = z.object({
 
 export const acceptInvitationServerSchema = z.object({
     invitationId: z.string().nonempty(),
-    organizationId: z.string(),
 });
 
 export const rejectInvitationServerSchema = z.object({
     invitationId: z.string().nonempty(),
+});
+
+export const updateInvitationStatusServerSchema = z.object({
+    invitationId: z.string().nonempty(),
+    status: z.nativeEnum(INVITATION_STATUS),
 });

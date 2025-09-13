@@ -12,15 +12,6 @@ export const appRouter = createTRPCRouter({
         return await prisma.session.findMany({ where: { userId: session.userId, expiresAt: { gte: new Date() } }, orderBy: { createdAt: 'asc' } });
     }),
 
-    getUserInvitations: publicProcedure.query(async () => {
-        const session = await getSession();
-        if (!session) return null;
-        return await prisma.invitation.findMany({
-            select: { id: true, status: true, createdAt: true, Organization: { select: { name: true, id: true } } },
-            where: { userId: session.userId },
-        });
-    }),
-
     getOrganization: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
         const session = await getSession();
         if (!session) return null;
@@ -154,31 +145,37 @@ export const appRouter = createTRPCRouter({
             return { totalPages, total, page, limit, data };
         }),
 
-    getOrganizationInvitations: publicProcedure
+    getInvitations: publicProcedure
         .input(
             z.object({
-                organizationId: z.string(),
+                q: z.string().nullish(),
+                organizationId: z.string().nullish(),
                 page: z.string().nullish(),
                 limit: z.string().nullish(),
                 order_column: z.string().nullish(),
                 order_direction: z.string().nullish(),
-                statusArr: z.array(z.nativeEnum(INVITATION_STATUS)).nullish(),
+                status: z.array(z.nativeEnum(INVITATION_STATUS)).nullish(),
             }),
         )
-        .query(async ({ input: { organizationId, limit: limitInput, page: pageInput, order_column, order_direction, statusArr } }) => {
+        .query(async ({ input: { q, organizationId, limit: limitInput, page: pageInput, order_column, order_direction, status } }) => {
             const limit = Number(limitInput) || 25;
             const page = Number(pageInput) || 1;
             const skip = (page - 1) * limit;
             const session = await getSession();
-            if (!session) return null;
-            const total = await prisma.invitation.count({ where: { organizationId } });
+            if (!session) return { totalPages: 0, total: 0, page, limit, data: [] };
+            const total = await prisma.invitation.count({ where: { ...(organizationId ? { organizationId } : { userId: session.userId }) } });
             const data = await prisma.invitation.findMany({
                 where: {
-                    organizationId,
-                    Organization: { Members: { some: { role: { in: ['MANAGER', 'OWNER'] }, User: { id: session.userId } } } },
-                    ...(statusArr?.length && { status: { in: statusArr } }),
+                    ...(q && { Organization: { name: { contains: q } } }),
+                    ...(organizationId
+                        ? {
+                              organizationId,
+                              Organization: { Members: { some: { role: { in: ['MANAGER', 'OWNER'] }, User: { id: session.userId } } } },
+                          }
+                        : { userId: session.userId }),
+                    ...(status?.length && { status: { in: status } }),
                 },
-                include: { User: { select: { name: true, email: true } } },
+                include: { User: { select: { name: true, email: true } }, Organization: { select: { name: true } } },
                 take: limit,
                 skip,
                 orderBy: order_column ? { [order_column]: order_direction } : { createdAt: 'desc' },

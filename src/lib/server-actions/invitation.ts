@@ -79,7 +79,10 @@ export const updateInvitationStatus = async (data: z.infer<typeof updateInvitati
                     ? { Organization: { Members: { some: { userId: session.userId, role: { in: ['OWNER'] } } } } }
                     : { userId: session.userId }),
             },
-            data: { status },
+            data: {
+                status,
+                ...(status === 'ACCEPTED' && { Organization: { update: { Members: { create: { role: 'EMPLOYEE', userId: session.userId } } } } }),
+            },
         });
 
         return { success: true, data: res };

@@ -1,17 +1,8 @@
 'use client';
 
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { SidebarMenu, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
 import { trpc } from '@/lib/trpc/client';
-import { ChevronsUpDown } from 'lucide-react';
-import Link from 'next/link';
+import { ArrowLeftFromLineIcon } from 'lucide-react';
 
 type Props = {
     organizationId: string;
@@ -28,7 +19,9 @@ export const NavOrganizations = ({ organizationId }: Props) => {
         // TODO: it might be select instead of dropdown
         <SidebarMenu>
             <SidebarMenuItem>
-                <DropdownMenu>
+                <ArrowLeftFromLineIcon />
+                <span>Back</span>
+                {/* <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <SidebarMenuButton size="lg" className="text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent group">
                             <p className="line-clamp-1">{selectedOrganization?.name}</p>
@@ -45,7 +38,7 @@ export const NavOrganizations = ({ organizationId }: Props) => {
                                 <DropdownMenuItem key={id} asChild>
                                     <Link
                                         className="flex items-center justify-between"
-                                        href={`/dashboard/organization/${id}`}
+                                        href={`/dashboard/${id}`}
                                         onClick={() => setOpenMobile(false)}
                                     >
                                         <p className="line-clamp-1">{name}</p>
@@ -54,7 +47,7 @@ export const NavOrganizations = ({ organizationId }: Props) => {
                             );
                         })}
                     </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu> */}
             </SidebarMenuItem>
         </SidebarMenu>
     );

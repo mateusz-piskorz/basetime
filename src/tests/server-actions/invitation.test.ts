@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { acceptInvitation, cancelInvitation, createInvitation, rejectInvitation } from '@/lib/server-actions/invitation';
+import { createInvitation, updateInvitationStatus } from '@/lib/server-actions/invitation';
 import { getSession } from '@/lib/session';
 
 const ownerUserId = 'idOwner';
@@ -83,26 +83,26 @@ test('createInvitation - already sent error', async () => {
 // cancelInvitation
 test('cancelInvitation - Error permission', async () => {
     const mockedGetSession = getSession as jest.Mock;
-    mockedGetSession.mockReturnValueOnce({ userId: managerUserId });
     const invitation = await prisma.invitation.findFirst();
     expect(invitation).not.toBe(null);
 
-    const res = await cancelInvitation({ invitationId: invitation!.id });
+    mockedGetSession.mockReturnValueOnce({ userId: managerUserId });
+    const res = await updateInvitationStatus({ invitationId: invitation!.id, status: 'CANCELED' });
     expect(res.success).toBe(false);
 
     mockedGetSession.mockReturnValueOnce({ userId: employeeUserId });
-    const res2 = await cancelInvitation({ invitationId: invitation!.id });
+    const res2 = await updateInvitationStatus({ invitationId: invitation!.id, status: 'CANCELED' });
     expect(res2.success).toBe(false);
 
     mockedGetSession.mockReturnValueOnce({ userId: exampleUserId });
-    const res3 = await cancelInvitation({ invitationId: invitation!.id });
+    const res3 = await updateInvitationStatus({ invitationId: invitation!.id, status: 'CANCELED' });
     expect(res3.success).toBe(false);
 });
 
 test('owner can cancelInvitation', async () => {
     const invitation = await prisma.invitation.findFirst();
     expect(invitation).not.toBe(null);
-    const res = await cancelInvitation({ invitationId: invitation!.id });
+    const res = await updateInvitationStatus({ invitationId: invitation!.id, status: 'CANCELED' });
     expect(res.success).toBe(true);
     expect(res.data?.status).toBe('CANCELED');
 });
@@ -112,7 +112,7 @@ test('acceptInvitation - error permission', async () => {
     await createInvitation({ email: exampleUserEmail, organizationId });
     const invitation = await prisma.invitation.findFirst({ where: { status: 'SENT' } });
     expect(invitation).not.toBe(null);
-    const res = await acceptInvitation({ invitationId: invitation!.id, organizationId });
+    const res = await updateInvitationStatus({ invitationId: invitation!.id, status: 'ACCEPTED' });
     expect(res.success).toBe(false);
 });
 
@@ -121,7 +121,7 @@ test('the invited person can acceptInvitation', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: exampleUserId });
     const invitation = await prisma.invitation.findFirst({ where: { status: 'SENT' } });
     expect(invitation).not.toBe(null);
-    const res = await acceptInvitation({ invitationId: invitation!.id, organizationId });
+    const res = await updateInvitationStatus({ invitationId: invitation!.id, status: 'ACCEPTED' });
     expect(res.success).toBe(true);
     expect(res.data?.status).toBe('ACCEPTED');
 });
@@ -135,7 +135,7 @@ test('rejectInvitation - error permission', async () => {
     await createInvitation({ email: exampleUserEmail, organizationId });
     const invitation = await prisma.invitation.findFirst({ where: { status: 'SENT' } });
     expect(invitation).not.toBe(null);
-    const res = await rejectInvitation({ invitationId: invitation!.id });
+    const res = await updateInvitationStatus({ invitationId: invitation!.id, status: 'REJECTED' });
     expect(res.success).toBe(false);
 });
 
@@ -144,7 +144,7 @@ test('the invited person can rejectInvitation', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: exampleUserId });
     const invitation = await prisma.invitation.findFirst({ where: { status: 'SENT' } });
     expect(invitation).not.toBe(null);
-    const res = await rejectInvitation({ invitationId: invitation!.id });
+    const res = await updateInvitationStatus({ invitationId: invitation!.id, status: 'REJECTED' });
     expect(res.success).toBe(true);
     expect(res.data?.status).toBe('REJECTED');
 });

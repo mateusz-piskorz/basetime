@@ -3,7 +3,7 @@
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { DataTable } from '@/components/common/data-table';
 import { useMember } from '@/lib/hooks/use-member';
-import { cancelInvitation } from '@/lib/server-actions/invitation';
+import { updateInvitationStatus } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
 import { INVITATION_STATUS } from '@prisma/client';
 import { useSearchParams } from 'next/navigation';
@@ -27,12 +27,12 @@ export const TableInvitations = ({ open, setOpen }: Props) => {
     const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
     const order_column = searchParams.get('order_column');
     const order_direction = searchParams.get('order_direction');
-    const statusArr = searchParams.getAll('status') as INVITATION_STATUS[];
+    const status = searchParams.getAll('status') as INVITATION_STATUS[];
 
-    const { data, refetch } = trpc.getOrganizationInvitations.useQuery({ organizationId, limit, page, order_column, order_direction, statusArr });
+    const { data, refetch } = trpc.getInvitations.useQuery({ organizationId, limit, page, order_column, order_direction, status });
 
     const handleCancelInvitation = async (invitationId: string) => {
-        const res = await cancelInvitation({ invitationId });
+        const res = await updateInvitationStatus({ invitationId, status: 'CANCELED' });
         if (!res.success) {
             toast.error(res.message);
             return;

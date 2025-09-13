@@ -14,7 +14,7 @@ export const NotFound = ({ title, description }: Props) => {
             <h1 className="text-2xl">{title}</h1>
             {description && <p className="text-muted-foreground max-w-[500px]">{description}</p>}
             <Button>
-                <Link href="/dashboard">Return to dashboard</Link>
+                <Link href="/dashboard/user/organizations">Return to dashboard</Link>
             </Button>
         </div>
     );

@@ -58,7 +58,7 @@ export function NavUser() {
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem asChild>
-                                <Link className="block w-full" href="/dashboard/settings" prefetch onClick={() => setOpenMobile(false)}>
+                                <Link className="block w-full" href="/dashboard/user/settings" prefetch onClick={() => setOpenMobile(false)}>
                                     <Settings className="mr-2" />
                                     Settings
                                 </Link>

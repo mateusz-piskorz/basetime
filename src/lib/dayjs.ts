@@ -1,3 +1,4 @@
+import { WEEK_START } from '@prisma/client';
 import dayjsLib from 'dayjs';
 import advancedFormat from 'dayjs/plugin/advancedFormat';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
@@ -12,9 +13,10 @@ dayjsLib.extend(isSameOrBefore);
 dayjsLib.extend(isSameOrAfter);
 dayjsLib.extend(relativeTime);
 dayjsLib.extend(updateLocale);
-dayjsLib.updateLocale('en', {
-    weekStart: 1,
-});
+
+export function createDayjs(weekStart: WEEK_START) {
+    dayjsLib.updateLocale('en', { weekStart: weekStart === 'MONDAY' ? 1 : undefined });
+    return dayjsLib;
+}
 
 export const dayjs = dayjsLib;
-export { Dayjs } from 'dayjs';

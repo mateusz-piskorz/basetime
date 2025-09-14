@@ -1,7 +1,8 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
-import { dayjs } from '@/lib/dayjs';
+
+import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { cn, formatMinutes } from '@/lib/utils/common';
@@ -15,6 +16,8 @@ type Props = {
 };
 
 export const Last7Days = ({ scope }: Props) => {
+    const { dayjs } = useDayjs();
+
     const { organizationId, member } = useMember();
     const { data } = trpc.getTimeEntries.useQuery({
         organizationId,
@@ -30,8 +33,9 @@ export const Last7Days = ({ scope }: Props) => {
                 end: dayjs().subtract(6, 'day').toDate(),
                 granularity: 'day',
                 nameFormatter: ({ index }) => (index === 0 ? 'Today' : index === 1 ? 'Yesterday' : `${index + 1} days ago`),
+                dayjs,
             }),
-        [data],
+        [data, dayjs],
     );
 
     return (

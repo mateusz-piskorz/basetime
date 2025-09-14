@@ -2,6 +2,7 @@
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { DataTable } from '@/components/common/data-table';
+import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { updateInvitationStatus } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export const TableInvitations = ({ open, setOpen }: Props) => {
+    const { dayjs } = useDayjs();
     const { organizationId } = useMember();
     const searchParams = useSearchParams();
 
@@ -47,6 +49,7 @@ export const TableInvitations = ({ open, setOpen }: Props) => {
             setSelectedId(undefined);
             handleCancelInvitation(invitationId);
         },
+        dayjs,
     });
 
     return (

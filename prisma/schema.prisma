@@ -32,6 +32,11 @@ enum CURRENCY {
   USD
 }
 
+enum WEEK_START {
+  MONDAY
+  SUNDAY
+}
+
 model Session {
   id        String   @id @default(cuid())
   expiresAt DateTime
@@ -57,11 +62,13 @@ model User {
 }
 
 model Organization {
-  id        String   @id @default(cuid())
-  name      String
-  currency  CURRENCY
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                      String     @id @default(cuid())
+  name                    String
+  currency                CURRENCY
+  roundUpMinutesThreshold Int        @default(1)
+  weekStart               WEEK_START @default(MONDAY)
+  createdAt               DateTime   @default(now())
+  updatedAt               DateTime   @updatedAt
 
   Members     Member[]
   Invitations Invitation[]

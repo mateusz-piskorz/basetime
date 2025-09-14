@@ -11,7 +11,7 @@ import { upsertOrganization } from '@/lib/server-actions/organization';
 import { trpc } from '@/lib/trpc/client';
 import { upsertOrganizationSchema } from '@/lib/zod/organization-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CURRENCY } from '@prisma/client';
+import { CURRENCY, WEEK_START } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -60,12 +60,23 @@ const FormComponent = ({ organizationId, defaultValues }: Props) => {
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" style={{ marginBottom: '16px' }}>
                 <InputField form={form} type="text" name="name" label="Name" className="max-w-[300px]" />
+
+                <InputField form={form} type="number" name="roundUpMinutesThreshold" label="round Up Minutes Threshold" className="max-w-[300px]" />
+
                 <SelectField
                     placeholder="Currency"
                     form={form}
                     name="currency"
                     label="Currency"
                     selectOptions={Object.values(CURRENCY).map((e) => ({ label: e, value: e }))}
+                />
+
+                <SelectField
+                    placeholder="Week Start"
+                    form={form}
+                    name="weekStart"
+                    label="Week Start"
+                    selectOptions={Object.values(WEEK_START).map((e) => ({ label: e, value: e }))}
                 />
 
                 <Button disabled={form.formState.isSubmitting} type="submit">

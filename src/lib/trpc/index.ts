@@ -1,3 +1,4 @@
+import { dayjs } from '@/lib/dayjs';
 import { formatMinutes, getDurationInMinutes, sumTimeEntries } from '@/lib/utils/common';
 import { INVITATION_STATUS, MEMBER_ROLE } from '@prisma/client';
 import z from 'zod';
@@ -153,7 +154,7 @@ export const appRouter = createTRPCRouter({
             });
 
             const data = res.map((timeEntry) => {
-                return { ...timeEntry, duration: formatMinutes(getDurationInMinutes({ start: timeEntry.start, end: timeEntry.end })) };
+                return { ...timeEntry, duration: formatMinutes(getDurationInMinutes({ start: timeEntry.start, end: timeEntry.end, dayjs })) };
             });
 
             const totalPages = Math.ceil(total / limit);
@@ -228,7 +229,7 @@ export const appRouter = createTRPCRouter({
 
         return res?.Members.map((member) => {
             const hourlyRate = member.HourlyRates?.length > 0 ? member.HourlyRates[0].value : undefined;
-            return { ...member, loggedTime: formatMinutes(sumTimeEntries(member.TimeEntries)), hourlyRate };
+            return { ...member, loggedTime: formatMinutes(sumTimeEntries({ entries: member.TimeEntries, dayjs })), hourlyRate };
         });
     }),
 
@@ -253,7 +254,7 @@ export const appRouter = createTRPCRouter({
             },
         });
         return res?.Projects.map((project) => {
-            const loggedMinutes = sumTimeEntries(project.TimeEntries);
+            const loggedMinutes = sumTimeEntries({ entries: project.TimeEntries, dayjs });
             const percentCompleted = project.estimatedMinutes ? ((loggedMinutes / project.estimatedMinutes) * 100).toFixed(2) : undefined;
 
             return { ...project, loggedTime: formatMinutes(loggedMinutes), loggedMinutes, percentCompleted };
@@ -289,7 +290,7 @@ export const appRouter = createTRPCRouter({
             });
 
             return res?.Projects.map((project) => {
-                return { ...project, loggedTime: formatMinutes(sumTimeEntries(project.TimeEntries)) };
+                return { ...project, loggedTime: formatMinutes(sumTimeEntries({ entries: project.TimeEntries, dayjs })) };
             });
         }),
 
@@ -309,7 +310,7 @@ export const appRouter = createTRPCRouter({
 
         return res.map((organization) => {
             const ownership = organization.Members.length ? organization.Members[0] : null;
-            return { ...organization, loggedTime: formatMinutes(sumTimeEntries(organization.TimeEntries)), ownership };
+            return { ...organization, loggedTime: formatMinutes(sumTimeEntries({ entries: organization.TimeEntries, dayjs })), ownership };
         });
     }),
 });

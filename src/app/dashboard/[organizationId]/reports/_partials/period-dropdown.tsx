@@ -3,7 +3,7 @@
 import { CalendarInput } from '@/components/common/calendar-input';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { dayjs } from '@/lib/dayjs';
+import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { CalendarClockIcon } from 'lucide-react';
 import { useState } from 'react';
 
@@ -15,6 +15,7 @@ type Props = {
 };
 
 export const PeriodDropdown = ({ endDate, setEndDate, startDate, setStartDate }: Props) => {
+    const { dayjs } = useDayjs();
     const [open, setOpen] = useState(false);
     return (
         <Popover open={open} onOpenChange={setOpen}>

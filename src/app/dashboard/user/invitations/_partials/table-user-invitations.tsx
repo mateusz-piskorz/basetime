@@ -4,6 +4,7 @@ import { DataTable } from '@/components/common/data-table-new';
 import { DataTableViewOptions } from '@/components/common/data-table-new/data-table-view-options';
 import { MultiOptionsFilterState } from '@/components/common/multi-options-filter-state';
 import { Input } from '@/components/ui/input';
+import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { useTable } from '@/lib/hooks/use-table';
 import { updateInvitationStatus } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
@@ -15,6 +16,7 @@ import { toast } from 'sonner';
 import { getInvitationsColumns } from './invitations-columns';
 
 export const TableUserInvitations = () => {
+    const { dayjs } = useDayjs();
     const trpcUtils = trpc.useUtils();
     const searchParams = useSearchParams();
     const page = searchParams.get('page');
@@ -37,36 +39,43 @@ export const TableUserInvitations = () => {
             refetch();
             trpcUtils.getUserOrganizations.refetch();
         },
+        dayjs,
     });
 
     const { table } = useTable({ columns, data: invitations?.data });
 
     return (
         <>
-            <div className="flex flex-wrap justify-between">
-                <div className="flex items-center gap-4">
-                    <Input
-                        placeholder="Search"
-                        onChange={debounce((event) => setQ(event.target.value), 300)}
-                        defaultValue={q || ''}
-                        className="min-w-[150px] rounded md:max-w-xs"
-                    />
+            <DataTable
+                toolbar={
+                    <div className="flex flex-wrap justify-between">
+                        <div className="flex items-center gap-4">
+                            <Input
+                                placeholder="Search"
+                                onChange={debounce((event) => setQ(event.target.value), 300)}
+                                defaultValue={q || ''}
+                                className="min-w-[150px] rounded md:max-w-xs"
+                            />
 
-                    <div className="flex items-center gap-2">
-                        <MultiOptionsFilterState
-                            options={Object.values(INVITATION_STATUS).map((val) => ({
-                                label: val,
-                                value: val,
-                            }))}
-                            setValues={(val) => setStatus(val as INVITATION_STATUS[])}
-                            values={status}
-                            title="Status"
-                        />
+                            <div className="flex items-center gap-2">
+                                <MultiOptionsFilterState
+                                    options={Object.values(INVITATION_STATUS).map((val) => ({
+                                        label: val,
+                                        value: val,
+                                    }))}
+                                    setValues={(val) => setStatus(val as INVITATION_STATUS[])}
+                                    values={status}
+                                    title="Status"
+                                />
+                            </div>
+                        </div>
+                        <DataTableViewOptions table={table} />
                     </div>
-                </div>
-                <DataTableViewOptions table={table} />
-            </div>
-            <DataTable table={table} className="my-4" totalPages={invitations?.totalPages} />
+                }
+                table={table}
+                className="my-4"
+                totalPages={invitations?.totalPages}
+            />
         </>
     );
 };

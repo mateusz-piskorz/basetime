@@ -1,6 +1,6 @@
 'use client';
 
-import { DataTableColumnHeader } from '@/components/common/data-table/data-table-column-header';
+import { DataTableColumnHeader } from '@/components/common/data-table-new/data-table-column-header';
 import { DataTableRowActions } from '@/components/common/data-table/data-table-row-actions';
 import { Checkbox } from '@/components/ui/checkbox';
 import { dayjs } from '@/lib/dayjs';

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
@@ -11,7 +13,7 @@ import { removeTimeEntries } from '@/lib/server-actions/time-entry';
 import { trpc } from '@/lib/trpc/client';
 import { SortingState } from '@tanstack/react-table';
 import { debounce } from 'lodash';
-import { User2 } from 'lucide-react';
+import { Trash2, User2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -64,6 +66,7 @@ export const TableTimeEntry = () => {
         limit,
         memberIds: members,
         projectIds: projects,
+        q,
     });
 
     const columns = getTimeEntryColumns({
@@ -81,6 +84,8 @@ export const TableTimeEntry = () => {
     });
 
     const { table } = useTable({ columns, data: timeEntries?.data, sorting, setSorting });
+
+    const selected = table.getFilteredSelectedRowModel().rows;
 
     return (
         <>
@@ -116,80 +121,78 @@ export const TableTimeEntry = () => {
 
             <DataTable
                 toolbar={
-                    <div className="flex flex-wrap justify-between">
-                        <div className="flex items-center gap-4">
-                            <Input
-                                placeholder="Search"
-                                onChange={debounce((event) => setQ(event.target.value), 300)}
-                                defaultValue={q || ''}
-                                className="min-w-[150px] rounded md:max-w-xs"
-                            />
+                    <>
+                        <div className="flex flex-wrap justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                                <Input
+                                    placeholder="Search"
+                                    onChange={debounce((event) => setQ(event.target.value), 300)}
+                                    defaultValue={q || ''}
+                                    className="min-w-[150px] rounded md:max-w-xs"
+                                />
 
-                            <div className="flex items-center gap-2">
-                                <MultiOptionsFilterState
-                                    options={(projectsData || []).map(({ id, name, color }) => ({
-                                        label: (
-                                            <>
-                                                <span
-                                                    className="mr-2 inline-block h-2 w-2 rounded-full"
-                                                    style={{ backgroundColor: projectColor[color] }}
-                                                />
-                                                {name}
-                                            </>
-                                        ),
-                                        value: id,
-                                    }))}
-                                    setValues={(val) => setProjects(val)}
-                                    values={projects}
-                                    title="Projects"
-                                />
-                                <MultiOptionsFilterState
-                                    options={(membersData || []).map(({ User, id }) => ({
-                                        label: `${User.name} ${member.id === id ? '(You)' : ''}`,
-                                        value: id,
-                                        icon: User2,
-                                    }))}
-                                    setValues={(val) => setMembers(val)}
-                                    values={members}
-                                    title="Members"
-                                />
+                                <div className="flex items-center gap-2">
+                                    <MultiOptionsFilterState
+                                        options={(projectsData || []).map(({ id, name, color }) => ({
+                                            label: (
+                                                <>
+                                                    <span
+                                                        className="mr-2 inline-block h-2 w-2 rounded-full"
+                                                        style={{ backgroundColor: projectColor[color] }}
+                                                    />
+                                                    {name}
+                                                </>
+                                            ),
+                                            value: id,
+                                        }))}
+                                        setValues={(val) => setProjects(val)}
+                                        values={projects}
+                                        title="Projects"
+                                    />
+                                    <MultiOptionsFilterState
+                                        options={(membersData || []).map(({ User, id }) => ({
+                                            label: `${User.name} ${member.id === id ? '(You)' : ''}`,
+                                            value: id,
+                                            icon: User2,
+                                        }))}
+                                        setValues={(val) => setMembers(val)}
+                                        values={members}
+                                        title="Members"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <DataTableViewOptions table={table} />
+                                <Button
+                                    onClick={() => {
+                                        setSelectedId(undefined);
+                                        setOpen(true);
+                                    }}
+                                >
+                                    Add new timeEntry
+                                </Button>
                             </div>
                         </div>
-                        <div className="flex gap-4">
-                            <DataTableViewOptions table={table} />
-                            <Button
-                                onClick={() => {
-                                    setSelectedId(undefined);
-                                    setOpen(true);
-                                }}
-                            >
-                                Add new timeEntry
-                            </Button>
-                        </div>
-                    </div>
+                        {selected.length > 0 && (
+                            <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                                <p className="whitespace-nowrap">{selected.length} selected</p>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                        setSelectedIds(selected.map((e) => (e.original as any).id));
+                                        setOpenConfirmMulti(true);
+                                    }}
+                                >
+                                    <Trash2 color="red" />
+                                </Button>
+                            </div>
+                        )}
+                    </>
                 }
                 table={table}
                 totalPages={timeEntries?.totalPages}
             />
-            {/* 
-            <DataTable
-                className="rounded-none"
-                totalPages={data?.totalPages}
-                data={data?.data ?? []}
-                columns={columns}
-                onSelectedRemove={(ids) => {
-                    setSelectedIds(ids);
-                    setOpenConfirmMulti(true);
-                }}
-                addNewRecord={{
-                    label: 'Add new timeEntry',
-                    action: () => {
-                        setSelectedId(undefined);
-                        setOpen(true);
-                    },
-                }}
-                filters={[]}
-            /> */}
         </>
     );
 };

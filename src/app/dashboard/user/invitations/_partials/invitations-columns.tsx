@@ -3,14 +3,16 @@
 import { DataTableColumnHeader } from '@/components/common/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/common/data-table/data-table-row-actions';
 import { InvitationStatusBadge } from '@/components/common/invitation-status-badge';
-import { dayjs } from '@/lib/dayjs';
+
 import { TrpcRouterOutput } from '@/lib/trpc/client';
 import { ColumnDef } from '@tanstack/react-table';
 
 export const getInvitationsColumns = ({
     handleAction,
+    dayjs,
 }: {
     handleAction: (args: { invitationId: string; action: 'accepted' | 'rejected' }) => void;
+    dayjs: typeof import('dayjs');
 }): ColumnDef<NonNullable<TrpcRouterOutput['getInvitations']>['data'][number]>[] => [
     {
         accessorKey: 'Organization_name',

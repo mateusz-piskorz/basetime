@@ -20,20 +20,22 @@ export const upsertOrganization = async (data: z.infer<typeof upsertOrganization
             return { success: false, message: 'Error validating fields' };
         }
 
-        const { currency, name, organizationId } = validated.data;
+        const { currency, name, organizationId, roundUpMinutesThreshold, weekStart } = validated.data;
 
         let res;
         if (organizationId) {
             res = await prisma.organization.update({
                 where: { id: organizationId, Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } },
-                data: { currency, name },
+                data: { currency, name, roundUpMinutesThreshold, weekStart },
             });
         } else {
             res = await prisma.organization.create({
                 data: {
                     currency: currency || 'EUR',
-                    name: name || `${session.name}'s organization`,
+                    name: name,
                     Members: { create: { role: 'OWNER', userId: session.userId } },
+                    roundUpMinutesThreshold,
+                    weekStart,
                 },
             });
         }

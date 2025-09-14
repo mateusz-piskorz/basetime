@@ -7,8 +7,8 @@ export default function Home() {
     const { user } = useAuth();
 
     return (
-        <div className="h-[400px] p-4">
-            <Link className="inline-block rounded border p-4" href={user ? '/dashboard/user/organizations' : '/login'}>
+        <div className="flex h-[400px] items-center justify-center">
+            <Link className="mx-auto inline-block rounded border p-4" href={user ? '/dashboard/user/organizations' : '/login'}>
                 {user ? 'Dashboard' : 'Login'}
             </Link>
         </div>

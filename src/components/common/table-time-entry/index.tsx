@@ -7,6 +7,7 @@ import { DataTable } from '@/components/common/data-table-new';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { projectColor } from '@/lib/constants/project-color';
+import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { useTable } from '@/lib/hooks/use-table';
 import { removeTimeEntries } from '@/lib/server-actions/time-entry';
@@ -23,6 +24,7 @@ import { MultiOptionsFilterState } from '../multi-options-filter-state';
 import { getTimeEntryColumns } from './time-entry-columns';
 
 export const TableTimeEntry = () => {
+    const { dayjs } = useDayjs();
     const { organizationId, member } = useMember();
     const [members, setMembers] = useState<string[]>([]);
     const [projects, setProjects] = useState<string[]>([]);
@@ -81,6 +83,7 @@ export const TableTimeEntry = () => {
             setSelectedId(timeEntry.id);
             setOpen(true);
         },
+        dayjs,
     });
 
     const { table } = useTable({ columns, data: timeEntries?.data, sorting, setSorting });

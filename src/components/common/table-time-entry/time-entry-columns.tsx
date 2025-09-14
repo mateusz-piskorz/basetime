@@ -3,16 +3,18 @@
 import { DataTableColumnHeader } from '@/components/common/data-table-new/data-table-column-header';
 import { DataTableRowActions } from '@/components/common/data-table/data-table-row-actions';
 import { Checkbox } from '@/components/ui/checkbox';
-import { dayjs } from '@/lib/dayjs';
+
 import { TrpcRouterOutput } from '@/lib/trpc/client';
 import { ColumnDef } from '@tanstack/react-table';
 
 export const getTimeEntryColumns = ({
     handleEditTimeEntry,
     handleDeleteTimeEntry,
+    dayjs,
 }: {
     handleEditTimeEntry: (TimeEntryId: string) => void;
     handleDeleteTimeEntry: (TimeEntryId: string) => void;
+    dayjs: typeof import('dayjs');
 }): ColumnDef<NonNullable<TrpcRouterOutput['getTimeEntriesPaginated']>['data'][number]>[] => [
     {
         id: 'select',

@@ -1,7 +1,8 @@
 'use client';
 
 import { TimeEntryReportChart } from '@/components/common/time-entry-report-chart';
-import { dayjs } from '@/lib/dayjs';
+
+import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { timeEntrySegments } from '@/lib/utils/timeEntrySegments';
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export const ThisWeekChart = ({ scope }: Props) => {
+    const { dayjs } = useDayjs();
     const { organizationId, member } = useMember();
     const { data } = trpc.getTimeEntries.useQuery({
         organizationId,
@@ -30,8 +32,9 @@ export const ThisWeekChart = ({ scope }: Props) => {
                 end: dayjs().endOf('week').toDate(),
                 granularity: 'day',
                 nameFormatter: ({ date }) => dayjs(date).format('dddd'),
+                dayjs,
             }),
-        [data],
+        [data, dayjs],
     );
 
     return (

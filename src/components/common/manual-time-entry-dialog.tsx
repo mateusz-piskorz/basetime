@@ -6,7 +6,7 @@ import { TimeEntrySelectField } from '@/components/common/form-fields/time-entry
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
-import { dayjs } from '@/lib/dayjs';
+import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { manualTimeEntry } from '@/lib/server-actions/time-entry';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
@@ -29,6 +29,7 @@ type Props = {
 };
 
 export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSuccess }: Props) => {
+    const { dayjs } = useDayjs();
     const trpcUtils = trpc.useUtils();
     const { organizationId } = useMember();
     const form = useForm<z.infer<typeof manualTimeEntrySchema>>({
@@ -55,15 +56,17 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
                       startTime: dayjs(ste.start).format('HH:mm'),
                       endDate: ste.end ? new Date(ste.end) : new Date(),
                       endTime: dayjs(ste.end || new Date()).format('HH:mm'),
-                      duration: formatMinutes(getDurationInMinutes({ start: new Date(ste.start), end: ste.end ? new Date(ste.end) : new Date() })),
+                      duration: formatMinutes(
+                          getDurationInMinutes({ dayjs, start: new Date(ste.start), end: ste.end ? new Date(ste.end) : new Date() }),
+                      ),
                   }
                 : undefined,
         );
     }, [selectedTimeEntry, form.formState.isSubmitSuccessful]);
 
     async function onSubmit({ endDate, endTime, startDate, startTime, name, projectId }: z.infer<typeof manualTimeEntrySchema>) {
-        const start = prepareDateTime(startDate, startTime);
-        const end = prepareDateTime(endDate, endTime);
+        const start = prepareDateTime({ date: startDate, time: startTime, dayjs });
+        const end = prepareDateTime({ date: endDate, time: endTime, dayjs });
 
         const res = await manualTimeEntry({
             organizationId,
@@ -86,19 +89,16 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
     }
 
     const updateDurationField = () => {
-        const startDate = dayjs(prepareDateTime(form.getValues('startDate'), form.getValues('startTime')));
-        const endDate = dayjs(prepareDateTime(form.getValues('endDate'), form.getValues('endTime')));
+        const startDate = dayjs(prepareDateTime({ dayjs, date: form.getValues('startDate'), time: form.getValues('startTime') }));
+        const endDate = dayjs(prepareDateTime({ dayjs, date: form.getValues('endDate'), time: form.getValues('endTime') }));
+
         const minutesDiff = endDate.diff(startDate, 'm');
         form.setValue('duration', formatMinutes(minutesDiff));
     };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent
-            // onOpenAutoFocus={(e) => {
-            //     e.preventDefault();
-            // }}
-            >
+            <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{selectedTimeEntry ? 'Update' : 'Create'} TimeEntry</DialogTitle>
                     <DialogDescription>Fill in the details below to {selectedTimeEntry ? 'Update' : 'Create'} TimeEntry</DialogDescription>
@@ -132,7 +132,7 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
                                 onBlur={(minutes) => {
                                     const endDate = form.getValues('endDate');
                                     const endTime = form.getValues('endTime');
-                                    const startDate = dayjs(prepareDateTime(endDate, endTime)).add(-(minutes || 90), 'm');
+                                    const startDate = dayjs(prepareDateTime({ date: endDate, time: endTime, dayjs })).add(-(minutes || 90), 'm');
 
                                     form.setValue('startDate', startDate.toDate());
                                     form.setValue('startTime', startDate.format('HH:mm'));

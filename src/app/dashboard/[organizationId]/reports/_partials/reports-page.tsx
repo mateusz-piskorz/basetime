@@ -2,11 +2,10 @@
 
 import { DashboardHeading } from '@/components/common/dashboard-heading';
 import { MultiOptionsFilterState } from '@/components/common/multi-options-filter-state';
-
 import { TimeEntryReportChart } from '@/components/common/time-entry-report-chart';
 import { Card, CardContent } from '@/components/ui/card';
 import { projectColor } from '@/lib/constants/project-color';
-import { dayjs } from '@/lib/dayjs';
+import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { formatMinutes, sumBillableAmount, sumTimeEntries } from '@/lib/utils/common';
@@ -16,7 +15,8 @@ import { useMemo, useState } from 'react';
 import { PeriodDropdown } from './period-dropdown';
 
 export const ReportsPage = () => {
-    const { organizationId, member } = useMember();
+    const { dayjs } = useDayjs();
+    const { organizationId, member, roundUpMinutesThreshold } = useMember();
 
     const [startDate, setStartDate] = useState(dayjs().startOf('week').toDate());
     const [endDate, setEndDate] = useState(dayjs().endOf('week').toDate());
@@ -45,19 +45,22 @@ export const ReportsPage = () => {
             start: startDate,
             end: endDate,
             granularity,
+            dayjs,
         });
-    }, [timeEntriesData, startDate, endDate]);
+    }, [timeEntriesData, startDate, endDate, dayjs]);
 
-    const totalMinutes = useMemo(() => sumTimeEntries(timeEntriesData?.timeEntries || []), [timeEntriesData]);
+    const totalMinutes = useMemo(() => sumTimeEntries({ entries: timeEntriesData?.timeEntries || [], dayjs }), [timeEntriesData, dayjs]);
     const billableAmount = useMemo(
         () =>
-            sumBillableAmount(
-                timeEntriesData?.timeEntriesByMembers?.map((member) => ({
-                    hourlyRate: member.hourlyRate || 0,
-                    minutes: sumTimeEntries(member.TimeEntries),
-                })) || [],
-            ),
-        [timeEntriesData],
+            sumBillableAmount({
+                roundUpMinutesThreshold,
+                members:
+                    timeEntriesData?.timeEntriesByMembers?.map((member) => ({
+                        hourlyRate: member.hourlyRate || 0,
+                        minutes: sumTimeEntries({ entries: member.TimeEntries, dayjs }),
+                    })) || [],
+            }),
+        [timeEntriesData, roundUpMinutesThreshold, dayjs],
     );
 
     return (

@@ -1,9 +1,7 @@
-import { dayjs, Dayjs } from '@/lib/dayjs';
 import { clsx, type ClassValue } from 'clsx';
+import { Dayjs } from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 
-/** 0-60, amount of minutes rounded up to full hour (0=everything rounded up) */
-const roundUpMinutesThreshold = 1;
 /** 0-60, amount of seconds rounded up to full minute (0=everything rounded up) */
 const roundUpSecondsThreshold = 0;
 
@@ -11,7 +9,15 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-const calculateBillableAmount = ({ hourlyRate, minutes }: { minutes: number; hourlyRate: number }) => {
+const calculateBillableAmount = ({
+    hourlyRate,
+    minutes,
+    roundUpMinutesThreshold,
+}: {
+    minutes: number;
+    hourlyRate: number;
+    roundUpMinutesThreshold: number;
+}) => {
     const fullHours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
 
@@ -25,9 +31,15 @@ const calculateBillableAmount = ({ hourlyRate, minutes }: { minutes: number; hou
     return hours * hourlyRate;
 };
 
-export const sumBillableAmount = (members: { minutes: number; hourlyRate: number }[]) => {
+export const sumBillableAmount = ({
+    members,
+    roundUpMinutesThreshold,
+}: {
+    roundUpMinutesThreshold: number;
+    members: { minutes: number; hourlyRate: number }[];
+}) => {
     return members.reduce((sum, { hourlyRate, minutes }) => {
-        return sum + calculateBillableAmount({ hourlyRate, minutes });
+        return sum + calculateBillableAmount({ hourlyRate, minutes, roundUpMinutesThreshold });
     }, 0);
 };
 
@@ -40,7 +52,15 @@ export const formatMinutes = (value: number) => {
     return `${hours}h ${min}min`;
 };
 
-export const getDurationInMinutes = ({ start, end }: { start: Date | string | Dayjs; end: Date | string | Dayjs | null }) => {
+export const getDurationInMinutes = ({
+    start,
+    end,
+    dayjs,
+}: {
+    dayjs: typeof import('dayjs');
+    start: Date | string | Dayjs;
+    end: Date | string | Dayjs | null;
+}) => {
     const diffSeconds = dayjs(end || Date.now()).diff(dayjs(start), 's');
 
     const fullMinutes = Math.floor(diffSeconds / 60);
@@ -60,13 +80,13 @@ type Input = {
     end: Date | string | null;
 }[];
 
-export const sumTimeEntries = (entries: Input) => {
+export const sumTimeEntries = ({ entries, dayjs }: { entries: Input; dayjs: typeof import('dayjs') }) => {
     return entries.reduce((sum, entry) => {
-        return sum + getDurationInMinutes({ start: entry.start, end: entry.end });
+        return sum + getDurationInMinutes({ start: entry.start, end: entry.end, dayjs });
     }, 0);
 };
 
-export const prepareDateTime = (date: string | Date | Dayjs, time: string) => {
+export const prepareDateTime = ({ date, dayjs, time }: { date: string | Date | Dayjs; time: string; dayjs: typeof import('dayjs') }) => {
     const [hours, minutes] = time.split(':');
     const prepared = dayjs(date).hour(Number(hours)).minute(Number(minutes)).second(0).millisecond(0);
     return prepared.toDate();

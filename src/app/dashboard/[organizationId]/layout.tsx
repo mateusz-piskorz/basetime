@@ -3,6 +3,7 @@
 import { NotFound } from '@/components/common/not-found';
 import { SpinLoader } from '@/components/common/spin-loader';
 import { AppLayout } from '@/layouts/dashboard/app-layout';
+import { DayjsProvider } from '@/lib/hooks/use-dayjs';
 import { MemberProvider } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { useParams } from 'next/navigation';
@@ -37,8 +38,10 @@ export default function OrganizationDashboardLayout({
     }
 
     return (
-        <MemberProvider member={data.member} currency={data.currency} organizationId={data.id}>
-            <AppLayout type="organization">{children}</AppLayout>
+        <MemberProvider member={data.member} currency={data.currency} organizationId={data.id} roundUpMinutesThreshold={data.roundUpMinutesThreshold}>
+            <DayjsProvider weekStart={data.weekStart}>
+                <AppLayout type="organization">{children}</AppLayout>
+            </DayjsProvider>
         </MemberProvider>
     );
 }

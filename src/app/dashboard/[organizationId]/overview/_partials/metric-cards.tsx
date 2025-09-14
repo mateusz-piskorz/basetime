@@ -2,7 +2,8 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { dayjs } from '@/lib/dayjs';
+
+import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { formatMinutes, sumBillableAmount, sumTimeEntries } from '@/lib/utils/common';
@@ -15,7 +16,8 @@ type Props = {
 };
 
 export const MetricCards = ({ scope, setScope }: Props) => {
-    const { member, organizationId } = useMember();
+    const { dayjs } = useDayjs();
+    const { member, organizationId, roundUpMinutesThreshold } = useMember();
 
     const { data } = trpc.getTimeEntries.useQuery({
         organizationId,
@@ -24,14 +26,18 @@ export const MetricCards = ({ scope, setScope }: Props) => {
         endDate: dayjs().endOf('week').toDate().toString(),
     });
 
-    const totalMinutes = useMemo(() => sumTimeEntries(data?.timeEntries || []), [data]);
+    const totalMinutes = useMemo(() => sumTimeEntries({ entries: data?.timeEntries || [], dayjs }), [data, dayjs]);
     const billableAmount = useMemo(
         () =>
-            sumBillableAmount(
-                data?.timeEntriesByMembers?.map((member) => ({ hourlyRate: member.hourlyRate || 0, minutes: sumTimeEntries(member.TimeEntries) })) ||
-                    [],
-            ),
-        [data],
+            sumBillableAmount({
+                roundUpMinutesThreshold,
+                members:
+                    data?.timeEntriesByMembers?.map((member) => ({
+                        hourlyRate: member.hourlyRate || 0,
+                        minutes: sumTimeEntries({ entries: member.TimeEntries, dayjs }),
+                    })) || [],
+            }),
+        [data, roundUpMinutesThreshold, dayjs],
     );
 
     return (

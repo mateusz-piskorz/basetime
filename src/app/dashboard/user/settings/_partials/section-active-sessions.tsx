@@ -4,8 +4,8 @@ import { DashboardHeading } from '@/components/common/dashboard-heading';
 import { SpinLoader } from '@/components/common/spin-loader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { dayjs } from '@/lib/dayjs';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { logout } from '@/lib/server-actions/auth';
 import { trpc } from '@/lib/trpc/client';
 import { Monitor, Smartphone } from 'lucide-react';
@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { UAParser } from 'ua-parser-js';
 
 export const SectionActiveSessions = () => {
+    const { dayjs } = useDayjs();
     const { data, isLoading, error, refetch } = trpc.getUserActiveSessions.useQuery();
     const { user } = useAuth();
 

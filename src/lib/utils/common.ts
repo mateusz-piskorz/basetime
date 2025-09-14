@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 /** 0-60, amount of minutes rounded up to full hour (0=everything rounded up) */
 const roundUpMinutesThreshold = 1;
 /** 0-60, amount of seconds rounded up to full minute (0=everything rounded up) */
-const roundUpSecondsThreshold = 1;
+const roundUpSecondsThreshold = 0;
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));

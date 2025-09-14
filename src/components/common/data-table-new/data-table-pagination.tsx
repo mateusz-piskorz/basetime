@@ -71,7 +71,7 @@ export function DataTablePagination<TData>({ table, totalPages }: DataTablePagin
                             <span className="sr-only">Go to first page</span>
                             <ChevronsLeft />
                         </Button>
-                        <Button variant="outline" size="icon" className="size-8" onClick={() => handlePageChange('prev')} disabled={page === 1}>
+                        <Button variant="outline" size="icon" className="size-8" onClick={() => handlePageChange('prev')} disabled={page == 1}>
                             <span className="sr-only">Go to previous page</span>
                             <ChevronLeft />
                         </Button>
@@ -83,7 +83,7 @@ export function DataTablePagination<TData>({ table, totalPages }: DataTablePagin
                             size="icon"
                             className="size-8"
                             onClick={() => handlePageChange('next')}
-                            disabled={page === totalPages}
+                            disabled={page == totalPages}
                         >
                             <span className="sr-only">Go to next page</span>
                             <ChevronRight />

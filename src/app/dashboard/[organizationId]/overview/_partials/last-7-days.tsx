@@ -20,7 +20,6 @@ export const Last7Days = ({ scope }: Props) => {
         organizationId,
         ...(scope === 'member' && { memberIds: [member.id] }),
         startDate: dayjs().subtract(7, 'day').toDate().toString(),
-        endDate: new Date().toString(),
     });
 
     const segments = useMemo(

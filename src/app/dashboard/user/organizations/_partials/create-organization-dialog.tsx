@@ -34,9 +34,10 @@ export const CreateOrganizationDialog = ({ open, setOpen }: Props) => {
             return;
         }
 
+        setOpen(false);
+        router.push(`/dashboard/${res.data?.id}/overview`);
         toast.success('Organization created successfully');
         trpcUtils.getUserOrganizations.refetch();
-        router.push(`/dashboard/${res.data?.id}/overview`);
     };
 
     return (

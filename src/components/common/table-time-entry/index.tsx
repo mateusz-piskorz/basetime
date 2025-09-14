@@ -1,31 +1,46 @@
 'use client';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
-import { DataTable } from '@/components/common/data-table';
+import { DataTable } from '@/components/common/data-table-new';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { projectColor } from '@/lib/constants/project-color';
 import { useMember } from '@/lib/hooks/use-member';
+import { useTable } from '@/lib/hooks/use-table';
 import { removeTimeEntries } from '@/lib/server-actions/time-entry';
 import { trpc } from '@/lib/trpc/client';
+import { SortingState } from '@tanstack/react-table';
+import { debounce } from 'lodash';
+import { User2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { DataTableViewOptions } from '../data-table/data-table-view-options';
 import { ManualTimeEntryDialog } from '../manual-time-entry-dialog';
+import { MultiOptionsFilterState } from '../multi-options-filter-state';
 import { getTimeEntryColumns } from './time-entry-columns';
 
 export const TableTimeEntry = () => {
-    const { id } = useMember().member;
+    const { organizationId, member } = useMember();
+    const [members, setMembers] = useState<string[]>([]);
+    const [projects, setProjects] = useState<string[]>([]);
+
+    const { data: membersData } = trpc.getMembers.useQuery({ organizationId });
+    const { data: projectsData } = trpc.getProjects.useQuery({ organizationId });
+
     const searchParams = useSearchParams();
     const page = searchParams.get('page');
     const limit = searchParams.get('limit');
+
     const [open, setOpen] = useState(false);
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openConfirmMulti, setOpenConfirmMulti] = useState(false);
-    const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
-    const [selectedIds, setSelectedIds] = useState<string[] | undefined>(undefined);
-    const order_column = searchParams.get('order_column');
-    const order_direction = searchParams.get('order_direction');
-    const q = searchParams.get('q');
 
-    const { data, refetch } = trpc.getTimeEntriesPaginated.useQuery({ memberId: id, limit, page, order_column, order_direction, q });
+    const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
+
+    const [selectedIds, setSelectedIds] = useState<string[] | undefined>(undefined);
+
+    const [q, setQ] = useState('');
 
     const handleDeleteTimeEntries = async (timeEntryIds: string[]) => {
         const res = await removeTimeEntries({ timeEntryIds });
@@ -39,13 +54,25 @@ export const TableTimeEntry = () => {
         setOpenConfirmMulti(false);
     };
 
+    const [sorting, setSorting] = useState<SortingState>([]);
+
+    const { data: timeEntries, refetch } = trpc.getTimeEntriesPaginated.useQuery({
+        organizationId,
+        order_column: sorting?.[0]?.id,
+        order_direction: sorting?.[0]?.desc ? 'desc' : 'asc',
+        page,
+        limit,
+        memberIds: members,
+        projectIds: projects,
+    });
+
     const columns = getTimeEntryColumns({
         handleDeleteTimeEntry: (timeEntryId: string) => {
             setSelectedId(timeEntryId);
             setOpenConfirm(true);
         },
         handleEditTimeEntry: async (timeEntryId: string) => {
-            const timeEntry = data?.data.find((p) => p.id === timeEntryId);
+            const timeEntry = timeEntries?.data.find((p) => p.id === timeEntryId);
             if (!timeEntry) return;
 
             setSelectedId(timeEntry.id);
@@ -53,12 +80,14 @@ export const TableTimeEntry = () => {
         },
     });
 
+    const { table } = useTable({ columns, data: timeEntries?.data, sorting, setSorting });
+
     return (
         <>
             <ManualTimeEntryDialog
                 open={open}
                 setOpen={setOpen}
-                selectedTimeEntry={selectedId ? data?.data.find((e) => e.id === selectedId) : undefined}
+                selectedTimeEntry={selectedId ? timeEntries?.data.find((e) => e.id === selectedId) : undefined}
             />
 
             <ConfirmDialog
@@ -86,6 +115,64 @@ export const TableTimeEntry = () => {
             />
 
             <DataTable
+                toolbar={
+                    <div className="flex flex-wrap justify-between">
+                        <div className="flex items-center gap-4">
+                            <Input
+                                placeholder="Search"
+                                onChange={debounce((event) => setQ(event.target.value), 300)}
+                                defaultValue={q || ''}
+                                className="min-w-[150px] rounded md:max-w-xs"
+                            />
+
+                            <div className="flex items-center gap-2">
+                                <MultiOptionsFilterState
+                                    options={(projectsData || []).map(({ id, name, color }) => ({
+                                        label: (
+                                            <>
+                                                <span
+                                                    className="mr-2 inline-block h-2 w-2 rounded-full"
+                                                    style={{ backgroundColor: projectColor[color] }}
+                                                />
+                                                {name}
+                                            </>
+                                        ),
+                                        value: id,
+                                    }))}
+                                    setValues={(val) => setProjects(val)}
+                                    values={projects}
+                                    title="Projects"
+                                />
+                                <MultiOptionsFilterState
+                                    options={(membersData || []).map(({ User, id }) => ({
+                                        label: `${User.name} ${member.id === id ? '(You)' : ''}`,
+                                        value: id,
+                                        icon: User2,
+                                    }))}
+                                    setValues={(val) => setMembers(val)}
+                                    values={members}
+                                    title="Members"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex gap-4">
+                            <DataTableViewOptions table={table} />
+                            <Button
+                                onClick={() => {
+                                    setSelectedId(undefined);
+                                    setOpen(true);
+                                }}
+                            >
+                                Add new timeEntry
+                            </Button>
+                        </div>
+                    </div>
+                }
+                table={table}
+                totalPages={timeEntries?.totalPages}
+            />
+            {/* 
+            <DataTable
                 className="rounded-none"
                 totalPages={data?.totalPages}
                 data={data?.data ?? []}
@@ -102,7 +189,7 @@ export const TableTimeEntry = () => {
                     },
                 }}
                 filters={[]}
-            />
+            /> */}
         </>
     );
 };

@@ -9,11 +9,13 @@ interface DataTableProps<TData> {
     totalPages?: number;
     className?: string;
     table: TableType<TData>;
+    toolbar?: React.ReactNode;
 }
 
-export function DataTable<TData>({ totalPages, className, table }: DataTableProps<TData>) {
+export function DataTable<TData>({ totalPages, className, table, toolbar }: DataTableProps<TData>) {
     return (
         <div className={cn('bg-card flex flex-col gap-4 rounded-md p-4 shadow', className)}>
+            {toolbar}
             <div className="rounded border">
                 <Table>
                     <TableHeader className="bg-accent">

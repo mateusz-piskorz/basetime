@@ -3,7 +3,7 @@ import { InputField } from '@/components/common/form-fields/input-field';
 import { MultiSelectField } from '@/components/common/form-fields/multi-select-field';
 import { SelectField } from '@/components/common/form-fields/select-field';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import { useMember } from '@/lib/hooks/use-member';
 import { upsertProject } from '@/lib/server-actions/project';
@@ -63,10 +63,9 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent>
                 <DialogTitle>{project ? `Update ${project.name}` : 'Create project'}</DialogTitle>
-                <DialogDescription>Here you can {project ? 'Update' : 'Create'} project</DialogDescription>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" style={{ marginBottom: '16px' }}>
-                        <InputField form={form} type="text" name="name" label="organization name" placeholder="My organization 123" />
+                        <InputField form={form} type="text" name="name" label="Project Name" placeholder="New Project" />
 
                         <div className="flex flex-col gap-6 sm:flex-row-reverse sm:items-end sm:gap-4">
                             <MultiSelectField

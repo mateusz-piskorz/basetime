@@ -5,7 +5,7 @@ export const upsertOrganizationSchema = z.object({
     name: z.string().nonempty(),
     currency: z.nativeEnum(CURRENCY).optional(),
     weekStart: z.nativeEnum(WEEK_START).optional(),
-    roundUpMinutesThreshold: z
+    roundUpMinutesThreshold: z.coerce
         .number()
         .optional()
         .refine((val) => val === undefined || (val >= 0 && val <= 60), { message: 'Value must be between 0 and 60' }),

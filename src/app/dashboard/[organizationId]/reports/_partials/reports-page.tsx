@@ -25,7 +25,7 @@ export const ReportsPage = () => {
     const [projects, setProjects] = useState<string[]>([]);
 
     const { data: membersData } = trpc.getMembers.useQuery({ organizationId });
-    const { data: projectsData } = trpc.getProjects.useQuery({ organizationId });
+    const { data: projectsData } = trpc.getProjects.useQuery({ organizationId, onlyManageable: true });
 
     const { data: timeEntriesData } = trpc.getTimeEntries.useQuery({
         organizationId,
@@ -85,16 +85,18 @@ export const ReportsPage = () => {
                             values={projects}
                             title="Projects"
                         />
-                        <MultiOptionsFilterState
-                            options={(membersData || []).map(({ User, id }) => ({
-                                label: `${User.name} ${member.id === id ? '(You)' : ''}`,
-                                value: id,
-                                icon: User2,
-                            }))}
-                            setValues={(val) => setMembers(val)}
-                            values={members}
-                            title="Members"
-                        />
+                        {['MANAGER', 'OWNER'].includes(member.role) && (
+                            <MultiOptionsFilterState
+                                options={(membersData || []).map(({ User, id }) => ({
+                                    label: `${User.name} ${member.id === id ? '(You)' : ''}`,
+                                    value: id,
+                                    icon: User2,
+                                }))}
+                                setValues={(val) => setMembers(val)}
+                                values={members}
+                                title="Members"
+                            />
+                        )}
                     </div>
                     <PeriodDropdown startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} />
                 </div>

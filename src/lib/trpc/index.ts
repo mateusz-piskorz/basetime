@@ -267,7 +267,7 @@ export const appRouter = createTRPCRouter({
                 },
             });
 
-            return res?.map((project) => {
+            return res.map((project) => {
                 const loggedMinutes = sumTimeEntries({ entries: project.TimeEntries, dayjs });
                 const percentCompleted = project.estimatedMinutes ? ((loggedMinutes / project.estimatedMinutes) * 100).toFixed(2) : undefined;
 

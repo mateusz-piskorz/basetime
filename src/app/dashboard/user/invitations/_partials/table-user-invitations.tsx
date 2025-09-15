@@ -4,7 +4,7 @@ import { DataTable } from '@/components/common/data-table-new';
 import { DataTableViewOptions } from '@/components/common/data-table-new/data-table-view-options';
 import { MultiOptionsFilterState } from '@/components/common/multi-options-filter-state';
 import { Input } from '@/components/ui/input';
-import { useDayjs } from '@/lib/hooks/use-dayjs';
+import { dayjs } from '@/lib/dayjs';
 import { useTable } from '@/lib/hooks/use-table';
 import { updateInvitationStatus } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
@@ -16,7 +16,6 @@ import { toast } from 'sonner';
 import { getInvitationsColumns } from './invitations-columns';
 
 export const TableUserInvitations = () => {
-    const { dayjs } = useDayjs();
     const trpcUtils = trpc.useUtils();
     const searchParams = useSearchParams();
     const page = searchParams.get('page');

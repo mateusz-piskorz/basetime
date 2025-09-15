@@ -230,6 +230,7 @@ export const appRouter = createTRPCRouter({
                 role: true,
                 User: { select: { id: true, name: true, email: true } },
                 TimeEntries: { select: { start: true, end: true } },
+                Projects: { select: { id: true } },
             },
         });
 
@@ -262,6 +263,7 @@ export const appRouter = createTRPCRouter({
                     name: true,
                     TimeEntries: { select: { start: true, end: true } },
                     estimatedMinutes: true,
+                    Members: { select: { id: true } },
                 },
             });
 

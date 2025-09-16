@@ -36,7 +36,7 @@ export const TableUserInvitations = () => {
 
             toast.success(`invitation ${action}`);
             refetch();
-            trpcUtils.getUserOrganizations.refetch();
+            trpcUtils.organizations.refetch();
         },
         dayjs,
     });

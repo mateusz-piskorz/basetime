@@ -10,7 +10,7 @@ type Props = {
 export const NotFound = ({ title, description }: Props) => {
     return (
         <div className="mx-auto mt-30 flex flex-col items-center space-y-4 text-center">
-            <Rabbit size={90} className="mx-auto" />
+            <Rabbit size={90} strokeWidth={1} className="mx-auto" />
             <h1 className="text-2xl">{title}</h1>
             {description && <p className="text-muted-foreground max-w-[500px]">{description}</p>}
             <Button>

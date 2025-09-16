@@ -14,10 +14,10 @@ export default function OrganizationDashboardLayout({
     children: React.ReactNode;
 }>) {
     const { organizationId } = useParams<{ organizationId: string }>();
-    const { data, error, isLoading } = trpc.getOrganization.useQuery({ organizationId });
+    const { data, isError, isLoading } = trpc.organizations.useQuery({ organizationId });
 
-    if (error) {
-        return <p className="text-red-500">{error.message}</p>;
+    if (isError) {
+        return <p className="text-red-500">Error getting organization</p>;
     }
 
     if (isLoading) {
@@ -28,7 +28,7 @@ export default function OrganizationDashboardLayout({
         );
     }
 
-    if (!data) {
+    if (!data?.length) {
         return (
             <NotFound
                 title="Organization not found"
@@ -37,9 +37,10 @@ export default function OrganizationDashboardLayout({
         );
     }
 
+    const { member, currency, id, roundUpMinutesThreshold, weekStart } = data[0];
     return (
-        <MemberProvider member={data.member} currency={data.currency} organizationId={data.id} roundUpMinutesThreshold={data.roundUpMinutesThreshold}>
-            <DayjsProvider weekStart={data.weekStart}>
+        <MemberProvider member={member} currency={currency} organizationId={id} roundUpMinutesThreshold={roundUpMinutesThreshold}>
+            <DayjsProvider weekStart={weekStart}>
                 <AppLayout type="organization">{children}</AppLayout>
             </DayjsProvider>
         </MemberProvider>

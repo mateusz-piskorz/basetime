@@ -9,6 +9,7 @@ export const invitations = publicProcedure
         z.object({
             organizationId: z.string().nullish(),
             q: z.string().nullish(),
+            queryColumn: z.enum(['ORGANIZATION_NAME', 'USER_NAME']).nullish(),
             page: z.string().nullish(),
             limit: z.string().nullish(),
             order_column: z.string().nullish(),
@@ -16,7 +17,7 @@ export const invitations = publicProcedure
             status: z.array(z.nativeEnum(INVITATION_STATUS)).nullish(),
         }),
     )
-    .query(async ({ input: { q, organizationId, limit: limitInput, page: pageInput, order_column, order_direction, status } }) => {
+    .query(async ({ input: { q, queryColumn, organizationId, limit: limitInput, page: pageInput, order_column, order_direction, status } }) => {
         const limit = Number(limitInput) || 25;
         const page = Number(pageInput) || 1;
         const skip = (page - 1) * limit;
@@ -26,7 +27,8 @@ export const invitations = publicProcedure
         const total = await prisma.invitation.count({ where: { ...(organizationId ? { organizationId } : { userId: session.userId }) } });
         const data = await prisma.invitation.findMany({
             where: {
-                ...(q && { Organization: { name: { contains: q } } }),
+                ...(queryColumn === 'ORGANIZATION_NAME' && q && { Organization: { name: { contains: q } } }),
+                ...(queryColumn === 'USER_NAME' && q && { User: { OR: [{ name: { contains: q } }, { email: { contains: q } }] } }),
                 ...(organizationId
                     ? {
                           organizationId,

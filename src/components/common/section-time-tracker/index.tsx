@@ -30,7 +30,7 @@ export const SectionTimeTracker = ({ className }: Props) => {
         organizationId,
     } = useMember();
 
-    const { data: activeTimeEntry, isPending, refetch } = trpc.getActiveTimeEntry.useQuery({ memberId });
+    const { data: activeTimeEntry, isPending, refetch } = trpc.activeTimeEntry.useQuery({ memberId });
 
     useEffect(() => {
         if (activeTimeEntry) {

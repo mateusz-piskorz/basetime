@@ -5,6 +5,7 @@ import z from 'zod';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
 import { activeSessions } from './endpoints/active-sessions';
+import { activeTimeEntry } from './endpoints/active-time-entry';
 import { invitations } from './endpoints/invitations';
 import { members } from './endpoints/members';
 import { organizations } from './endpoints/organizations';
@@ -17,14 +18,7 @@ export const appRouter = createTRPCRouter({
     members,
     projects,
     invitations,
-
-    getActiveTimeEntry: publicProcedure.input(z.object({ memberId: z.string() })).query(async ({ input: { memberId } }) => {
-        const session = await getSession();
-        if (!session) return null;
-        return await prisma.timeEntry.findFirst({
-            where: { memberId, end: null },
-        });
-    }),
+    activeTimeEntry,
 
     getTimeEntries: publicProcedure
         .input(

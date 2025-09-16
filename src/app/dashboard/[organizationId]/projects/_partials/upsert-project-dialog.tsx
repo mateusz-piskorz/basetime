@@ -57,7 +57,7 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
         trpcUtils.getProjects.refetch();
         setOpen(false);
     };
-    const { data: members } = trpc.getMembers.useQuery({ organizationId });
+    const { data: members } = trpc.members.useQuery({ organizationId });
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

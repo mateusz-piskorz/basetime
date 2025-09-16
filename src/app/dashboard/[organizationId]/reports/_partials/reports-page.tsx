@@ -24,8 +24,8 @@ export const ReportsPage = () => {
     const [members, setMembers] = useState<string[]>([]);
     const [projects, setProjects] = useState<string[]>([]);
 
-    const { data: membersData } = trpc.getMembers.useQuery({ organizationId });
-    const { data: projectsData } = trpc.getProjects.useQuery({ organizationId, onlyManageable: true });
+    const { data: membersData } = trpc.members.useQuery({ organizationId });
+    const { data: projectsData } = trpc.projects.useQuery({ organizationId });
 
     const { data: timeEntriesData } = trpc.getTimeEntries.useQuery({
         organizationId,

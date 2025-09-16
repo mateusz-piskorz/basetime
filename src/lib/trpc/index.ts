@@ -1,56 +1,22 @@
 import { dayjs } from '@/lib/dayjs';
-import { formatMinutes, getDurationInMinutes, sumTimeEntries } from '@/lib/utils/common';
-import { INVITATION_STATUS, MEMBER_ROLE } from '@prisma/client';
+import { formatMinutes, getDurationInMinutes } from '@/lib/utils/common';
+import { MEMBER_ROLE } from '@prisma/client';
 import z from 'zod';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
 import { activeSessions } from './endpoints/active-sessions';
+import { invitations } from './endpoints/invitations';
+import { members } from './endpoints/members';
 import { organizations } from './endpoints/organizations';
+import { projects } from './endpoints/projects';
 import { createTRPCRouter, publicProcedure } from './init';
 
 export const appRouter = createTRPCRouter({
     activeSessions,
     organizations,
-
-    getInvitations: publicProcedure
-        .input(
-            z.object({
-                q: z.string().nullish(),
-                organizationId: z.string().nullish(),
-                page: z.string().nullish(),
-                limit: z.string().nullish(),
-                order_column: z.string().nullish(),
-                order_direction: z.string().nullish(),
-                status: z.array(z.nativeEnum(INVITATION_STATUS)).nullish(),
-            }),
-        )
-        .query(async ({ input: { q, organizationId, limit: limitInput, page: pageInput, order_column, order_direction, status } }) => {
-            const limit = Number(limitInput) || 25;
-            const page = Number(pageInput) || 1;
-            const skip = (page - 1) * limit;
-            const session = await getSession();
-            if (!session) return { totalPages: 0, total: 0, page, limit, data: [] };
-            const total = await prisma.invitation.count({ where: { ...(organizationId ? { organizationId } : { userId: session.userId }) } });
-            const data = await prisma.invitation.findMany({
-                where: {
-                    ...(q && { Organization: { name: { contains: q } } }),
-                    ...(organizationId
-                        ? {
-                              organizationId,
-                              Organization: { Members: { some: { role: { in: ['MANAGER', 'OWNER'] }, User: { id: session.userId } } } },
-                          }
-                        : { userId: session.userId }),
-                    ...(status?.length && { status: { in: status } }),
-                },
-                include: { User: { select: { name: true, email: true } }, Organization: { select: { name: true } } },
-                take: limit,
-                skip,
-                orderBy: order_column ? { [order_column]: order_direction } : { createdAt: 'desc' },
-            });
-
-            const totalPages = Math.ceil(total / limit);
-            return { totalPages, total, page, limit, data };
-        }),
+    members,
+    projects,
+    invitations,
 
     getActiveTimeEntry: publicProcedure.input(z.object({ memberId: z.string() })).query(async ({ input: { memberId } }) => {
         const session = await getSession();
@@ -195,72 +161,6 @@ export const appRouter = createTRPCRouter({
 
             const totalPages = Math.ceil(total / limit);
             return { totalPages, total, page, limit, data };
-        }),
-
-    getMembers: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
-        const session = await getSession();
-        if (!session) return null;
-
-        const res = await prisma.member.findMany({
-            where: { organizationId },
-            select: {
-                id: true,
-                HourlyRates: {
-                    take: 1,
-                    where: {
-                        OR: [
-                            { Member: { userId: session.userId } },
-                            { Member: { Organization: { Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } } } },
-                        ],
-                    },
-                },
-                _count: true,
-                role: true,
-                User: { select: { id: true, name: true, email: true } },
-                TimeEntries: { select: { start: true, end: true } },
-                Projects: { select: { id: true } },
-            },
-        });
-
-        return res.map((member) => {
-            const hourlyRate = member.HourlyRates?.length > 0 ? member.HourlyRates[0].value : undefined;
-            return { ...member, loggedTime: formatMinutes(sumTimeEntries({ entries: member.TimeEntries, dayjs })), hourlyRate };
-        });
-    }),
-
-    getProjects: publicProcedure
-        .input(z.object({ organizationId: z.string(), onlyManageable: z.boolean().optional() }))
-        .query(async ({ input: { organizationId, onlyManageable } }) => {
-            const session = await getSession();
-            if (!session) return null;
-
-            const res = await prisma.project.findMany({
-                where: {
-                    organizationId,
-                    ...(onlyManageable && {
-                        OR: [
-                            { Members: { some: { userId: session.userId } } },
-                            { Organization: { Members: { some: { userId: session.userId, role: { in: ['OWNER', 'MANAGER'] } } } } },
-                        ],
-                    }),
-                },
-                select: {
-                    _count: true,
-                    id: true,
-                    color: true,
-                    name: true,
-                    TimeEntries: { select: { start: true, end: true } },
-                    estimatedMinutes: true,
-                    Members: { select: { id: true } },
-                },
-            });
-
-            return res.map((project) => {
-                const loggedMinutes = sumTimeEntries({ entries: project.TimeEntries, dayjs });
-                const percentCompleted = project.estimatedMinutes ? ((loggedMinutes / project.estimatedMinutes) * 100).toFixed(2) : undefined;
-
-                return { ...project, loggedTime: formatMinutes(loggedMinutes), loggedMinutes, percentCompleted };
-            });
         }),
 });
 

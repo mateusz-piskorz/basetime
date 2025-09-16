@@ -27,7 +27,7 @@ export const MemberList = ({ openInvitationDialog }: Props) => {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
 
-    const { data, error, isLoading, refetch } = trpc.getMembers.useQuery({ organizationId });
+    const { data, error, isLoading, refetch } = trpc.members.useQuery({ organizationId });
 
     const selectedMember = data?.find((e) => e.id === selectedId);
 

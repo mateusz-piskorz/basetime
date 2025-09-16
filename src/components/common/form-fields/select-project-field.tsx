@@ -39,7 +39,7 @@ export const SelectProjectField = <T extends FieldValues>({
     const { control } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
 
     const { organizationId } = useMember();
-    const { data } = trpc.getProjects.useQuery({ organizationId, onlyManageable: true });
+    const { data } = trpc.projects.useQuery({ organizationId });
 
     return (
         <FormField
@@ -58,7 +58,7 @@ export const SelectProjectField = <T extends FieldValues>({
                             <SelectItem value="no-project">No Project</SelectItem>
                             <SelectGroup>
                                 <SelectLabel>Projects</SelectLabel>
-                                {(data ? data : []).map(({ id, name, color }) => (
+                                {(data || []).map(({ id, name, color }) => (
                                     <SelectItem key={id} value={id}>
                                         <span className="h-2 min-w-2 rounded-full" style={{ backgroundColor: projectColor[color] }} />
                                         <span className={cn('max-w-[100px] truncate', textClassName)}>{name}</span>

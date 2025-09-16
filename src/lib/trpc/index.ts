@@ -4,13 +4,30 @@ import { INVITATION_STATUS, MEMBER_ROLE } from '@prisma/client';
 import z from 'zod';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
+import { activeSessions } from './endpoints/active-sessions';
 import { createTRPCRouter, publicProcedure } from './init';
 
 export const appRouter = createTRPCRouter({
-    getUserActiveSessions: publicProcedure.query(async () => {
+    activeSessions,
+
+    getUserOrganizations: publicProcedure.query(async () => {
         const session = await getSession();
         if (!session) return null;
-        return await prisma.session.findMany({ where: { userId: session.userId, expiresAt: { gte: new Date() } }, orderBy: { createdAt: 'asc' } });
+        const res = await prisma.organization.findMany({
+            where: { Members: { some: { userId: session.userId } } },
+            select: {
+                id: true,
+                name: true,
+                _count: true,
+                TimeEntries: { select: { id: true, start: true, end: true } },
+                Members: { where: { userId: session.userId, role: 'OWNER' } },
+            },
+        });
+
+        return res.map((organization) => {
+            const ownership = organization.Members.length ? organization.Members[0] : null;
+            return { ...organization, loggedTime: formatMinutes(sumTimeEntries({ entries: organization.TimeEntries, dayjs })), ownership };
+        });
     }),
 
     getOrganization: publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
@@ -274,59 +291,6 @@ export const appRouter = createTRPCRouter({
                 return { ...project, loggedTime: formatMinutes(loggedMinutes), loggedMinutes, percentCompleted };
             });
         }),
-
-    getMemberProjects: publicProcedure
-        .input(z.object({ organizationId: z.string(), memberId: z.string() }))
-        .query(async ({ input: { organizationId, memberId } }) => {
-            const session = await getSession();
-            if (!session) return null;
-
-            const currentMember = await prisma.member.findFirst({ where: { userId: session.userId, organizationId } });
-            if (!currentMember) {
-                return null;
-            }
-
-            const res = await prisma.organization.findUnique({
-                where: { id: organizationId, Members: { some: { userId: session.userId } } },
-                select: {
-                    Projects: {
-                        ...(currentMember.role === 'EMPLOYEE' && { where: { Members: { some: { id: memberId } } } }),
-                        select: {
-                            color: true,
-                            _count: true,
-                            TimeEntries: { select: { start: true, end: true } },
-                            name: true,
-                            createdAt: true,
-                            id: true,
-                        },
-                    },
-                },
-            });
-
-            return res?.Projects.map((project) => {
-                return { ...project, loggedTime: formatMinutes(sumTimeEntries({ entries: project.TimeEntries, dayjs })) };
-            });
-        }),
-
-    getUserOrganizations: publicProcedure.query(async () => {
-        const session = await getSession();
-        if (!session) return null;
-        const res = await prisma.organization.findMany({
-            where: { Members: { some: { userId: session.userId } } },
-            select: {
-                id: true,
-                name: true,
-                _count: true,
-                TimeEntries: { select: { id: true, start: true, end: true } },
-                Members: { where: { userId: session.userId, role: 'OWNER' } },
-            },
-        });
-
-        return res.map((organization) => {
-            const ownership = organization.Members.length ? organization.Members[0] : null;
-            return { ...organization, loggedTime: formatMinutes(sumTimeEntries({ entries: organization.TimeEntries, dayjs })), ownership };
-        });
-    }),
 });
 
 export type AppRouter = typeof appRouter;

@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { UAParser } from 'ua-parser-js';
 
 export const SectionActiveSessions = () => {
-    const { data, isLoading, error, refetch } = trpc.getUserActiveSessions.useQuery();
+    const { data, isLoading, error, refetch } = trpc.activeSessions.useQuery();
     const { user } = useAuth();
 
     const handleLogoutSession = async (sessionId: string) => {

@@ -38,8 +38,8 @@ export const SelectProjectField = <T extends FieldValues>({
     const name = propsName as string;
     const { control } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
 
-    const { member, organizationId } = useMember();
-    const { data } = trpc.getMemberProjects.useQuery({ organizationId, memberId: member.id });
+    const { organizationId } = useMember();
+    const { data } = trpc.getProjects.useQuery({ organizationId, onlyManageable: true });
 
     return (
         <FormField

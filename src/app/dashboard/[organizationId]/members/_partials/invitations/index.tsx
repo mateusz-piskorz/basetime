@@ -17,8 +17,8 @@ import { INVITATION_STATUS } from '@prisma/client';
 import { debounce } from 'lodash';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { getColumns } from './columns';
 import { CreateInvitationDialog } from './create-invitation-dialog';
-import { getInvitationsColumns } from './invitations-columns';
 
 type Props = {
     open: boolean;
@@ -55,15 +55,17 @@ export const TableInvitations = ({ open, setOpen }: Props) => {
         setOpenConfirm(false);
     };
 
-    const columns = getInvitationsColumns({
-        handleCancel: async (invitationId: string) => {
-            setSelectedId(undefined);
-            handleCancelInvitation(invitationId);
-        },
-        dayjs,
+    const { table } = useTable({
+        columns: getColumns({
+            handleCancel: async (invitationId: string) => {
+                setSelectedId(invitationId);
+                setOpenConfirm(true);
+            },
+            dayjs,
+        }),
+        data: invitations?.data,
+        sortingProp,
     });
-
-    const { table } = useTable({ columns, data: invitations?.data, sortingProp });
 
     return (
         <>
@@ -86,8 +88,8 @@ export const TableInvitations = ({ open, setOpen }: Props) => {
                 table={table}
                 totalPages={invitations?.totalPages}
                 toolbar={
-                    <div className="flex flex-wrap justify-between gap-2">
-                        <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap justify-between gap-4">
+                        <div className="flex gap-4">
                             <Input
                                 placeholder="Search"
                                 onChange={debounce((event) => setQ(event.target.value), 300)}
@@ -96,7 +98,7 @@ export const TableInvitations = ({ open, setOpen }: Props) => {
                             />
                             <InvitationStatusFilter setStatus={setStatus} status={status} />
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-4">
                             <DataTableViewOptions table={table} />
                             <Button
                                 onClick={() => {

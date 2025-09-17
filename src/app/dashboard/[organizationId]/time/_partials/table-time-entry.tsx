@@ -29,6 +29,7 @@ export const TableTimeEntry = () => {
     const [members, setMembers] = useState<string[]>([]);
     const [projects, setProjects] = useState<string[]>([]);
     const { limit, page } = useTablePagination();
+    const { order_column, order_direction, sortingProp } = useTableSorting();
     const [q, setQ] = useState('');
 
     const [open, setOpen] = useState(false);
@@ -49,8 +50,6 @@ export const TableTimeEntry = () => {
         setOpenConfirm(false);
         setOpenConfirmMulti(false);
     };
-
-    const { order_column, order_direction, sortingProp } = useTableSorting();
 
     const { data: timeEntries, refetch } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
@@ -122,7 +121,7 @@ export const TableTimeEntry = () => {
                 toolbar={
                     <>
                         <div className="flex flex-wrap justify-between gap-4">
-                            <div className="flex items-center gap-4">
+                            <div className="flex gap-4">
                                 <Input
                                     placeholder="Search"
                                     onChange={debounce((event) => setQ(event.target.value), 300)}
@@ -130,10 +129,8 @@ export const TableTimeEntry = () => {
                                     className="min-w-[150px] rounded md:max-w-xs"
                                 />
 
-                                <div className="flex items-center gap-2">
-                                    <ProjectsFilter projects={projects} setProjects={setProjects} />
-                                    {['MANAGER', 'OWNER'].includes(member.role) && <MembersFilter members={members} setMembers={setMembers} />}
-                                </div>
+                                <ProjectsFilter projects={projects} setProjects={setProjects} />
+                                {['MANAGER', 'OWNER'].includes(member.role) && <MembersFilter members={members} setMembers={setMembers} />}
                             </div>
                             <div className="flex gap-4">
                                 <DataTableViewOptions table={table} />

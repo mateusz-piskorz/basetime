@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { InputField } from '@/components/common/form-fields/input-field';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
@@ -7,7 +9,7 @@ import { createInvitation } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
 import { createInvitationSchema } from '@/lib/zod/invitation-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -18,14 +20,11 @@ type Props = {
 };
 
 export const CreateInvitationDialog = ({ open, setOpen }: Props) => {
-    const [error, setError] = useState<string | null>(null);
     const { organizationId } = useMember();
-
     const trpcUtils = trpc.useUtils();
+    const [error, setError] = useState<string | null>(null);
 
-    const form = useForm({
-        resolver: zodResolver(createInvitationSchema),
-    });
+    const form = useForm({ resolver: zodResolver(createInvitationSchema) });
 
     const onSubmit = async ({ email }: z.infer<typeof createInvitationSchema>) => {
         const res = await createInvitation({ email, organizationId });
@@ -40,6 +39,10 @@ export const CreateInvitationDialog = ({ open, setOpen }: Props) => {
         trpcUtils.invitations.refetch();
         setOpen(false);
     };
+
+    useEffect(() => {
+        if (form.formState.isSubmitSuccessful) form.reset({ email: '' });
+    }, [form.formState.isSubmitSuccessful]);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

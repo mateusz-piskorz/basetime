@@ -13,9 +13,9 @@ import { INVITATION_STATUS } from '@prisma/client';
 import { debounce } from 'lodash';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { getInvitationsColumns } from './invitations-columns';
+import { getColumns } from './columns';
 
-export const TableUserInvitations = () => {
+export const UserInvitationsTable = () => {
     const trpcUtils = trpc.useUtils();
     const { limit, page } = useTablePagination();
     const [q, setQ] = useState('');
@@ -24,7 +24,7 @@ export const TableUserInvitations = () => {
     const { data: invitations, refetch } = trpc.invitations.useQuery({ page, limit, status, q, queryColumn: 'ORGANIZATION_NAME' });
 
     const { table } = useTable({
-        columns: getInvitationsColumns({
+        columns: getColumns({
             handleAction: async ({ action, invitationId }) => {
                 const res = await updateInvitationStatus({ invitationId, status: action === 'accepted' ? 'ACCEPTED' : 'REJECTED' });
 
@@ -45,6 +45,9 @@ export const TableUserInvitations = () => {
     return (
         <>
             <DataTable
+                table={table}
+                className="my-4"
+                totalPages={invitations?.totalPages}
                 toolbar={
                     <div className="flex flex-wrap justify-between gap-4">
                         <div className="flex gap-4">
@@ -59,9 +62,6 @@ export const TableUserInvitations = () => {
                         <DataTableViewOptions table={table} />
                     </div>
                 }
-                table={table}
-                className="my-4"
-                totalPages={invitations?.totalPages}
             />
         </>
     );

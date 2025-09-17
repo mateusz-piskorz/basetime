@@ -13,7 +13,6 @@ interface DataTablePaginationProps<TData> {
 }
 
 export function DataTablePagination<TData>({ table, totalPages }: DataTablePaginationProps<TData>) {
-    console.log(totalPages);
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();

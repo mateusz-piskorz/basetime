@@ -133,7 +133,7 @@ test('members arg works - timeEntries', async () => {
 
     expect(res.length).toBe(2);
     res.forEach((member) => {
-        [employee.memberId, owner.memberId].includes(member.id);
+        expect([employee.memberId, owner.memberId].includes(member.id)).toBe(true);
     });
 });
 
@@ -151,7 +151,7 @@ test('projects arg works - timeEntries', async () => {
     expect(res.flatMap((e) => e.TimeEntries).length).toBe(2);
 
     res.flatMap((e) => e.TimeEntries).forEach((timeEntry) => {
-        [employee.projectId, manager.projectId].includes(timeEntry.projectId!);
+        expect([employee.projectId, manager.projectId].includes(timeEntry.projectId!)).toBe(true);
     });
 });
 
@@ -184,6 +184,6 @@ test('startDate, endDate arg works - timeEntries', async () => {
 
     expect(res.flatMap((e) => e.TimeEntries).length).toBe(2);
     res.flatMap((e) => e.TimeEntries).forEach((timeEntry) => {
-        [employee.timeEntry.id, manager.timeEntry.id].includes(timeEntry.id);
+        expect([employee.timeEntry.id, manager.timeEntry.id].includes(timeEntry.id)).toBe(true);
     });
 });

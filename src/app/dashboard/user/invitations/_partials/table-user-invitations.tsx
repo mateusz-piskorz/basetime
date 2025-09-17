@@ -23,7 +23,9 @@ export const TableUserInvitations = () => {
     const [q, setQ] = useState('');
     const [status, setStatus] = useState<INVITATION_STATUS[]>([]);
 
-    const { data: invitations, refetch } = trpc.invitations.useQuery({ page, limit, status, q });
+    console.log('status', status);
+
+    const { data: invitations, refetch } = trpc.invitations.useQuery({ page, limit, status, q, queryColumn: 'ORGANIZATION_NAME' });
 
     const columns = getInvitationsColumns({
         handleAction: async ({ action, invitationId }) => {

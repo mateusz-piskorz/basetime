@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils/common';
 import { Clock, DollarSign, FolderClosed } from 'lucide-react';
 
 type Props = {
-    member: NonNullable<TrpcRouterOutput['getMembers']>[number];
+    member: NonNullable<TrpcRouterOutput['members']>[number];
 
     deleteMember: (memberId: string) => void;
     manageMember: (memberId: string) => void;

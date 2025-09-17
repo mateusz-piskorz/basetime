@@ -24,7 +24,7 @@ import { SelectProjectField } from './form-fields/select-project-field';
 type Props = {
     open: boolean;
     setOpen: (val: boolean) => void;
-    selectedTimeEntry?: NonNullable<TrpcRouterOutput['getTimeEntriesPaginated']>['data'][number];
+    selectedTimeEntry?: NonNullable<TrpcRouterOutput['timeEntriesPaginated']>['data'][number];
     onSuccess?: () => void;
 };
 
@@ -82,7 +82,7 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
             return;
         }
 
-        trpcUtils.getTimeEntriesPaginated.refetch();
+        trpcUtils.timeEntriesPaginated.refetch();
         toast.success(`TimeEntry ${selectedTimeEntry ? 'Updated' : 'Created'} successfully`);
         onSuccess?.();
         setOpen(false);

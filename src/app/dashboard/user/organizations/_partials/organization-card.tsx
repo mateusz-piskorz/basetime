@@ -6,7 +6,7 @@ import { Clock, FolderClosed, Users2 } from 'lucide-react';
 import Link from 'next/link';
 
 type Props = {
-    organization: NonNullable<TrpcRouterOutput['getUserOrganizations']>[number];
+    organization: NonNullable<TrpcRouterOutput['organizations']>[number];
 };
 
 export const OrganizationCard = ({ organization: { id, _count, loggedTime, name, ownership } }: Props) => {

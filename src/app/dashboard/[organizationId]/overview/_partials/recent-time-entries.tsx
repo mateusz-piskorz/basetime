@@ -16,17 +16,17 @@ type Props = {
 
 export const RecentTimeEntries = ({ scope }: Props) => {
     const { organizationId, member } = useMember();
-    const { data } = trpc.getTimeEntries.useQuery({
+    const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
         ...(scope === 'member' && { memberIds: [member.id] }),
-        limit: 4,
+        limit: '4',
     });
 
     const paddedEntries = useMemo(() => {
-        const entries = (data?.timeEntries ?? []).slice(0, 4);
+        const entries = (timeEntries?.data || []).slice(0, 4);
         const emptySlots = Array(Math.max(0, 4 - entries.length)).fill(null);
         return [...entries, ...emptySlots];
-    }, [data]) as NonNullable<typeof data>['timeEntries'];
+    }, [timeEntries]) as NonNullable<typeof timeEntries>['data'];
 
     return (
         <div className="h-[300px] flex-1 md:min-w-[330px] lg:min-w-[300px]">

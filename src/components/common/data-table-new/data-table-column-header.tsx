@@ -15,8 +15,6 @@ export function DataTableColumnHeader<TData, TValue>({ column, className }: Data
         return <div className={cn(className)}>{column.columnDef.meta?.title}</div>;
     }
 
-    // console.log(column.getIsSorted());
-
     return (
         <div className={cn('flex items-center space-x-2', className)}>
             <DropdownMenu>

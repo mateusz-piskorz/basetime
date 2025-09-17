@@ -20,7 +20,7 @@ export const SectionProjects = () => {
     const { organizationId } = useMember();
     const { role } = useMember().member;
 
-    const { data, error, isLoading, refetch } = trpc.getProjects.useQuery({ organizationId });
+    const { data, error, isLoading, refetch } = trpc.projects.useQuery({ organizationId });
     const [selectedId, setSelectedId] = useState<null | string>(null);
     const selectedProject = data?.find((project) => project.id === selectedId);
 

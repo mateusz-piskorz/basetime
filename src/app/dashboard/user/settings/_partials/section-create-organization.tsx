@@ -30,7 +30,7 @@ export const SectionUpsertOrganization = () => {
         }
 
         toast.success('Organization created successfully');
-        trpcUtils.getUserOrganizations.refetch();
+        trpcUtils.organizations.refetch();
     };
 
     return (

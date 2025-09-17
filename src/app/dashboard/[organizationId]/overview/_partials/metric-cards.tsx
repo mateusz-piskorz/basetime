@@ -19,25 +19,32 @@ export const MetricCards = ({ scope, setScope }: Props) => {
     const { dayjs } = useDayjs();
     const { member, organizationId, roundUpMinutesThreshold } = useMember();
 
-    const { data } = trpc.getTimeEntries.useQuery({
+    const { data: timeEntriesByMember } = trpc.timeEntriesByMember.useQuery({
         organizationId,
         ...(scope === 'member' && { memberIds: [member.id] }),
         startDate: dayjs().startOf('week').toDate().toString(),
         endDate: dayjs().endOf('week').toDate().toString(),
     });
 
-    const totalMinutes = useMemo(() => sumTimeEntries({ entries: data?.timeEntries || [], dayjs }), [data, dayjs]);
+    const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
+        organizationId,
+        ...(scope === 'member' && { memberIds: [member.id] }),
+        startDate: dayjs().startOf('week').toDate().toString(),
+        endDate: dayjs().endOf('week').toDate().toString(),
+    });
+
+    const totalMinutes = useMemo(() => sumTimeEntries({ entries: timeEntries?.data || [], dayjs }), [timeEntries, dayjs]);
     const billableAmount = useMemo(
         () =>
             sumBillableAmount({
                 roundUpMinutesThreshold,
                 members:
-                    data?.timeEntriesByMembers?.map((member) => ({
+                    timeEntriesByMember?.map((member) => ({
                         hourlyRate: member.hourlyRate || 0,
                         minutes: sumTimeEntries({ entries: member.TimeEntries, dayjs }),
                     })) || [],
             }),
-        [data, roundUpMinutesThreshold, dayjs],
+        [timeEntriesByMember, roundUpMinutesThreshold, dayjs],
     );
 
     return (

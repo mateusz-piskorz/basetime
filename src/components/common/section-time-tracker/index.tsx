@@ -30,7 +30,7 @@ export const SectionTimeTracker = ({ className }: Props) => {
         organizationId,
     } = useMember();
 
-    const { data: activeTimeEntry, isPending, refetch } = trpc.getActiveTimeEntry.useQuery({ memberId });
+    const { data: activeTimeEntry, isPending, refetch } = trpc.activeTimeEntry.useQuery({ memberId });
 
     useEffect(() => {
         if (activeTimeEntry) {
@@ -58,8 +58,8 @@ export const SectionTimeTracker = ({ className }: Props) => {
             return;
         }
         refetch();
-        trpcUtils.getTimeEntries.refetch({ organizationId });
-        trpcUtils.getTimeEntriesPaginated.refetch({ organizationId });
+        trpcUtils.timeEntriesByMember.refetch({ organizationId });
+        trpcUtils.timeEntriesPaginated.refetch({ organizationId });
     };
     return (
         <div className={cn('space-y-8 px-4 md:px-6 lg:px-8', className)}>

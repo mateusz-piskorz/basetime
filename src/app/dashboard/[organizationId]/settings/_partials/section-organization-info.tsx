@@ -19,7 +19,7 @@ import z from 'zod';
 export const SectionOrganizationInfo = () => {
     const { organizationId } = useMember();
 
-    const { data, isLoading, error } = trpc.getOrganization.useQuery({ organizationId });
+    const { data, isLoading, error } = trpc.organizations.useQuery({ organizationId });
 
     return (
         <div className="space-y-8 px-4 md:px-8">
@@ -27,7 +27,7 @@ export const SectionOrganizationInfo = () => {
             {error && <p className="text-red-500">error getting organization info</p>}
             {!error && isLoading && <SpinLoader />}
 
-            {!error && !isLoading && data && <FormComponent organizationId={data.id} defaultValues={{ ...data }} />}
+            {!error && !isLoading && data?.length && <FormComponent organizationId={data[0].id} defaultValues={{ ...data[0] }} />}
         </div>
     );
 };
@@ -48,7 +48,8 @@ const FormComponent = ({ organizationId, defaultValues }: Props) => {
         }
 
         toast.success('Organization updated successfully');
-        trpcUtils.getUserOrganizations.refetch();
+        // todo: refresh all dependant queries
+        trpcUtils.organizations.refetch();
     };
 
     const form = useForm({

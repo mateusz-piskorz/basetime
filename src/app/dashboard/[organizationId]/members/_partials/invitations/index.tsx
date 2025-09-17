@@ -31,7 +31,7 @@ export const TableInvitations = ({ open, setOpen }: Props) => {
     const order_direction = searchParams.get('order_direction');
     const status = searchParams.getAll('status') as INVITATION_STATUS[];
 
-    const { data, refetch } = trpc.getInvitations.useQuery({ organizationId, limit, page, order_column, order_direction, status });
+    const { data, refetch } = trpc.invitations.useQuery({ organizationId, limit, page, order_column, order_direction, status });
 
     const handleCancelInvitation = async (invitationId: string) => {
         const res = await updateInvitationStatus({ invitationId, status: 'CANCELED' });

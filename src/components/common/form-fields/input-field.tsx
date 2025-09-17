@@ -53,7 +53,7 @@ export const InputField = <T extends FieldValues, IT extends InputType>({
                             disabled={disabled}
                             className={classNameInput}
                             onFocus={onFocus}
-                            placeholder={placeholder || label}
+                            placeholder={placeholder}
                             {...field}
                             value={field.value || ''}
                             type={type}

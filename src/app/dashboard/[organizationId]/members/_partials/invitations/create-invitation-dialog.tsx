@@ -37,7 +37,7 @@ export const CreateInvitationDialog = ({ open, setOpen }: Props) => {
         }
 
         toast.success('Invitation sent successfully');
-        trpcUtils.getInvitations.refetch();
+        trpcUtils.invitations.refetch();
         setOpen(false);
     };
 

@@ -19,7 +19,7 @@ export const Last7Days = ({ scope }: Props) => {
     const { dayjs } = useDayjs();
 
     const { organizationId, member } = useMember();
-    const { data } = trpc.getTimeEntries.useQuery({
+    const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
         ...(scope === 'member' && { memberIds: [member.id] }),
         startDate: dayjs().subtract(7, 'day').toDate().toString(),
@@ -28,14 +28,14 @@ export const Last7Days = ({ scope }: Props) => {
     const segments = useMemo(
         () =>
             timeEntrySegments({
-                timeEntries: data?.timeEntries || [],
+                timeEntries: timeEntries?.data || [],
                 start: dayjs().toDate(),
                 end: dayjs().subtract(6, 'day').toDate(),
                 granularity: 'day',
                 nameFormatter: ({ index }) => (index === 0 ? 'Today' : index === 1 ? 'Yesterday' : `${index + 1} days ago`),
                 dayjs,
             }),
-        [data, dayjs],
+        [timeEntries, dayjs],
     );
 
     return (

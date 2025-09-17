@@ -20,14 +20,14 @@ type Props = {
     open: boolean;
     setOpen: (val: boolean) => void;
     onSuccess: () => void;
-    member: NonNullable<TrpcRouterOutput['getMembers']>[number];
+    member: NonNullable<TrpcRouterOutput['members']>[number];
 };
 
 export const UpdateMemberDialog = ({ open, setOpen, onSuccess, member }: Props) => {
     const { currency } = useMember();
     const trpcUtils = trpc.useUtils();
     const { organizationId } = useMember();
-    const { data: projects } = trpc.getProjects.useQuery({ organizationId });
+    const { data: projects } = trpc.projects.useQuery({ organizationId });
 
     const form = useForm({
         resolver: zodResolver(updateMemberSchema),
@@ -46,7 +46,7 @@ export const UpdateMemberDialog = ({ open, setOpen, onSuccess, member }: Props) 
         }
 
         toast.success('Member updated successfully');
-        trpcUtils.getMembers.refetch();
+        trpcUtils.members.refetch();
         onSuccess();
     };
 

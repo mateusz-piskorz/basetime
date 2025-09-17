@@ -29,8 +29,8 @@ export const TableTimeEntry = () => {
     const [members, setMembers] = useState<string[]>([]);
     const [projects, setProjects] = useState<string[]>([]);
 
-    const { data: membersData } = trpc.getMembers.useQuery({ organizationId });
-    const { data: projectsData } = trpc.getProjects.useQuery({ organizationId, onlyManageable: true });
+    const { data: membersData } = trpc.members.useQuery({ organizationId });
+    const { data: projectsData } = trpc.projects.useQuery({ organizationId });
 
     const searchParams = useSearchParams();
     const page = searchParams.get('page');
@@ -60,7 +60,7 @@ export const TableTimeEntry = () => {
 
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    const { data: timeEntries, refetch } = trpc.getTimeEntriesPaginated.useQuery({
+    const { data: timeEntries, refetch } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
         order_column: sorting?.[0]?.id,
         order_direction: sorting?.[0]?.desc ? 'desc' : 'asc',

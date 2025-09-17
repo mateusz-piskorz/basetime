@@ -10,10 +10,10 @@ export const timeEntriesPaginated = publicProcedure
     .input(
         z.object({
             organizationId: z.string(),
-            projectIds: z.array(z.string()).nullish(),
-            memberIds: z.array(z.string()).nullish(),
-            page: z.string().nullish(),
-            limit: z.string().nullish(),
+            projects: z.array(z.string()).nullish(),
+            members: z.array(z.string()).nullish(),
+            page: z.number().nullish(),
+            limit: z.number().nullish(),
             takeAll: z.boolean().nullish(),
             order_column: z.string().nullish(),
             order_direction: z.string().nullish(),
@@ -26,8 +26,8 @@ export const timeEntriesPaginated = publicProcedure
         async ({
             input: {
                 organizationId,
-                memberIds,
-                projectIds,
+                members,
+                projects,
                 limit: limitInput,
                 order_column,
                 order_direction,
@@ -39,7 +39,7 @@ export const timeEntriesPaginated = publicProcedure
             },
         }) => {
             const session = await getSession();
-            if (!session) return { totalPages: 0, total: 0, page: 1, limit: 25, data: [] };
+            if (!session) return { totalPages: 1, total: 0, page: 1, limit: 25, data: [] };
 
             const start = startDate ? new Date(startDate) : undefined;
             const end = endDate ? new Date(endDate) : undefined;
@@ -51,9 +51,9 @@ export const timeEntriesPaginated = publicProcedure
             const where = {
                 organizationId,
                 ...(q && { name: { contains: q } }),
-                ...(memberIds?.length
+                ...(members?.length
                     ? {
-                          memberId: { in: memberIds },
+                          memberId: { in: members },
                           OR: [
                               { Member: { userId: session.userId } },
                               {
@@ -64,9 +64,9 @@ export const timeEntriesPaginated = publicProcedure
                           ],
                       }
                     : { Member: { userId: session.userId } }),
-                ...(projectIds?.length && {
+                ...(projects?.length && {
                     Project: {
-                        id: { in: projectIds },
+                        id: { in: projects },
                         OR: [
                             { Members: { some: { userId: session.userId } } },
                             { Organization: { Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] as MEMBER_ROLE[] } } } } },
@@ -97,7 +97,7 @@ export const timeEntriesPaginated = publicProcedure
                 return { ...timeEntry, duration: formatMinutes(getDurationInMinutes({ start: timeEntry.start, end: timeEntry.end, dayjs })) };
             });
 
-            const totalPages = Math.ceil(total / limit);
+            const totalPages = Math.ceil(total / limit) || 1;
             return { totalPages, total, page, limit, data };
         },
     );

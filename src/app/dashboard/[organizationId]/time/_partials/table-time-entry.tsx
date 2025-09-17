@@ -2,25 +2,25 @@
 
 'use client';
 
+import { ManualTimeEntryDialog } from '@/app/dashboard/[organizationId]/time/_partials/manual-time-entry-dialog';
 import ConfirmDialog from '@/components/common/confirm-dialog';
-import { DataTable } from '@/components/common/data-table-new';
+import { DataTable } from '@/components/common/data-table';
+import { DataTableViewOptions } from '@/components/common/data-table/data-table-view-options';
+import { MembersFilter } from '@/components/common/members-filter';
+import { ProjectsFilter } from '@/components/common/projects-filter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { projectColor } from '@/lib/constants/project-color';
 import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { useTable } from '@/lib/hooks/use-table';
+import { useTablePagination } from '@/lib/hooks/use-table-pagination';
+import { useTableSorting } from '@/lib/hooks/use-table-sorting';
 import { removeTimeEntries } from '@/lib/server-actions/time-entry';
 import { trpc } from '@/lib/trpc/client';
-import { SortingState } from '@tanstack/react-table';
 import { debounce } from 'lodash';
-import { Trash2, User2 } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { DataTableViewOptions } from '../data-table/data-table-view-options';
-import { ManualTimeEntryDialog } from '../manual-time-entry-dialog';
-import { MultiOptionsFilterState } from '../multi-options-filter-state';
 import { getTimeEntryColumns } from './time-entry-columns';
 
 export const TableTimeEntry = () => {
@@ -28,23 +28,15 @@ export const TableTimeEntry = () => {
     const { organizationId, member } = useMember();
     const [members, setMembers] = useState<string[]>([]);
     const [projects, setProjects] = useState<string[]>([]);
-
-    const { data: membersData } = trpc.members.useQuery({ organizationId });
-    const { data: projectsData } = trpc.projects.useQuery({ organizationId });
-
-    const searchParams = useSearchParams();
-    const page = searchParams.get('page');
-    const limit = searchParams.get('limit');
+    const { limit, page } = useTablePagination();
+    const [q, setQ] = useState('');
 
     const [open, setOpen] = useState(false);
     const [openConfirm, setOpenConfirm] = useState(false);
     const [openConfirmMulti, setOpenConfirmMulti] = useState(false);
 
     const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
-
     const [selectedIds, setSelectedIds] = useState<string[] | undefined>(undefined);
-
-    const [q, setQ] = useState('');
 
     const handleDeleteTimeEntries = async (timeEntryIds: string[]) => {
         const res = await removeTimeEntries({ timeEntryIds });
@@ -58,35 +50,37 @@ export const TableTimeEntry = () => {
         setOpenConfirmMulti(false);
     };
 
-    const [sorting, setSorting] = useState<SortingState>([]);
+    const { order_column, order_direction, sortingProp } = useTableSorting();
 
     const { data: timeEntries, refetch } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
-        order_column: sorting?.[0]?.id,
-        order_direction: sorting?.[0]?.desc ? 'desc' : 'asc',
+        order_column,
+        order_direction,
         page,
         limit,
-        memberIds: members,
-        projectIds: projects,
+        members,
+        projects,
         q,
     });
 
-    const columns = getTimeEntryColumns({
-        handleDeleteTimeEntry: (timeEntryId: string) => {
-            setSelectedId(timeEntryId);
-            setOpenConfirm(true);
-        },
-        handleEditTimeEntry: async (timeEntryId: string) => {
-            const timeEntry = timeEntries?.data.find((p) => p.id === timeEntryId);
-            if (!timeEntry) return;
+    const { table } = useTable({
+        columns: getTimeEntryColumns({
+            handleDeleteTimeEntry: (timeEntryId: string) => {
+                setSelectedId(timeEntryId);
+                setOpenConfirm(true);
+            },
+            handleEditTimeEntry: async (timeEntryId: string) => {
+                const timeEntry = timeEntries?.data.find((p) => p.id === timeEntryId);
+                if (!timeEntry) return;
 
-            setSelectedId(timeEntry.id);
-            setOpen(true);
-        },
-        dayjs,
+                setSelectedId(timeEntry.id);
+                setOpen(true);
+            },
+            dayjs,
+        }),
+        data: timeEntries?.data,
+        sortingProp,
     });
-
-    const { table } = useTable({ columns, data: timeEntries?.data, sorting, setSorting });
 
     const selected = table.getFilteredSelectedRowModel().rows;
 
@@ -123,6 +117,8 @@ export const TableTimeEntry = () => {
             />
 
             <DataTable
+                table={table}
+                totalPages={timeEntries?.totalPages}
                 toolbar={
                     <>
                         <div className="flex flex-wrap justify-between gap-4">
@@ -135,35 +131,8 @@ export const TableTimeEntry = () => {
                                 />
 
                                 <div className="flex items-center gap-2">
-                                    <MultiOptionsFilterState
-                                        options={(projectsData || []).map(({ id, name, color }) => ({
-                                            label: (
-                                                <>
-                                                    <span
-                                                        className="mr-2 inline-block h-2 w-2 rounded-full"
-                                                        style={{ backgroundColor: projectColor[color] }}
-                                                    />
-                                                    {name}
-                                                </>
-                                            ),
-                                            value: id,
-                                        }))}
-                                        setValues={(val) => setProjects(val)}
-                                        values={projects}
-                                        title="Projects"
-                                    />
-                                    {['MANAGER', 'OWNER'].includes(member.role) && (
-                                        <MultiOptionsFilterState
-                                            options={(membersData || []).map(({ User, id }) => ({
-                                                label: `${User.name} ${member.id === id ? '(You)' : ''}`,
-                                                value: id,
-                                                icon: User2,
-                                            }))}
-                                            setValues={(val) => setMembers(val)}
-                                            values={members}
-                                            title="Members"
-                                        />
-                                    )}
+                                    <ProjectsFilter projects={projects} setProjects={setProjects} />
+                                    {['MANAGER', 'OWNER'].includes(member.role) && <MembersFilter members={members} setMembers={setMembers} />}
                                 </div>
                             </div>
                             <div className="flex gap-4">
@@ -195,8 +164,6 @@ export const TableTimeEntry = () => {
                         )}
                     </>
                 }
-                table={table}
-                totalPages={timeEntries?.totalPages}
             />
         </>
     );

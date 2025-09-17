@@ -1,7 +1,7 @@
 import { SectionTimeTracker } from '@/components/common/section-time-tracker';
-import { TableTimeEntry } from '@/components/common/table-time-entry';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
+import { TableTimeEntry } from './_partials/table-time-entry';
 
 export default async function TimePage() {
     const user = await getSession();

@@ -1,7 +1,7 @@
 'use client';
 
 import { DashboardHeading } from '@/components/common/dashboard-heading';
-import { MultiOptionsFilterState } from '@/components/common/multi-options-filter-state';
+import { MultiSelect } from '@/components/common/multi-select';
 import { TimeEntryReportChart } from '@/components/common/time-entry-report-chart';
 import { Card, CardContent } from '@/components/ui/card';
 import { projectColor } from '@/lib/constants/project-color';
@@ -79,7 +79,7 @@ export const ReportsPage = () => {
             <div className="space-y-4 px-4 md:px-8">
                 <div className="flex flex-wrap justify-between">
                     <div className="space-y-4 space-x-4">
-                        <MultiOptionsFilterState
+                        <MultiSelect
                             options={(projectsData || []).map(({ id, name, color }) => ({
                                 label: (
                                     <>
@@ -94,7 +94,7 @@ export const ReportsPage = () => {
                             title="Projects"
                         />
                         {['MANAGER', 'OWNER'].includes(member.role) && (
-                            <MultiOptionsFilterState
+                            <MultiSelect
                                 options={(membersData || []).map(({ User, id }) => ({
                                     label: `${User.name} ${member.id === id ? '(You)' : ''}`,
                                     value: id,

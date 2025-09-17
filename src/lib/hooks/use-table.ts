@@ -19,19 +19,21 @@ import { useState } from 'react';
 type Props<TData, TValue> = {
     columns: ColumnDef<TData, TValue>[];
     data?: TData[];
-    sorting?: SortingState;
-    setSorting?: OnChangeFn<SortingState>;
+    sortingProp?: {
+        sorting: SortingState;
+        setSorting?: OnChangeFn<SortingState>;
+    };
 };
 
 const emptyArr: any[] = [];
 
-export const useTable = <TData, TValue>({ columns, data, setSorting, sorting }: Props<TData, TValue>) => {
+export const useTable = <TData, TValue>({ columns, data, sortingProp }: Props<TData, TValue>) => {
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
     const table = useReactTable({
         data: data || emptyArr,
         columns,
-        state: { columnVisibility, sorting },
-        onSortingChange: setSorting,
+        state: { columnVisibility, sorting: sortingProp?.sorting },
+        onSortingChange: sortingProp?.setSorting,
         onColumnVisibilityChange: setColumnVisibility,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -41,5 +43,5 @@ export const useTable = <TData, TValue>({ columns, data, setSorting, sorting }: 
         manualSorting: true,
     });
 
-    return { table, sorting };
+    return { table };
 };

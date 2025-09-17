@@ -1,81 +1,21 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils/common';
-import {
-    ColumnDef,
-    flexRender,
-    getCoreRowModel,
-    getFacetedRowModel,
-    getFacetedUniqueValues,
-    getFilteredRowModel,
-    getSortedRowModel,
-    useReactTable,
-    VisibilityState,
-} from '@tanstack/react-table';
-import { ComponentProps, useEffect, useState } from 'react';
+import { flexRender, Table as TableType } from '@tanstack/react-table';
 import { DataTablePagination } from './data-table-pagination';
-import { DataTableToolbar } from './data-table-toolbar';
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[];
-    data: TData[];
-    filters: ComponentProps<typeof DataTableToolbar>['filters'];
-    addNewRecord?: ComponentProps<typeof DataTableToolbar>['addNewRecord'];
+interface DataTableProps<TData> {
     totalPages?: number;
-    displayDataTableToolbar?: boolean;
     className?: string;
-    displaySearchBar?: boolean;
-    onSelectedRemove?: (selectedIds: string[]) => void;
+    table: TableType<TData>;
+    toolbar?: React.ReactNode;
 }
 
-export function DataTable<TData, TValue>({
-    columns,
-    data,
-    filters,
-    addNewRecord,
-    totalPages,
-    displayDataTableToolbar = true,
-    displaySearchBar = true,
-    className,
-    onSelectedRemove,
-}: DataTableProps<TData, TValue>) {
-    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-        //@ts-ignore
-        Object.fromEntries(columns.filter((e) => e.meta?.initialVisibility).map(({ accessorKey }) => [accessorKey.replace(/\./g, '_'), false])),
-    );
-    const [rowSelection, setRowSelection] = useState({});
-
-    const table = useReactTable({
-        data,
-        columns,
-        state: { columnVisibility, rowSelection },
-        onColumnVisibilityChange: setColumnVisibility,
-        getCoreRowModel: getCoreRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFacetedRowModel: getFacetedRowModel(),
-        getFacetedUniqueValues: getFacetedUniqueValues(),
-        onRowSelectionChange: setRowSelection,
-    });
-
-    useEffect(() => {
-        table.resetRowSelection();
-    }, [data]);
-
+export function DataTable<TData>({ totalPages, className, table, toolbar }: DataTableProps<TData>) {
     return (
         <div className={cn('bg-card flex flex-col gap-4 rounded-md p-4 shadow', className)}>
-            {displayDataTableToolbar && (
-                <DataTableToolbar
-                    onSelectedRemove={onSelectedRemove}
-                    table={table}
-                    filters={filters}
-                    addNewRecord={addNewRecord}
-                    displaySearchBar={displaySearchBar}
-                />
-            )}
+            {toolbar}
             <div className="rounded border">
                 <Table>
                     <TableHeader className="bg-accent">
@@ -117,7 +57,7 @@ export function DataTable<TData, TValue>({
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
                                     No results.
                                 </TableCell>
                             </TableRow>

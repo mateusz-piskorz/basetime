@@ -10,8 +10,8 @@ export const invitations = publicProcedure
             organizationId: z.string().nullish(),
             q: z.string().nullish(),
             queryColumn: z.enum(['ORGANIZATION_NAME', 'USER_NAME']).nullish(),
-            page: z.string().nullish(),
-            limit: z.string().nullish(),
+            page: z.number().nullish(),
+            limit: z.number().nullish(),
             order_column: z.string().nullish(),
             order_direction: z.string().nullish(),
             status: z.array(z.nativeEnum(INVITATION_STATUS)).nullish(),
@@ -22,7 +22,7 @@ export const invitations = publicProcedure
         const page = Number(pageInput) || 1;
         const skip = (page - 1) * limit;
         const session = await getSession();
-        if (!session) return { totalPages: 0, total: 0, page, limit, data: [] };
+        if (!session) return { totalPages: 1, total: 0, page, limit, data: [] };
 
         const total = await prisma.invitation.count({ where: { ...(organizationId ? { organizationId } : { userId: session.userId }) } });
         const data = await prisma.invitation.findMany({
@@ -43,6 +43,6 @@ export const invitations = publicProcedure
             orderBy: order_column ? { [order_column]: order_direction } : { createdAt: 'desc' },
         });
 
-        const totalPages = Math.ceil(total / limit);
+        const totalPages = Math.ceil(total / limit) || 1;
         return { totalPages, total, page, limit, data };
     });

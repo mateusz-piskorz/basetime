@@ -27,7 +27,15 @@ export const ReportsPage = () => {
     const { data: membersData } = trpc.members.useQuery({ organizationId });
     const { data: projectsData } = trpc.projects.useQuery({ organizationId });
 
-    const { data: timeEntriesData } = trpc.getTimeEntries.useQuery({
+    const { data: timeEntriesData } = trpc.timeEntriesPaginated.useQuery({
+        organizationId,
+        projectIds: projects,
+        memberIds: members,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
+    });
+
+    const { data: timeEntriesByMember } = trpc.timeEntriesByMember.useQuery({
         organizationId,
         projectIds: projects,
         memberIds: members,
@@ -41,7 +49,7 @@ export const ReportsPage = () => {
         const granularity = rangeOfDays < 24 ? 'day' : rangeOfDays < 93 ? 'week' : 'month';
 
         return timeEntrySegments({
-            timeEntries: timeEntriesData?.timeEntries || [],
+            timeEntries: timeEntriesData?.data || [],
             start: startDate,
             end: endDate,
             granularity,
@@ -49,18 +57,18 @@ export const ReportsPage = () => {
         });
     }, [timeEntriesData, startDate, endDate, dayjs]);
 
-    const totalMinutes = useMemo(() => sumTimeEntries({ entries: timeEntriesData?.timeEntries || [], dayjs }), [timeEntriesData, dayjs]);
+    const totalMinutes = useMemo(() => sumTimeEntries({ entries: timeEntriesData?.data || [], dayjs }), [timeEntriesData, dayjs]);
     const billableAmount = useMemo(
         () =>
             sumBillableAmount({
                 roundUpMinutesThreshold,
                 members:
-                    timeEntriesData?.timeEntriesByMembers?.map((member) => ({
+                    timeEntriesByMember?.map((member) => ({
                         hourlyRate: member.hourlyRate || 0,
                         minutes: sumTimeEntries({ entries: member.TimeEntries, dayjs }),
                     })) || [],
             }),
-        [timeEntriesData, roundUpMinutesThreshold, dayjs],
+        [timeEntriesByMember, roundUpMinutesThreshold, dayjs],
     );
 
     return (

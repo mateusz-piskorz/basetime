@@ -21,7 +21,7 @@ import z from 'zod';
 type Props = {
     open: boolean;
     setOpen: (val: boolean) => void;
-    project?: NonNullable<TrpcRouterOutput['getProjects']>[number];
+    project?: NonNullable<TrpcRouterOutput['projects']>[number];
 };
 
 export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
@@ -54,7 +54,7 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
             return;
         }
         toast.success(`Project ${project ? 'updated' : 'created'} successfully`);
-        trpcUtils.getProjects.refetch();
+        trpcUtils.projects.refetch();
         setOpen(false);
     };
     const { data: members } = trpc.members.useQuery({ organizationId });

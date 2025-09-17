@@ -127,6 +127,7 @@ test('invitations orderBy', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const desc = await queryClient.fetchQuery(trpc.invitations.queryOptions({ organizationId, order_column: 'status', order_direction: 'desc' }));
     const [desc1, desc2] = desc.data;
+    // it's by enum index, not alphabetically
     expect(desc1.status).toBe('CANCELED');
     expect(desc2.status).toBe('SENT');
 

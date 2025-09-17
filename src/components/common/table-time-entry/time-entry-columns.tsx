@@ -15,7 +15,7 @@ export const getTimeEntryColumns = ({
     handleEditTimeEntry: (TimeEntryId: string) => void;
     handleDeleteTimeEntry: (TimeEntryId: string) => void;
     dayjs: typeof import('dayjs');
-}): ColumnDef<NonNullable<TrpcRouterOutput['getTimeEntriesPaginated']>['data'][number]>[] => [
+}): ColumnDef<NonNullable<TrpcRouterOutput['timeEntriesPaginated']>['data'][number]>[] => [
     {
         id: 'select',
         header: ({ table }) => (

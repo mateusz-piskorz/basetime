@@ -58,8 +58,8 @@ export const SectionTimeTracker = ({ className }: Props) => {
             return;
         }
         refetch();
-        trpcUtils.getTimeEntries.refetch({ organizationId });
-        trpcUtils.getTimeEntriesPaginated.refetch({ organizationId });
+        trpcUtils.timeEntriesByMember.refetch({ organizationId });
+        trpcUtils.timeEntriesPaginated.refetch({ organizationId });
     };
     return (
         <div className={cn('space-y-8 px-4 md:px-6 lg:px-8', className)}>

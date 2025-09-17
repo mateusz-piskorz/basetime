@@ -17,7 +17,7 @@ type Props = {
 export const ThisWeekChart = ({ scope }: Props) => {
     const { dayjs } = useDayjs();
     const { organizationId, member } = useMember();
-    const { data } = trpc.getTimeEntries.useQuery({
+    const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
         ...(scope === 'member' && { memberIds: [member.id] }),
         startDate: dayjs().startOf('week').toDate().toString(),
@@ -27,14 +27,14 @@ export const ThisWeekChart = ({ scope }: Props) => {
     const segments = useMemo(
         () =>
             timeEntrySegments({
-                timeEntries: data?.timeEntries || [],
+                timeEntries: timeEntries?.data || [],
                 start: dayjs().startOf('week').toDate(),
                 end: dayjs().endOf('week').toDate(),
                 granularity: 'day',
                 nameFormatter: ({ date }) => dayjs(date).format('dddd'),
                 dayjs,
             }),
-        [data, dayjs],
+        [timeEntries, dayjs],
     );
 
     return (

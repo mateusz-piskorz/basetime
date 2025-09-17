@@ -14,7 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { ProjectBadge } from '../project-badge';
 
-type TimeEntry = NonNullable<TrpcRouterOutput['getTimeEntriesPaginated']>['data'][number];
+type TimeEntry = NonNullable<TrpcRouterOutput['timeEntriesPaginated']>['data'][number];
 
 type FieldType = Nullable<string>;
 
@@ -34,7 +34,7 @@ export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, na
     const { organizationId, member } = useMember();
     const [q, setQ] = useState('');
 
-    const { data } = trpc.getTimeEntriesPaginated.useQuery({
+    const { data } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
         memberIds: [member.id],
         limit: '7',

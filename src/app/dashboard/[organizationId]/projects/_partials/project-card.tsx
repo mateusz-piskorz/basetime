@@ -6,7 +6,7 @@ import { cn, formatMinutes } from '@/lib/utils/common';
 import { Clock, Timer, Users2 } from 'lucide-react';
 
 type Props = {
-    project: NonNullable<TrpcRouterOutput['getProjects']>[number];
+    project: NonNullable<TrpcRouterOutput['projects']>[number];
     deleteProject: (memberId: string) => void;
     manageProject: (memberId: string) => void;
 };

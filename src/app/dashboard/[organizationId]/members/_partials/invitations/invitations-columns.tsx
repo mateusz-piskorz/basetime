@@ -13,7 +13,7 @@ export const getInvitationsColumns = ({
 }: {
     handleCancel: (invitationId: string) => void;
     dayjs: typeof import('dayjs');
-}): ColumnDef<NonNullable<TrpcRouterOutput['getInvitations']>['data'][number]>[] => [
+}): ColumnDef<NonNullable<TrpcRouterOutput['invitations']>['data'][number]>[] => [
     {
         accessorKey: 'User_email',
         meta: { title: 'User Email' },

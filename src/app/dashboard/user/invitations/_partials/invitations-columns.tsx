@@ -12,7 +12,7 @@ export const getInvitationsColumns = ({
 }: {
     handleAction: (args: { invitationId: string; action: 'accepted' | 'rejected' }) => void;
     dayjs: typeof import('dayjs');
-}): ColumnDef<NonNullable<TrpcRouterOutput['getInvitations']>['data'][number]>[] => [
+}): ColumnDef<NonNullable<TrpcRouterOutput['invitations']>['data'][number]>[] => [
     {
         accessorKey: 'Organization_name',
         meta: { title: 'Organization Name' },

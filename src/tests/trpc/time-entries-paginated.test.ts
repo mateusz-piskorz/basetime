@@ -97,7 +97,7 @@ test('employee can get his timeEntries', async () => {
     const { id, timeEntry } = employee;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesPaginated.queryOptions({ organizationId, memberIds: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesPaginated.queryOptions({ organizationId, members: [manager.memberId, employee.memberId, owner.memberId] }),
     );
 
     expect(res.data.length).toBe(1);
@@ -108,7 +108,7 @@ test('manager can get others timeEntries', async () => {
     const { id } = manager;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesPaginated.queryOptions({ organizationId, memberIds: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesPaginated.queryOptions({ organizationId, members: [manager.memberId, employee.memberId, owner.memberId] }),
     );
 
     expect(res.data.length).toBe(3);
@@ -118,7 +118,7 @@ test('owner can get others timeEntries', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesPaginated.queryOptions({ organizationId, memberIds: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesPaginated.queryOptions({ organizationId, members: [manager.memberId, employee.memberId, owner.memberId] }),
     );
 
     expect(res.data.length).toBe(3);
@@ -128,7 +128,7 @@ test('limit arg works - timeEntries', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesPaginated.queryOptions({ organizationId, limit: '2', memberIds: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesPaginated.queryOptions({ organizationId, limit: 2, members: [manager.memberId, employee.memberId, owner.memberId] }),
     );
 
     expect(res.data.length).toBe(2);
@@ -138,7 +138,7 @@ test('page arg works - timeEntries', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const page1 = await queryClient.fetchQuery(
-        trpc.timeEntriesPaginated.queryOptions({ organizationId, limit: '1', page: '1', memberIds: [manager.memberId, employee.memberId] }),
+        trpc.timeEntriesPaginated.queryOptions({ organizationId, limit: 1, page: 1, members: [manager.memberId, employee.memberId] }),
     );
 
     expect(page1.data.length).toBe(1);
@@ -146,7 +146,7 @@ test('page arg works - timeEntries', async () => {
 
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const page2 = await queryClient.fetchQuery(
-        trpc.timeEntriesPaginated.queryOptions({ organizationId, limit: '1', page: '2', memberIds: [manager.memberId, employee.memberId] }),
+        trpc.timeEntriesPaginated.queryOptions({ organizationId, limit: 1, page: 2, members: [manager.memberId, employee.memberId] }),
     );
 
     expect(page2.data.length).toBe(1);
@@ -159,7 +159,7 @@ test('order arg works - timeEntries', async () => {
     const desc = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             organizationId,
-            memberIds: [manager.memberId, employee.memberId],
+            members: [manager.memberId, employee.memberId],
             order_column: 'name',
             order_direction: 'desc',
         }),
@@ -174,7 +174,7 @@ test('order arg works - timeEntries', async () => {
     const asc = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             organizationId,
-            memberIds: [manager.memberId, employee.memberId],
+            members: [manager.memberId, employee.memberId],
             order_column: 'name',
             order_direction: 'asc',
         }),
@@ -189,7 +189,7 @@ test('members arg works - timeEntries', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesPaginated.queryOptions({ organizationId, memberIds: [employee.memberId, owner.memberId] }),
+        trpc.timeEntriesPaginated.queryOptions({ organizationId, members: [employee.memberId, owner.memberId] }),
     );
 
     expect(res.data.length).toBe(2);
@@ -204,8 +204,8 @@ test('projects arg works - timeEntries', async () => {
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             organizationId,
-            memberIds: [employee.memberId, owner.memberId, manager.memberId],
-            projectIds: [employee.projectId, manager.projectId],
+            members: [employee.memberId, owner.memberId, manager.memberId],
+            projects: [employee.projectId, manager.projectId],
         }),
     );
 
@@ -221,8 +221,8 @@ test('projects arg employee permission - timeEntries', async () => {
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             organizationId,
-            memberIds: [employee.memberId, owner.memberId, manager.memberId],
-            projectIds: [employee.projectId, manager.projectId],
+            members: [employee.memberId, owner.memberId, manager.memberId],
+            projects: [employee.projectId, manager.projectId],
         }),
     );
 
@@ -236,9 +236,9 @@ test('takeAll arg works - timeEntries', async () => {
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             organizationId,
-            limit: '1',
+            limit: 1,
             takeAll: true,
-            memberIds: [employee.memberId, owner.memberId, manager.memberId],
+            members: [employee.memberId, owner.memberId, manager.memberId],
         }),
     );
 
@@ -251,7 +251,7 @@ test('startDate, endDate arg works - timeEntries', async () => {
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             organizationId,
-            memberIds: [employee.memberId, owner.memberId, manager.memberId],
+            members: [employee.memberId, owner.memberId, manager.memberId],
             startDate: dayjs().subtract(6, 'h').subtract(30, 'minutes').toDate().toString(),
             endDate: dayjs().subtract(3, 'h').subtract(30, 'minutes').toDate().toString(),
         }),
@@ -269,7 +269,7 @@ test('query arg works - timeEntries', async () => {
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             organizationId,
-            memberIds: [employee.memberId, owner.memberId, manager.memberId],
+            members: [employee.memberId, owner.memberId, manager.memberId],
             q: 'emplo',
         }),
     );

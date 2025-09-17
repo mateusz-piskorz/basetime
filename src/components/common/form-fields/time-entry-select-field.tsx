@@ -36,8 +36,8 @@ export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, na
 
     const { data } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
-        memberIds: [member.id],
-        limit: '7',
+        members: [member.id],
+        limit: 7,
         q,
         order_column: 'createdAt',
         order_direction: 'desc',

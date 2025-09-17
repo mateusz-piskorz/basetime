@@ -112,12 +112,12 @@ test('invitations query filter', async () => {
 test('invitations pagination', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
-    const page1 = await queryClient.fetchQuery(trpc.invitations.queryOptions({ organizationId, limit: '1', page: '1' }));
+    const page1 = await queryClient.fetchQuery(trpc.invitations.queryOptions({ organizationId, limit: 1, page: 1 }));
 
     expect(page1.data.length).toBe(1);
 
     mockedGetSession.mockReturnValueOnce({ userId: id });
-    const page2 = await queryClient.fetchQuery(trpc.invitations.queryOptions({ organizationId, limit: '1', page: '2' }));
+    const page2 = await queryClient.fetchQuery(trpc.invitations.queryOptions({ organizationId, limit: 1, page: 2 }));
     expect(page2.data.length).toBe(1);
     expect(page2.data[0].id).not.toBe(page1.data[0].id);
 });

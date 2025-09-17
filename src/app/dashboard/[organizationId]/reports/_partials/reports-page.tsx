@@ -1,16 +1,15 @@
 'use client';
 
 import { DashboardHeading } from '@/components/common/dashboard-heading';
-import { MultiOptionsFilterState } from '@/components/common/multi-options-filter-state';
+import { MembersFilter } from '@/components/common/members-filter';
+import { ProjectsFilter } from '@/components/common/projects-filter';
 import { TimeEntryReportChart } from '@/components/common/time-entry-report-chart';
 import { Card, CardContent } from '@/components/ui/card';
-import { projectColor } from '@/lib/constants/project-color';
 import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { formatMinutes, sumBillableAmount, sumTimeEntries } from '@/lib/utils/common';
 import { timeEntrySegments } from '@/lib/utils/timeEntrySegments';
-import { User2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { PeriodDropdown } from './period-dropdown';
 
@@ -24,13 +23,10 @@ export const ReportsPage = () => {
     const [members, setMembers] = useState<string[]>([]);
     const [projects, setProjects] = useState<string[]>([]);
 
-    const { data: membersData } = trpc.members.useQuery({ organizationId });
-    const { data: projectsData } = trpc.projects.useQuery({ organizationId });
-
     const { data: timeEntriesData } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
-        projectIds: projects,
-        memberIds: members,
+        projects,
+        members,
         startDate: startDate.toString(),
         endDate: endDate.toString(),
     });
@@ -79,32 +75,8 @@ export const ReportsPage = () => {
             <div className="space-y-4 px-4 md:px-8">
                 <div className="flex flex-wrap justify-between">
                     <div className="space-y-4 space-x-4">
-                        <MultiOptionsFilterState
-                            options={(projectsData || []).map(({ id, name, color }) => ({
-                                label: (
-                                    <>
-                                        <span className="mr-2 inline-block h-2 w-2 rounded-full" style={{ backgroundColor: projectColor[color] }} />
-                                        {name}
-                                    </>
-                                ),
-                                value: id,
-                            }))}
-                            setValues={(val) => setProjects(val)}
-                            values={projects}
-                            title="Projects"
-                        />
-                        {['MANAGER', 'OWNER'].includes(member.role) && (
-                            <MultiOptionsFilterState
-                                options={(membersData || []).map(({ User, id }) => ({
-                                    label: `${User.name} ${member.id === id ? '(You)' : ''}`,
-                                    value: id,
-                                    icon: User2,
-                                }))}
-                                setValues={(val) => setMembers(val)}
-                                values={members}
-                                title="Members"
-                            />
-                        )}
+                        <ProjectsFilter projects={projects} setProjects={setProjects} />
+                        {['MANAGER', 'OWNER'].includes(member.role) && <MembersFilter members={members} setMembers={setMembers} />}
                     </div>
                     <PeriodDropdown startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} />
                 </div>

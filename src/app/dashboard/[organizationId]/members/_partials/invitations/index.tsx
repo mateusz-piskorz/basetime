@@ -2,16 +2,23 @@
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { DataTable } from '@/components/common/data-table';
+import { DataTableViewOptions } from '@/components/common/data-table/data-table-view-options';
+import { InvitationStatusFilter } from '@/components/common/invitation-status-filter';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { useMember } from '@/lib/hooks/use-member';
+import { useTable } from '@/lib/hooks/use-table';
+import { useTablePagination } from '@/lib/hooks/use-table-pagination';
+import { useTableSorting } from '@/lib/hooks/use-table-sorting';
 import { updateInvitationStatus } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
 import { INVITATION_STATUS } from '@prisma/client';
-import { useSearchParams } from 'next/navigation';
+import { debounce } from 'lodash';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { getColumns } from './columns';
 import { CreateInvitationDialog } from './create-invitation-dialog';
-import { getInvitationsColumns } from './invitations-columns';
 
 type Props = {
     open: boolean;
@@ -19,19 +26,23 @@ type Props = {
 };
 
 export const TableInvitations = ({ open, setOpen }: Props) => {
+    const [q, setQ] = useState('');
     const { dayjs } = useDayjs();
     const { organizationId } = useMember();
-    const searchParams = useSearchParams();
-
-    const page = searchParams.get('page');
-    const limit = searchParams.get('limit');
+    const [status, setStatus] = useState<INVITATION_STATUS[]>([]);
     const [openConfirm, setOpenConfirm] = useState(false);
     const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
-    const order_column = searchParams.get('order_column');
-    const order_direction = searchParams.get('order_direction');
-    const status = searchParams.getAll('status') as INVITATION_STATUS[];
+    const { order_column, order_direction, sortingProp } = useTableSorting();
+    const { limit, page } = useTablePagination();
 
-    const { data, refetch } = trpc.invitations.useQuery({ organizationId, limit, page, order_column, order_direction, status });
+    const { data: invitations, refetch } = trpc.invitations.useQuery({
+        organizationId,
+        limit,
+        page,
+        status,
+        order_column,
+        order_direction,
+    });
 
     const handleCancelInvitation = async (invitationId: string) => {
         const res = await updateInvitationStatus({ invitationId, status: 'CANCELED' });
@@ -44,12 +55,16 @@ export const TableInvitations = ({ open, setOpen }: Props) => {
         setOpenConfirm(false);
     };
 
-    const columns = getInvitationsColumns({
-        handleCancel: async (invitationId: string) => {
-            setSelectedId(undefined);
-            handleCancelInvitation(invitationId);
-        },
-        dayjs,
+    const { table } = useTable({
+        columns: getColumns({
+            handleCancel: async (invitationId: string) => {
+                setSelectedId(invitationId);
+                setOpenConfirm(true);
+            },
+            dayjs,
+        }),
+        data: invitations?.data,
+        sortingProp,
     });
 
     return (
@@ -69,19 +84,33 @@ export const TableInvitations = ({ open, setOpen }: Props) => {
             />
 
             <DataTable
-                displaySearchBar={false}
-                className="my-4"
-                totalPages={data?.totalPages}
-                data={data?.data ?? []}
-                columns={columns}
-                addNewRecord={{
-                    label: 'Create invitation',
-                    action: () => {
-                        setSelectedId(undefined);
-                        setOpen(true);
-                    },
-                }}
-                filters={[{ filterKey: 'status', options: Object.values(INVITATION_STATUS).map((e) => ({ label: e, value: e })), title: 'Status' }]}
+                className="mt-4"
+                table={table}
+                totalPages={invitations?.totalPages}
+                toolbar={
+                    <div className="flex flex-wrap justify-between gap-4">
+                        <div className="flex gap-4">
+                            <Input
+                                placeholder="Search"
+                                onChange={debounce((event) => setQ(event.target.value), 300)}
+                                defaultValue={q || ''}
+                                className="min-w-[150px] rounded md:max-w-xs"
+                            />
+                            <InvitationStatusFilter setStatus={setStatus} status={status} />
+                        </div>
+                        <div className="flex gap-4">
+                            <DataTableViewOptions table={table} />
+                            <Button
+                                onClick={() => {
+                                    setSelectedId(undefined);
+                                    setOpen(true);
+                                }}
+                            >
+                                Sent new invitation
+                            </Button>
+                        </div>
+                    </div>
+                }
             />
         </>
     );

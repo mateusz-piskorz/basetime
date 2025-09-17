@@ -17,9 +17,9 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
-import { CalendarField } from './form-fields/calendar-field';
-import { DurationField } from './form-fields/duration-field';
-import { SelectProjectField } from './form-fields/select-project-field';
+import { CalendarField } from '../../../../../components/common/form-fields/calendar-field';
+import { DurationField } from '../../../../../components/common/form-fields/duration-field';
+import { SelectProjectField } from '../../../../../components/common/form-fields/select-project-field';
 
 type Props = {
     open: boolean;

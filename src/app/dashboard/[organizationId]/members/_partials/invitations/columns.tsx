@@ -7,7 +7,7 @@ import { InvitationStatusBadge } from '@/components/common/invitation-status-bad
 import { TrpcRouterOutput } from '@/lib/trpc/client';
 import { ColumnDef } from '@tanstack/react-table';
 
-export const getInvitationsColumns = ({
+export const getColumns = ({
     handleCancel,
     dayjs,
 }: {

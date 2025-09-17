@@ -19,7 +19,7 @@ export const RecentTimeEntries = ({ scope }: Props) => {
     const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
         ...(scope === 'member' && { memberIds: [member.id] }),
-        limit: '4',
+        limit: 4,
     });
 
     const paddedEntries = useMemo(() => {

@@ -25,7 +25,7 @@ export const Last7Days = ({ scope }: Props) => {
         startDate: dayjs().subtract(7, 'day').toDate().toString(),
     });
 
-    const segments = useMemo(
+    const { segments } = useMemo(
         () =>
             timeEntrySegments({
                 timeEntries: timeEntries?.data || [],

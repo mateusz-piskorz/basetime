@@ -24,7 +24,7 @@ export const ThisWeekChart = ({ scope }: Props) => {
         endDate: dayjs().endOf('week').toDate().toString(),
     });
 
-    const segments = useMemo(
+    const { segments } = useMemo(
         () =>
             timeEntrySegments({
                 timeEntries: timeEntries?.data || [],

@@ -54,7 +54,8 @@ type TimeEntrySegments = {
 };
 
 export const timeEntrySegments = ({ start, end, timeEntries, granularity = 'day', nameFormatter, dayjs }: TimeEntrySegments) => {
-    return dateSegments({ start, end, granularity, nameFormatter, dayjs }).map((segment) => {
+    let max = 0;
+    const segments = dateSegments({ start, end, granularity, nameFormatter, dayjs }).map((segment) => {
         let { loggedMinutes } = segment;
         let { timeEntriesCount } = segment;
 
@@ -73,10 +74,14 @@ export const timeEntrySegments = ({ start, end, timeEntries, granularity = 'day'
             }
         }
 
+        if (loggedMinutes > max) max = loggedMinutes;
+
         return {
             ...segment,
             loggedMinutes,
             timeEntriesCount,
         };
     });
+
+    return { segments, max };
 };

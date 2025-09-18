@@ -116,6 +116,7 @@ export const TableTimeEntry = () => {
             />
 
             <DataTable
+                className="border-none shadow-none"
                 table={table}
                 totalPages={timeEntries?.totalPages}
                 toolbar={

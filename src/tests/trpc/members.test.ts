@@ -2,9 +2,9 @@ import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
 import { getQueryClient, trpc } from '@/lib/trpc/server-client';
 
-const employee = { id: 'u1', role: 'EMPLOYEE' } as const;
-const manager = { id: 'u2', role: 'MANAGER' } as const;
-const owner = { id: 'u3', role: 'OWNER' } as const;
+const employee = { id: 'u1', role: 'EMPLOYEE', memberId: 'u1m' } as const;
+const manager = { id: 'u2', role: 'MANAGER', memberId: 'u2m' } as const;
+const owner = { id: 'u3', role: 'OWNER', memberId: 'u3m' } as const;
 const organizationId = 'oid';
 const salary = 25;
 
@@ -28,7 +28,9 @@ test('members setup', async () => {
                 name: index,
                 password: index,
                 id: user.id,
-                Members: { create: { role: user.role, organizationId: organization.id, HourlyRates: { create: { value: salary } } } },
+                Members: {
+                    create: { id: user.memberId, role: user.role, organizationId: organization.id, HourlyRates: { create: { value: salary } } },
+                },
             },
         });
     }
@@ -74,4 +76,17 @@ test('owner can get members', async () => {
     res.forEach((member) => {
         expect(member.hourlyRate).toBe(salary);
     });
+});
+
+test('hourlyRate returns latest salary', async () => {
+    const newestSalary = 64;
+    const { id, memberId } = employee;
+    await prisma.member.update({ where: { id: memberId }, data: { HourlyRates: { create: { value: newestSalary } } } });
+
+    mockedGetSession.mockReturnValueOnce({ userId: id });
+    const res = await queryClient.fetchQuery(trpc.members.queryOptions({ organizationId }));
+
+    expect(res.length).toBe(3);
+    const employeeMember = res.find((e) => e.id === memberId);
+    expect(employeeMember?.hourlyRate).toBe(newestSalary);
 });

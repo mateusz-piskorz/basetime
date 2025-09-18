@@ -1,4 +1,3 @@
-import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { type ReactNode } from 'react';
 import { AppHeader } from './app-header';
@@ -18,7 +17,6 @@ export const AppLayout = ({ children, breadcrumbs, type }: AppLayoutProps) => {
 
             <SidebarInset>
                 <AppHeader breadcrumbs={breadcrumbs} />
-                <Separator />
 
                 {children}
             </SidebarInset>

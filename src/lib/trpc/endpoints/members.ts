@@ -21,6 +21,7 @@ export const members = publicProcedure.input(z.object({ organizationId: z.string
                         { Member: { Organization: { Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } } } },
                     ],
                 },
+                orderBy: { createdAt: 'desc' },
             },
             User: { select: { id: true, name: true, email: true } },
             TimeEntries: true,

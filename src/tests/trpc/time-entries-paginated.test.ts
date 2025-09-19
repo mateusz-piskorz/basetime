@@ -124,6 +124,17 @@ test('owner can get others timeEntries', async () => {
     expect(res.data.length).toBe(3);
 });
 
+test('members all arg works -timeEntries', async () => {
+    const { id } = owner;
+    mockedGetSession.mockReturnValueOnce({ userId: id });
+    const res1 = await queryClient.fetchQuery(trpc.timeEntriesPaginated.queryOptions({ organizationId }));
+    expect(res1.data.length).toBe(1);
+
+    mockedGetSession.mockReturnValueOnce({ userId: id });
+    const res2 = await queryClient.fetchQuery(trpc.timeEntriesPaginated.queryOptions({ organizationId, members: 'all' }));
+    expect(res2.data.length).toBe(3);
+});
+
 test('limit arg works - timeEntries', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });

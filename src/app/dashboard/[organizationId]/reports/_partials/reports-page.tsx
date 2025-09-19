@@ -39,7 +39,7 @@ export const ReportsPage = () => {
         endDate: endDate.toString(),
     });
 
-    const segments = useMemo(() => {
+    const { segments } = useMemo(() => {
         const rangeOfDays = dayjs(endDate).diff(dayjs(startDate), 'day');
 
         const granularity = rangeOfDays < 24 ? 'day' : rangeOfDays < 93 ? 'week' : 'month';

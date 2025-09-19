@@ -20,7 +20,7 @@ export const OrganizationDashboard = () => {
                 <div className="flex flex-col flex-wrap gap-x-6 gap-y-10 md:flex-row">
                     <RecentTimeEntries scope={scope} />
                     <Last7Days scope={scope} />
-                    <ActivityGraph />
+                    <ActivityGraph scope={scope} />
                 </div>
             </div>
             <div className="mt-16 flex flex-col gap-8 px-4 md:flex-row md:px-6 lg:px-8">

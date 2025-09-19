@@ -17,10 +17,10 @@ type Props = {
 
 export const ActivityGraph = ({ scope }: Props) => {
     const { dayjs } = useDayjs();
-    const { organizationId, member } = useMember();
+    const { organizationId } = useMember();
     const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
-        ...(scope === 'member' && { memberIds: [member.id] }),
+        ...(scope === 'organization' && { members: 'all' }),
         startDate: dayjs().subtract(2, 'month').startOf('week').toDate().toString(),
     });
 
@@ -45,6 +45,7 @@ export const ActivityGraph = ({ scope }: Props) => {
                 <Activity className="text-muted-foreground size-5" />
                 <h2>Activity Graph</h2>
             </div>
+
             <Card className="h-[300px] py-0 pt-4">
                 <CardContent className="space-y-3 px-4 sm:px-6">
                     <div className="flex justify-around sm:ml-[36px]">
@@ -54,6 +55,7 @@ export const ActivityGraph = ({ scope }: Props) => {
                             </span>
                         ))}
                     </div>
+
                     <div className="flex h-full space-x-2">
                         <div className="hidden h-full flex-col justify-between sm:flex">
                             {weekSegments.map((weekDay) => (
@@ -62,6 +64,7 @@ export const ActivityGraph = ({ scope }: Props) => {
                                 </span>
                             ))}
                         </div>
+
                         <div className="grid h-full w-full grid-flow-col gap-2" style={{ gridTemplateRows: 'repeat(7, minmax(0, 1fr)' }}>
                             {segments.map(({ loggedMinutes, name, start }) => (
                                 <Tooltip key={name}>
@@ -73,12 +76,12 @@ export const ActivityGraph = ({ scope }: Props) => {
                                                     opacity:
                                                         max !== 0
                                                             ? loggedMinutes >= max
-                                                                ? 1
+                                                                ? 0.9
                                                                 : loggedMinutes >= max * 0.75
                                                                   ? 0.75
                                                                   : loggedMinutes >= max * 0.5
                                                                     ? 0.5
-                                                                    : loggedMinutes >= max * 0.25
+                                                                    : loggedMinutes >= max * 0.01
                                                                       ? 0.25
                                                                       : 0
                                                             : 0,

@@ -15,10 +15,10 @@ type Props = {
 };
 
 export const RecentTimeEntries = ({ scope }: Props) => {
-    const { organizationId, member } = useMember();
+    const { organizationId } = useMember();
     const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
-        ...(scope === 'member' && { memberIds: [member.id] }),
+        ...(scope === 'organization' && { members: 'all' }),
         limit: 4,
     });
 

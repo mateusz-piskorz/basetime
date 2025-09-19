@@ -16,13 +16,15 @@ type Props = {
 
 export const ThisWeekChart = ({ scope }: Props) => {
     const { dayjs } = useDayjs();
-    const { organizationId, member } = useMember();
+    const { organizationId } = useMember();
     const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
-        ...(scope === 'member' && { memberIds: [member.id] }),
+        ...(scope === 'organization' && { members: 'all' }),
         startDate: dayjs().startOf('week').toDate().toString(),
         endDate: dayjs().endOf('week').toDate().toString(),
     });
+
+    console.log(timeEntries);
 
     const { segments } = useMemo(
         () =>

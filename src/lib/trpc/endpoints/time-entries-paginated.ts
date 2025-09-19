@@ -11,7 +11,7 @@ export const timeEntriesPaginated = publicProcedure
         z.object({
             organizationId: z.string(),
             projects: z.array(z.string()).nullish(),
-            members: z.array(z.string()).nullish(),
+            members: z.union([z.array(z.string()), z.literal('all')]).nullish(),
             page: z.number().nullish(),
             limit: z.number().nullish(),
             takeAll: z.boolean().nullish(),
@@ -51,19 +51,25 @@ export const timeEntriesPaginated = publicProcedure
             const where = {
                 organizationId,
                 ...(q && { name: { contains: q } }),
-                ...(members?.length
+                ...(members === 'all'
                     ? {
-                          memberId: { in: members },
-                          OR: [
-                              { Member: { userId: session.userId } },
-                              {
-                                  Organization: {
-                                      Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] as MEMBER_ROLE[] } } },
-                                  },
-                              },
-                          ],
+                          Organization: {
+                              Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] as MEMBER_ROLE[] } } },
+                          },
                       }
-                    : { Member: { userId: session.userId } }),
+                    : members?.length
+                      ? {
+                            memberId: { in: members },
+                            OR: [
+                                { Member: { userId: session.userId } },
+                                {
+                                    Organization: {
+                                        Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] as MEMBER_ROLE[] } } },
+                                    },
+                                },
+                            ],
+                        }
+                      : { Member: { userId: session.userId } }),
                 ...(projects?.length && {
                     Project: {
                         id: { in: projects },

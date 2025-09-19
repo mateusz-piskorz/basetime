@@ -21,14 +21,14 @@ export const MetricCards = ({ scope, setScope }: Props) => {
 
     const { data: timeEntriesByMember } = trpc.timeEntriesByMember.useQuery({
         organizationId,
-        ...(scope === 'member' && { memberIds: [member.id] }),
+        ...(scope === 'organization' && { members: 'all' }),
         startDate: dayjs().startOf('week').toDate().toString(),
         endDate: dayjs().endOf('week').toDate().toString(),
     });
 
     const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
-        ...(scope === 'member' && { memberIds: [member.id] }),
+        ...(scope === 'organization' && { members: 'all' }),
         startDate: dayjs().startOf('week').toDate().toString(),
         endDate: dayjs().endOf('week').toDate().toString(),
     });

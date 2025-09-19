@@ -18,10 +18,10 @@ type Props = {
 export const Last7Days = ({ scope }: Props) => {
     const { dayjs } = useDayjs();
 
-    const { organizationId, member } = useMember();
+    const { organizationId } = useMember();
     const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
-        ...(scope === 'member' && { memberIds: [member.id] }),
+        ...(scope === 'organization' && { members: 'all' }),
         startDate: dayjs().subtract(7, 'day').toDate().toString(),
     });
 

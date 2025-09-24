@@ -43,7 +43,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     volumes:
-      - minio_data:/var/lib/minio/data
+      - minio_data_stg:/var/lib/minio/data
     networks:
       - btnetworkstg
     healthcheck:

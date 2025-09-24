@@ -25,7 +25,7 @@ services:
       MINIO_ROOT_USER: rootusername
       MINIO_ROOT_PASSWORD: rootpassword
     volumes:
-      - minio_data:/var/lib/minio/data
+      - minio_data_dev:/var/lib/minio/data
     networks:
       - btnetworkdev
     healthcheck:

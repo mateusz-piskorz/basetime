@@ -38,9 +38,23 @@ jobs:
           - 5432:5432
         options: >-
           --health-cmd pg_isready
-          --health-interval 10s
+          --health-interval 5s
           --health-timeout 5s
           --health-retries 5
+      minio:
+        image: quay.io/minio/minio:latest
+        env:
+          MINIO_ROOT_USER: rootusername
+          MINIO_ROOT_PASSWORD: rootpassword
+        ports:
+          - 9000:9000
+          - 9001:9001
+        options: >-
+          --health-cmd mc ready local
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+        command: server /data --console-address ":9001"
 
     steps:
       - uses: actions/checkout@v4
@@ -50,6 +64,20 @@ jobs:
 
       - name: Copy Environment File
         run: cp .env.example .env
+
+      - name: Install MinIO Client (mc)
+        run: |
+          wget https://dl.min.io/client/mc/release/linux-amd64/mc
+          chmod +x mc
+          sudo mv mc /usr/local/bin/
+
+      - name: Setup MinIO buckets and users
+        env:
+          MINIO_ROOT_USER: rootusername
+          MINIO_ROOT_PASSWORD: rootpassword
+          MINIO_USER: johndoe
+          MINIO_PASSWORD: johndoe123
+        run: bash ./scripts/minio-setup-buckets.sh
 
       - name: Start Next.js server
         run: nohup npm run dev &

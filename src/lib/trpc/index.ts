@@ -6,7 +6,7 @@ import { organizations } from './endpoints/organizations';
 import { projects } from './endpoints/projects';
 import { timeEntriesByMember } from './endpoints/time-entries-by-member';
 import { timeEntriesPaginated } from './endpoints/time-entries-paginated';
-import { updateAvatar } from './endpoints/update-avatar';
+
 import { createTRPCRouter } from './init';
 
 export const appRouter = createTRPCRouter({
@@ -18,7 +18,6 @@ export const appRouter = createTRPCRouter({
     activeTimeEntry,
     timeEntriesPaginated,
     timeEntriesByMember,
-    updateAvatar,
 });
 
 export type AppRouter = typeof appRouter;

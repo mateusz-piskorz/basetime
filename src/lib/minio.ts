@@ -5,7 +5,7 @@ import * as Minio from 'minio';
 type Bucket = 'main';
 
 const minioClient = new Minio.Client({
-    endPoint: process.env.MINIO_ENDPOINT!, //e.g. localhost
+    endPoint: process.env.MINIO_ENDPOINT!,
     port: 9000,
     accessKey: process.env.MINIO_USER,
     secretKey: process.env.MINIO_PASSWORD,

@@ -26,21 +26,6 @@ jobs:
   tests:
     needs: quality
     runs-on: ubuntu-latest
-    services:
-      db_dev:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: mydb
-          POSTGRES_USER: johndoe
-          POSTGRES_PASSWORD: randompassword
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - uses: actions/checkout@v4
 
@@ -49,6 +34,13 @@ jobs:
 
       - name: Copy Environment File
         run: cp .env.example .env
+
+      - name: Build and run dev containers
+        run: |
+          docker compose --file docker-compose.dev.yml up -d --build --force-recreate
+
+      - name: Wait for containers
+        run: sleep 10
 
       - name: Start Next.js server
         run: nohup npm run dev &

@@ -1,3 +1,9 @@
+volumes:
+  postgres_data_prod:
+
+networks:
+  btnetworkprod:
+
 services:
   app:
     build:
@@ -25,9 +31,3 @@ services:
       - postgres_data_prod:/var/lib/postgresql/data
     networks:
       - btnetworkprod
-
-volumes:
-  postgres_data_prod:
-
-networks:
-  btnetworkprod:

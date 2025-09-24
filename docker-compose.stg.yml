@@ -1,3 +1,9 @@
+volumes:
+  postgres_data_stg:
+
+networks:
+  btnetworkstg:
+
 services:
   app:
     build:
@@ -25,9 +31,3 @@ services:
       - postgres_data_stg:/var/lib/postgresql/data
     networks:
       - btnetworkstg
-
-volumes:
-  postgres_data_stg:
-
-networks:
-  btnetworkstg:

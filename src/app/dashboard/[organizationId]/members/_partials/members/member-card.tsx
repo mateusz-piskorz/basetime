@@ -8,20 +8,20 @@ import { Clock, DollarSign, FolderClosed } from 'lucide-react';
 
 type Props = {
     member: NonNullable<TrpcRouterOutput['members']>[number];
-
     deleteMember: (memberId: string) => void;
     manageMember: (memberId: string) => void;
 };
 
-export const MemberCard = ({ member: { id, User, _count, loggedTime, role, hourlyRate }, manageMember, deleteMember }: Props) => {
+export const MemberCard = ({ member: { id, User, _count, loggedTime, role, hourlyRate, avatar }, manageMember, deleteMember }: Props) => {
     const {
         member: { role: currentUserRole, id: currentMemberId },
     } = useMember();
+
     return (
         <Card className={cn('relative w-full overflow-hidden md:max-w-[325px]', currentMemberId === id && 'border-green-500/70')}>
             <CardContent className={cn('min-h-[200px] space-y-6', currentUserRole === 'EMPLOYEE' && 'min-h-[150px]')}>
                 <div className="flex gap-2">
-                    <UserInfo showEmail user={User} showCurrentUserIndicator={currentMemberId === id} />
+                    <UserInfo showEmail user={User} showCurrentUserIndicator={currentMemberId === id} avatar={avatar} />
                     {role}
                 </div>
 

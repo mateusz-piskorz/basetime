@@ -27,35 +27,6 @@ jobs:
   tests:
     needs: quality
     runs-on: ubuntu-latest
-    services:
-      db_dev:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: mydb
-          POSTGRES_USER: johndoe
-          POSTGRES_PASSWORD: randompassword
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
-      minio:
-        image: quay.io/minio/minio:latest
-        env:
-          MINIO_ROOT_USER: rootusername
-          MINIO_ROOT_PASSWORD: rootpassword
-        ports:
-          - 9000:9000
-          - 9001:9001
-        options: >-
-          --health-cmd mc ready local
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
-        command: server /data --console-address ":9001"
-
     steps:
       - uses: actions/checkout@v4
 
@@ -65,19 +36,12 @@ jobs:
       - name: Copy Environment File
         run: cp .env.example .env
 
-      - name: Install MinIO Client (mc)
+      - name: Build and run dev containers
         run: |
-          wget https://dl.min.io/client/mc/release/linux-amd64/mc
-          chmod +x mc
-          sudo mv mc /usr/local/bin/
+          docker compose --file docker-compose.dev.yml up -d --build --force-recreate
 
-      - name: Setup MinIO buckets and users
-        env:
-          MINIO_ROOT_USER: rootusername
-          MINIO_ROOT_PASSWORD: rootpassword
-          MINIO_USER: johndoe
-          MINIO_PASSWORD: johndoe123
-        run: bash ./scripts/minio-setup-buckets.sh
+      - name: Wait for containers
+        run: sleep 10
 
       - name: Start Next.js server
         run: nohup npm run dev &

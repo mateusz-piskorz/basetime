@@ -47,7 +47,7 @@ jobs:
         run: nohup npm run dev &
 
       - name: Wait for server to be ready
-        run: npx wait-on http://localhost:3000
+        run: npx wait-on http://localhost:3000 --timeout 20000
 
       - name: test
         run: npm run test

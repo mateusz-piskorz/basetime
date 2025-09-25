@@ -18,6 +18,8 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
       MINIO_ENDPOINT: ${MINIO_ENDPOINT}
       MINIO_SSL: ${MINIO_SSL}
+      MINIO_USER: ${MINIO_USER}
+      MINIO_PASSWORD: ${MINIO_PASSWORD}
     restart: unless-stopped
     depends_on:
       - db

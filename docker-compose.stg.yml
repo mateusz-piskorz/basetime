@@ -39,6 +39,7 @@ services:
       - postgres_data_stg:/var/lib/postgresql/data
     networks:
       - btnetworkstg
+      # turn it off on production
     ports:
       - 5432:5432
 

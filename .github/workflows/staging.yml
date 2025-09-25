@@ -86,12 +86,6 @@ jobs:
         run: |
           docker images -f "dangling=true" -q | xargs -r docker rmi
 
-      - name: Debug env
-        run: env | grep MINIO
-
-      - name: Debug MINIO_ENDPOINT in container
-        run: docker compose --file docker-compose.stg.yml run --rm app env | grep MINIO_ENDPOINT
-
       - name: Build and run containers
         run: |
           docker compose --file docker-compose.stg.yml up -d --build --force-recreate
@@ -102,5 +96,5 @@ jobs:
       - name: Run Prisma migrate deploy
         run: docker compose --file docker-compose.stg.yml run --rm -e HOME=/tmp -e NPM_CONFIG_CACHE=/tmp/.npm app npx prisma migrate deploy
 
-      - name: Prune Docker (optional)
-        run: docker system prune -f
+      # - name: Prune Docker (optional)
+      #   run: docker system prune -f

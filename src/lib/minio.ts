@@ -1,4 +1,4 @@
-console.log('DEBUG: MINIO_ENDPOINT:', process.env.MINIO_ENDPOINT);
+console.log('DEBUG ALL ENV:', process.env);
 
 import 'server-only';
 

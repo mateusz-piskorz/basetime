@@ -89,6 +89,9 @@ jobs:
       - name: Debug env
         run: env | grep MINIO
 
+      - name: Debug MINIO_ENDPOINT in container
+        run: docker compose --file docker-compose.stg.yml run --rm app env | grep MINIO_ENDPOINT
+
       - name: Build and run containers
         run: |
           docker compose --file docker-compose.stg.yml up -d --build --force-recreate

@@ -21,7 +21,8 @@ export async function POST(req: NextRequest) {
         await uploadFile({ bucket: 'main', file: resizedBuffer, fileName });
 
         return NextResponse.json({ success: true, message: 'Avatar uploaded and resized' });
-    } catch {
+    } catch (e) {
+        console.log(e);
         return NextResponse.json({ success: false, message: 'Something went wrong - update-avatar api post' });
     }
 }

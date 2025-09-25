@@ -4,7 +4,7 @@ import * as Minio from 'minio';
 
 type Bucket = 'main';
 
-if (process.env.MINIO_ENDPOINT) {
+if (!process.env.MINIO_ENDPOINT) {
     throw new Error('MINIO_ENDPOINT var undefined');
 }
 

@@ -1,3 +1,5 @@
+console.log('DEBUG: MINIO_ENDPOINT:', process.env.MINIO_ENDPOINT);
+
 import 'server-only';
 
 import * as Minio from 'minio';

@@ -3,7 +3,7 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
     output: 'standalone',
     images: {
-        domains: ['localhost', 'www.basetime.online', 'staging.basetime.online'],
+        domains: ['localhost', 'minio.basetime.online', 'stagingminio.basetime.online'],
     },
 };
 

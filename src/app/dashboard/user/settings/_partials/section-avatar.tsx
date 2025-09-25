@@ -6,14 +6,29 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { cn } from '@/lib/utils/common';
-import { ACCEPTED_IMAGE_EXT, updateAvatarSchema } from '@/lib/zod/profile-schema';
+import { ACCEPTED_IMAGE_EXT } from '@/lib/zod/profile-schema';
 import { Upload } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import z from 'zod';
+
+const ACCEPTED_IMAGE_TYPES = ['image/svg+xml', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 export const SectionAvatar = () => {
+    const updateAvatarSchema = useMemo(
+        () =>
+            z.object({
+                profile_img: z
+                    .instanceof(File)
+                    .refine((file) => file.size < 15000000, 'max file size is 15mb')
+                    .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), `Allowed file extensions: ${ACCEPTED_IMAGE_EXT.join(', ')}`)
+                    .nullable(),
+            }),
+        [],
+    );
+
     const router = useRouter();
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
@@ -31,12 +46,12 @@ export const SectionAvatar = () => {
             const formData = new FormData();
             formData.set('file', img);
 
-            res = await fetch('/api/update-avatar', {
+            res = await fetch('/api/user-avatar', {
                 method: 'POST',
                 body: formData,
             });
         } else {
-            res = await fetch('/api/update-avatar', {
+            res = await fetch('/api/user-avatar', {
                 method: 'DELETE',
             });
         }

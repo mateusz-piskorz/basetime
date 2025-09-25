@@ -19,6 +19,8 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+      - minio
+      - minio-create-bucket
     ports:
       - 3001:3000
     networks:
@@ -35,6 +37,8 @@ services:
       - postgres_data_stg:/var/lib/postgresql/data
     networks:
       - btnetworkstg
+    ports:
+      - 5432:5432
 
   minio:
     image: quay.io/minio/minio:latest
@@ -52,8 +56,7 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - 9000:9000
-      - 9001:9001
+      - 9001:9000
 
   minio-create-bucket:
     image: minio/mc:latest

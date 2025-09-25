@@ -1,5 +1,5 @@
 import { AuthProvider } from '@/lib/hooks/use-auth';
-import { getUserAvatar } from '@/lib/minio';
+import { getUserAvatarUrl } from '@/lib/minio';
 import { getSession } from '@/lib/session';
 import { QueryProvider } from '@/lib/trpc/queryProvider';
 import type { Metadata } from 'next';
@@ -29,7 +29,7 @@ export default async function RootLayout({
     children: React.ReactNode;
 }>) {
     const user = await getSession();
-    const avatar = user ? await getUserAvatar({ userId: user?.userId }) : null;
+    const avatar = user ? await getUserAvatarUrl({ userId: user?.userId }) : null;
 
     return (
         <html lang="en" suppressHydrationWarning>

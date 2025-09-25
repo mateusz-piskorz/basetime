@@ -1,14 +1,8 @@
-console.log('DEBUG ALL ENV:', process.env);
-
 import 'server-only';
 
 import * as Minio from 'minio';
 
 type Bucket = 'main';
-
-if (!process.env.MINIO_ENDPOINT) {
-    throw new Error('MINIO_ENDPOINT var undefined');
-}
 
 const minioClient = new Minio.Client({
     endPoint: process.env.MINIO_ENDPOINT!,

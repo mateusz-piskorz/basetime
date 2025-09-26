@@ -43,6 +43,8 @@ export const MemberList = ({ openInvitationDialog }: Props) => {
         setSelectedId(null);
     };
 
+    console.log({ data });
+
     return (
         <>
             {selectedMember && (

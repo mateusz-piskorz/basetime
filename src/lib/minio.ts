@@ -28,7 +28,7 @@ const getPresignedUrl = async ({ bucket, fileName }: { bucket: Bucket; fileName:
     } catch {
         exists = false;
     }
-    if (!exists) return null;
+    if (!exists) return undefined;
 
     return await minioClient.presignedGetObject(bucket, fileName, 60 * 24 * 24);
 };

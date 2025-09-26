@@ -34,7 +34,13 @@ export const members = publicProcedure.input(z.object({ organizationId: z.string
         res.map(async (member) => {
             const avatar = await getUserAvatarUrl({ userId: member.userId });
             const hourlyRate = member.HourlyRates?.length > 0 ? member.HourlyRates[0].value : undefined;
-            return { ...member, loggedTime: formatMinutes(sumTimeEntries({ entries: member.TimeEntries, dayjs })), hourlyRate, avatar };
+            return {
+                ...member,
+                User: { ...member.User, avatar },
+                loggedTime: formatMinutes(sumTimeEntries({ entries: member.TimeEntries, dayjs })),
+                hourlyRate,
+                avatar,
+            };
         }),
     );
 });

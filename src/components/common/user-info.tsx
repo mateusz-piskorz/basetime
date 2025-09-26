@@ -9,8 +9,9 @@ type Props = {
     user?: {
         name: string;
         email: string;
+        avatar?: string;
     };
-    avatar?: string | null;
+
     showEmail?: boolean;
     showCurrentUserIndicator?: boolean;
     onlyAvatar?: boolean;
@@ -26,7 +27,7 @@ export function UserInfo(props: Props) {
     return (
         <>
             <Avatar className={cn('h-8 w-8 overflow-hidden rounded-full', props.size === 'lg' && 'h-[100px] w-[100px]')}>
-                <AvatarImage src={props.avatar || auth.user?.avatar || ''} alt={name} />
+                <AvatarImage src={user?.avatar} alt={name} />
                 <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
                     {getInitials(name)}
                 </AvatarFallback>

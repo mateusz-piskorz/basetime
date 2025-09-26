@@ -29,7 +29,7 @@ export default async function RootLayout({
     children: React.ReactNode;
 }>) {
     const user = await getSession();
-    const avatar = user ? await getUserAvatarUrl({ userId: user?.userId }) : null;
+    const avatar = user ? await getUserAvatarUrl({ userId: user?.userId }) : undefined;
 
     return (
         <html lang="en" suppressHydrationWarning>

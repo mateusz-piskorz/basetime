@@ -34,6 +34,7 @@ const getPresignedUrl = async ({ bucket, fileName }: { bucket: Bucket; fileName:
     const publicUrl = rawUrl.replace(`http://${process.env.MINIO_ENDPOINT}:9000/`, process.env.MINIO_PUBLIC_ENDPOINT!);
     console.log({ rawUrl });
     console.log({ publicUrl });
+    console.log({ process: process.env });
     return publicUrl;
 };
 

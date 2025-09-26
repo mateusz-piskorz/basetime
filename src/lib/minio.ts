@@ -32,7 +32,8 @@ const getPresignedUrl = async ({ bucket, fileName }: { bucket: Bucket; fileName:
 
     const rawUrl = await minioClient.presignedGetObject(bucket, fileName, 60 * 24 * 24);
     const publicUrl = rawUrl.replace(`http://${process.env.MINIO_ENDPOINT}:9000/`, process.env.MINIO_PUBLIC_ENDPOINT!);
-
+    console.log({ rawUrl });
+    console.log({ publicUrl });
     return publicUrl;
 };
 

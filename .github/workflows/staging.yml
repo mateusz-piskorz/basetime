@@ -65,7 +65,6 @@ jobs:
       MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
       MINIO_USER: ${{ vars.MINIO_USER }}
       MINIO_PASSWORD: ${{ secrets.MINIO_PASSWORD }}
-      MINIO_PUBLIC_ENDPOINT: ${{ vars.MINIO_PUBLIC_ENDPOINT }}
       MINIO_ENDPOINT: ${{ vars.MINIO_ENDPOINT }}
       MINIO_SSL: ${{ vars.MINIO_SSL }}
 
@@ -97,5 +96,5 @@ jobs:
       - name: Run Prisma migrate deploy
         run: docker compose --file docker-compose.stg.yml run --rm -e HOME=/tmp -e NPM_CONFIG_CACHE=/tmp/.npm app npx prisma migrate deploy
 
-      # - name: Prune Docker (optional)
-      #   run: docker system prune -f
+      - name: Prune Docker (optional)
+        run: docker system prune -f

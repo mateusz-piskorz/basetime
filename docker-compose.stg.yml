@@ -17,7 +17,6 @@ services:
       SESSION_SECRET: ${SESSION_SECRET}
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
       MINIO_ENDPOINT: ${MINIO_ENDPOINT}
-      MINIO_PUBLIC_ENDPOINT: ${MINIO_PUBLIC_ENDPOINT}
       MINIO_SSL: ${MINIO_SSL}
       MINIO_USER: ${MINIO_USER}
       MINIO_PASSWORD: ${MINIO_PASSWORD}
@@ -42,9 +41,6 @@ services:
       - postgres_data_stg:/var/lib/postgresql/data
     networks:
       - btnetworkstg
-      # turn it off on production
-    ports:
-      - 5432:5432
 
   minio:
     image: quay.io/minio/minio:latest

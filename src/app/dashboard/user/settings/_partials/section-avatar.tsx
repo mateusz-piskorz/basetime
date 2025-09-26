@@ -55,9 +55,11 @@ export const SectionAvatar = () => {
                 method: 'DELETE',
             });
         }
-
-        if (!res.ok) {
+        const data = await res.json();
+        if (!data.success) {
             toast.error('something went wrong');
+            setLoading(false);
+            return;
         }
 
         setImg(undefined);

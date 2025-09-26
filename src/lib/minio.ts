@@ -6,7 +6,7 @@ type Bucket = 'main';
 
 const minioClient = new Minio.Client({
     endPoint: process.env.MINIO_ENDPOINT!,
-    port: 9000,
+    port: process.env.MINIO_PORT ? Number(process.env.MINIO_PORT) : undefined,
     accessKey: process.env.MINIO_USER,
     secretKey: process.env.MINIO_PASSWORD,
     useSSL: process.env.MINIO_SSL === 'true',
@@ -30,12 +30,7 @@ const getPresignedUrl = async ({ bucket, fileName }: { bucket: Bucket; fileName:
     }
     if (!exists) return null;
 
-    const rawUrl = await minioClient.presignedGetObject(bucket, fileName, 60 * 24 * 24);
-    const publicUrl = rawUrl.replace(`http://${process.env.MINIO_ENDPOINT}:9000/`, process.env.MINIO_PUBLIC_ENDPOINT!);
-    console.log({ rawUrl });
-    console.log({ publicUrl });
-    console.log({ process: process.env });
-    return publicUrl;
+    return await minioClient.presignedGetObject(bucket, fileName, 60 * 24 * 24);
 };
 
 export const getUserAvatarUrl = async ({ userId }: { userId: string }) => {

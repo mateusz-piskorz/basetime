@@ -55,10 +55,16 @@ jobs:
     runs-on: self-hosted
     env:
       NEXT_PUBLIC_URL: ${{ vars.NEXT_PUBLIC_URL }}
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
       POSTGRES_USER: ${{ vars.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      MINIO_ROOT_USER: ${{ vars.MINIO_ROOT_USER }}
+      MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+      MINIO_USER: ${{ vars.MINIO_USER }}
+      MINIO_PASSWORD: ${{ secrets.MINIO_PASSWORD }}
+      MINIO_ENDPOINT: ${{ vars.MINIO_ENDPOINT }}
+      MINIO_SSL: ${{ vars.MINIO_SSL }}
 
     defaults:
       run:

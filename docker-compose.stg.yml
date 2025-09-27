@@ -1,19 +1,35 @@
+volumes:
+  postgres_data_stg:
+  minio_data_stg:
+
+networks:
+  btnetworkstg:
+
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        MINIO_ENDPOINT: ${MINIO_ENDPOINT}
     environment:
       NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
       SESSION_SECRET: ${SESSION_SECRET}
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_SSL: ${MINIO_SSL}
+      MINIO_USER: ${MINIO_USER}
+      MINIO_PASSWORD: ${MINIO_PASSWORD}
     restart: unless-stopped
     depends_on:
       - db
+      - minio
+      - minio-create-bucket
     ports:
       - 3001:3000
     networks:
       - btnetworkstg
+
   db:
     image: postgres:17.6
     container_name: db_stg
@@ -26,8 +42,36 @@ services:
     networks:
       - btnetworkstg
 
-volumes:
-  postgres_data_stg:
+  minio:
+    image: quay.io/minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data_stg:/var/lib/minio/data
+    networks:
+      - btnetworkstg
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 9001:9000
 
-networks:
-  btnetworkstg:
+  minio-create-bucket:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_USER: ${MINIO_USER}
+      MINIO_PASSWORD: ${MINIO_PASSWORD}
+    volumes:
+      - ./scripts/minio-setup-buckets.sh:/etc/scripts/minio-setup-buckets.sh
+    networks:
+      - btnetworkstg
+    entrypoint: /etc/scripts/minio-setup-buckets.sh

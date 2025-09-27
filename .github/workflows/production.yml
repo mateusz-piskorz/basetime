@@ -24,21 +24,6 @@ jobs:
   tests:
     needs: quality
     runs-on: ubuntu-latest
-    services:
-      db_dev:
-        image: postgres:17.6
-        env:
-          POSTGRES_DB: mydb
-          POSTGRES_USER: johndoe
-          POSTGRES_PASSWORD: randompassword
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
       - uses: actions/checkout@v4
 
@@ -48,11 +33,18 @@ jobs:
       - name: Copy Environment File
         run: cp .env.example .env
 
+      - name: Build and run dev containers
+        run: |
+          docker compose --file docker-compose.dev.yml up -d --build --force-recreate
+
+      - name: Wait for containers
+        run: sleep 10
+
       - name: Start Next.js server
         run: nohup npm run dev &
 
       - name: Wait for server to be ready
-        run: npx wait-on http://localhost:3000
+        run: npx wait-on http://localhost:3000 --timeout 20000
 
       - name: test
         run: npm run test
@@ -63,10 +55,16 @@ jobs:
     runs-on: self-hosted
     env:
       NEXT_PUBLIC_URL: ${{ vars.NEXT_PUBLIC_URL }}
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
       POSTGRES_USER: ${{ vars.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      MINIO_ROOT_USER: ${{ vars.MINIO_ROOT_USER }}
+      MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
+      MINIO_USER: ${{ vars.MINIO_USER }}
+      MINIO_PASSWORD: ${{ secrets.MINIO_PASSWORD }}
+      MINIO_ENDPOINT: ${{ vars.MINIO_ENDPOINT }}
+      MINIO_SSL: ${{ vars.MINIO_SSL }}
 
     defaults:
       run:

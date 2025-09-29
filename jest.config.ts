@@ -1,7 +1,7 @@
 import type { Config } from 'jest';
 
 const config: Config = {
-    setupFilesAfterEnv: ['<rootDir>/src/tests/jest.setup.js'],
+    setupFilesAfterEnv: ['<rootDir>/src/tests/utils/jest.setup.js'],
     coverageProvider: 'v8',
     testEnvironment: 'node',
     transform: {

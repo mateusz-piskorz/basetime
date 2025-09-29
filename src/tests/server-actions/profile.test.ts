@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import { deleteUserAccount, updatePassword, updateProfile } from '@/lib/server-actions/profile';
 import bcrypt from 'bcrypt';
+import { getStatObject, uploadFile } from '../../lib/minio';
+import { loadTestNonSharedBuffer } from '../utils/example-img';
 
 const email = 'john@spoko.pl';
 const password = 'john1234';
@@ -10,6 +12,13 @@ const updatedName = 'john doe2';
 const userId = 'id123';
 const organizationId = 'organizationId123';
 
+const setupUser = async () => {
+    const pwHash = await bcrypt.hash(password, 9);
+    await prisma.user.create({ data: { email, name, password: pwHash, id: userId } });
+
+    expect(await prisma.user.findUnique({ where: { email } })).not.toBe(null);
+};
+
 jest.mock('@/lib/session', () => ({
     getSession: () => ({
         userId: userId,
@@ -17,8 +26,7 @@ jest.mock('@/lib/session', () => ({
 }));
 
 test('profile setup', async () => {
-    const pwHash = await bcrypt.hash(password, 9);
-    await prisma.user.create({ data: { email, name, password: pwHash, id: userId } });
+    await setupUser();
     await prisma.organization.create({
         data: { id: organizationId, name: 'o', currency: 'EUR', Members: { create: { role: 'OWNER', userId } } },
     });
@@ -51,4 +59,17 @@ test('User can delete account', async () => {
     expect(user).toBe(null);
     const organization = await prisma.organization.findUnique({ where: { id: organizationId } });
     expect(organization).toBe(null);
+});
+
+test('deleteUserAccount also deletes user avatar', async () => {
+    await setupUser();
+    const fileName = `user/${userId}/avatar.png`;
+    await uploadFile({ bucket: 'main', file: loadTestNonSharedBuffer(), fileName });
+    expect(await getStatObject({ bucket: 'main', fileName })).not.toBe(undefined);
+
+    const res = await deleteUserAccount({ password });
+
+    expect(res.success).toBe(true);
+
+    expect(await getStatObject({ bucket: 'main', fileName })).toBe(undefined);
 });

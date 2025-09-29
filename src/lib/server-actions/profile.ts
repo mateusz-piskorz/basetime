@@ -2,6 +2,7 @@
 
 import bcrypt from 'bcrypt';
 import z from 'zod';
+import { deleteFile } from '../minio';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
 import { deleteUserAccountSchema, updatePasswordSchema, updateProfileSchema } from '../zod/profile-schema';
@@ -105,6 +106,9 @@ export const deleteUserAccount = async (data: z.infer<typeof deleteUserAccountSc
         });
 
         await prisma.user.delete({ where: { id: session.userId } });
+
+        const fileName = `user/${session.userId}/avatar.png`;
+        await deleteFile({ bucket: 'main', fileName });
 
         return { success: true };
     } catch {

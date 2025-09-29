@@ -61,10 +61,6 @@ export const SectionAvatar = () => {
                 {imgSrc && (
                     <div>
                         <img
-                            onError={() => {
-                                console.log('here123');
-                                setImg(undefined);
-                            }}
                             src={imgSrc}
                             className="mx-auto mt-4 h-[180px] w-[300px] bg-center object-cover"
                             alt="uploaded image"

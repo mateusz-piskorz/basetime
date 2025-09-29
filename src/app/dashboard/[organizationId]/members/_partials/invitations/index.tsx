@@ -11,7 +11,7 @@ import { useMember } from '@/lib/hooks/use-member';
 import { useTable } from '@/lib/hooks/use-table';
 import { useTablePagination } from '@/lib/hooks/use-table-pagination';
 import { useTableSorting } from '@/lib/hooks/use-table-sorting';
-import { updateInvitationStatus } from '@/lib/server-actions/invitation';
+import { updateInvStatus } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
 import { INVITATION_STATUS } from '@prisma/client';
 import { debounce } from 'lodash';
@@ -45,7 +45,7 @@ export const TableInvitations = ({ open, setOpen }: Props) => {
     });
 
     const handleCancelInvitation = async (invitationId: string) => {
-        const res = await updateInvitationStatus({ invitationId, status: 'CANCELED' });
+        const res = await updateInvStatus({ invitationId, status: 'CANCELED' });
         if (!res.success) {
             toast.error(res.message);
             return;

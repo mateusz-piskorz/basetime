@@ -1,25 +1,15 @@
 'use server';
 
 import z from 'zod';
+import { action } from '.';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
-import { createProjectServerSchema, deleteProjectServerSchema } from '../zod/project-schema';
+import { createProjectSchemaS, deleteProjectServerSchema } from '../zod/project-schema';
 
-export const upsertProject = async (data: z.infer<typeof createProjectServerSchema>) => {
+export const upsertProject = action(createProjectSchemaS, async (validated, session) => {
     try {
-        const validated = createProjectServerSchema.safeParse(data);
-
-        if (validated.error) {
-            return { success: false, message: 'Error validating fields' };
-        }
-
-        const session = await getSession();
-        if (!session) {
-            return { success: false, message: 'Error session invalid' };
-        }
-
-        const { memberIds, name, estimatedMinutes, color, organizationId, projectId } = validated.data;
-
+        const { memberIds, name, estimatedMinutes, color, organizationId, projectId } = validated;
+        const { userId } = session;
         let res;
         if (projectId) {
             res = await prisma.project.update({
@@ -30,7 +20,7 @@ export const upsertProject = async (data: z.infer<typeof createProjectServerSche
                     estimatedMinutes,
                     Members: { connect: memberIds?.map((id) => ({ id })) },
                     Organization: {
-                        connect: { id: organizationId, Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } },
+                        connect: { id: organizationId, Members: { some: { userId, role: { in: ['MANAGER', 'OWNER'] } } } },
                     },
                 },
             });
@@ -42,7 +32,7 @@ export const upsertProject = async (data: z.infer<typeof createProjectServerSche
                     estimatedMinutes,
                     Members: { connect: memberIds?.map((id) => ({ id })) },
                     Organization: {
-                        connect: { id: organizationId, Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } },
+                        connect: { id: organizationId, Members: { some: { userId, role: { in: ['MANAGER', 'OWNER'] } } } },
                     },
                 },
             });
@@ -52,7 +42,7 @@ export const upsertProject = async (data: z.infer<typeof createProjectServerSche
     } catch {
         return { success: false, message: 'Error something went wrong - upsertProject' };
     }
-};
+});
 
 export const deleteProject = async (data: z.infer<typeof deleteProjectServerSchema>) => {
     try {

@@ -17,16 +17,10 @@ const limiter = rateLimit({
 export const signup = async (data: z.infer<typeof registerSchema>) => {
     try {
         const clientIp = await getClientIp();
+        if (!limiter.check(5, clientIp)) return { success: false, message: 'Error limiter' };
+
         const validated = registerSchema.safeParse(data);
-
-        if (!limiter.check(5, clientIp)) {
-            return { success: false, message: 'Error limiter' };
-        }
-
-        if (validated.error) {
-            return { success: false, message: 'Error validating fields' };
-        }
-
+        if (validated.error) return { success: false, message: 'Error validating fields' };
         const { email, password, name } = validated.data;
 
         if (await prisma.user.findUnique({ where: { email }, select: { id: true } })) {
@@ -46,7 +40,7 @@ export const signup = async (data: z.infer<typeof registerSchema>) => {
 
         return { success: true };
     } catch {
-        return { success: false, message: 'Error something went wrong - signup' };
+        return { success: false, message: 'Error - signup' };
     }
 };
 
@@ -59,33 +53,21 @@ export const signin = async (data: z.infer<typeof loginSchema>) => {
             return { success: true };
         }
 
-        const clientIp = await getClientIp();
+        if (!limiter.check(5, await getClientIp())) return { success: false, message: 'Error limiter' };
+
         const validated = loginSchema.safeParse(data);
-
-        if (!limiter.check(5, clientIp)) {
-            return { success: false, message: 'Error limiter' };
-        }
-
-        if (validated.error) {
-            return { success: false, message: 'Error validating fields' };
-        }
-
+        if (validated.error) return { success: false, message: 'Error validating fields' };
         const { email, password } = validated.data;
 
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) {
-            return { success: false, message: 'Error credentials incorrect' };
-        }
-
-        if (!(await bcrypt.compare(password, user?.password))) {
-            return { success: false, message: 'Error credentials incorrect' };
-        }
+        if (!user) return { success: false, message: 'Error credentials incorrect' };
+        if (!(await bcrypt.compare(password, user?.password))) return { success: false, message: 'Error credentials incorrect' };
 
         await createSession({ userAgent: (await headers()).get('user-agent') || '', userId: user.id });
 
         return { success: true };
     } catch {
-        return { success: false, message: 'Error something went wrong - signin' };
+        return { success: false, message: 'Error - signin' };
     }
 };
 
@@ -93,13 +75,11 @@ export const logout = async (data: z.infer<typeof logoutServerSchema>) => {
     try {
         const validated = logoutServerSchema.safeParse(data);
 
-        if (validated.error) {
-            return { success: false, message: 'Error validating fields' };
-        }
+        if (validated.error) return { success: false, message: 'Error validating fields' };
 
         await deleteSession(validated.data.sessionId);
         return { success: true };
     } catch {
-        return { success: false, message: 'Error something went wrong - logout' };
+        return { success: false, message: 'Error - logout' };
     }
 };

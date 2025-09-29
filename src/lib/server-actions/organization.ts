@@ -1,39 +1,25 @@
 'use server';
 
 import bcrypt from 'bcrypt';
-import z from 'zod';
+import { action } from '.';
 import { prisma } from '../prisma';
-import { getSession } from '../session';
-import { deleteOrganizationServerSchema, upsertOrganizationServerSchema } from '../zod/organization-schema';
+import { deleteOrgSchemaS, upsertOrgSchemaS } from '../zod/organization-schema';
 
-export const upsertOrganization = async (data: z.infer<typeof upsertOrganizationServerSchema>) => {
+export const upsertOrg = action(upsertOrgSchemaS, async (validated, { userId }) => {
+    const { name, currency, organizationId, roundUpMinutesThreshold, weekStart } = validated;
     try {
-        const session = await getSession();
-
-        if (!session) {
-            return { success: false, message: 'Error session invalid' };
-        }
-
-        const validated = upsertOrganizationServerSchema.safeParse(data);
-
-        if (validated.error) {
-            return { success: false, message: 'Error validating fields' };
-        }
-
-        const { currency, name, organizationId, roundUpMinutesThreshold, weekStart } = validated.data;
-
         let res;
         if (organizationId) {
             res = await prisma.organization.update({
-                where: { id: organizationId, Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } },
+                where: { id: organizationId, Members: { some: { userId, role: { in: ['MANAGER', 'OWNER'] } } } },
                 data: { currency, name, roundUpMinutesThreshold, weekStart },
             });
         } else {
             res = await prisma.organization.create({
                 data: {
                     currency: currency || 'EUR',
-                    name: name,
-                    Members: { create: { role: 'OWNER', userId: session.userId } },
+                    name,
+                    Members: { create: { role: 'OWNER', userId } },
                     roundUpMinutesThreshold,
                     weekStart,
                 },
@@ -42,42 +28,21 @@ export const upsertOrganization = async (data: z.infer<typeof upsertOrganization
 
         return { success: true, data: res };
     } catch {
-        return { success: false, message: 'Error something went wrong - createOrganization' };
+        return { success: false, message: 'Error - upsertOrg' };
     }
-};
+});
 
-export const deleteOrganization = async (data: z.infer<typeof deleteOrganizationServerSchema>) => {
+export const deleteOrg = action(deleteOrgSchemaS, async ({ organizationId, password }, { userId }) => {
     try {
-        const validated = deleteOrganizationServerSchema.safeParse(data);
+        const user = await prisma.user.findUnique({ where: { id: userId }, select: { password: true } });
 
-        if (validated.error) {
-            return { success: false, message: 'Error validating fields' };
-        }
+        if (!user) return { success: false, message: 'Error user not found' };
+        if (!(await bcrypt.compare(password, user?.password))) return { success: false, message: 'Error password incorrect' };
 
-        const session = await getSession();
-        if (!session) {
-            return { success: false, message: 'Error session invalid' };
-        }
-
-        const { password, organizationId } = validated.data;
-
-        const user = await prisma.user.findUnique({
-            where: { id: session.userId },
-            select: { password: true },
-        });
-
-        if (!user) {
-            return { success: false, message: 'Error user not found' };
-        }
-
-        if (!(await bcrypt.compare(password, user?.password))) {
-            return { success: false, message: 'Error password incorrect' };
-        }
-
-        await prisma.organization.delete({ where: { id: organizationId, Members: { some: { userId: session.userId, role: 'OWNER' } } } });
+        await prisma.organization.delete({ where: { id: organizationId, Members: { some: { userId, role: 'OWNER' } } } });
 
         return { success: true };
     } catch {
-        return { success: false, message: 'Error something went wrong - deleteOrganization' };
+        return { success: false, message: 'Error - deleteOrg' };
     }
-};
+});

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { dayjs } from '@/lib/dayjs';
 import { useTable } from '@/lib/hooks/use-table';
 import { useTablePagination } from '@/lib/hooks/use-table-pagination';
-import { updateInvitationStatus } from '@/lib/server-actions/invitation';
+import { updateInvStatus } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
 import { INVITATION_STATUS } from '@prisma/client';
 import { debounce } from 'lodash';
@@ -26,7 +26,7 @@ export const UserInvitationsTable = () => {
     const { table } = useTable({
         columns: getColumns({
             handleAction: async ({ action, invitationId }) => {
-                const res = await updateInvitationStatus({ invitationId, status: action === 'accepted' ? 'ACCEPTED' : 'REJECTED' });
+                const res = await updateInvStatus({ invitationId, status: action === 'accepted' ? 'ACCEPTED' : 'REJECTED' });
 
                 if (!res.success) {
                     toast.error(res.message);

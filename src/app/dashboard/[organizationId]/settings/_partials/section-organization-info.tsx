@@ -7,9 +7,9 @@ import { SpinLoader } from '@/components/common/spin-loader';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { useMember } from '@/lib/hooks/use-member';
-import { upsertOrganization } from '@/lib/server-actions/organization';
+import { upsertOrg } from '@/lib/server-actions/organization';
 import { trpc } from '@/lib/trpc/client';
-import { upsertOrganizationSchema } from '@/lib/zod/organization-schema';
+import { upsertOrgSchema } from '@/lib/zod/organization-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CURRENCY, WEEK_START } from '@prisma/client';
 import { useForm } from 'react-hook-form';
@@ -34,13 +34,13 @@ export const SectionOrganizationInfo = () => {
 
 type Props = {
     organizationId: string;
-    defaultValues: z.infer<typeof upsertOrganizationSchema>;
+    defaultValues: z.infer<typeof upsertOrgSchema>;
 };
 
 const FormComponent = ({ organizationId, defaultValues }: Props) => {
     const trpcUtils = trpc.useUtils();
-    const onSubmit = async (data: z.infer<typeof upsertOrganizationSchema>) => {
-        const res = await upsertOrganization({ ...data, organizationId });
+    const onSubmit = async (data: z.infer<typeof upsertOrgSchema>) => {
+        const res = await upsertOrg({ ...data, organizationId });
 
         if (!res.success) {
             toast.error(res.message);
@@ -52,10 +52,7 @@ const FormComponent = ({ organizationId, defaultValues }: Props) => {
         trpcUtils.organizations.refetch();
     };
 
-    const form = useForm({
-        resolver: zodResolver(upsertOrganizationSchema),
-        defaultValues,
-    });
+    const form = useForm({ resolver: zodResolver(upsertOrgSchema), defaultValues });
 
     return (
         <Form {...form}>

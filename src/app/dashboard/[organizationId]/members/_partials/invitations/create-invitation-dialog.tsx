@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import { useMember } from '@/lib/hooks/use-member';
-import { createInvitation } from '@/lib/server-actions/invitation';
+import { createInv } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
-import { createInvitationSchema } from '@/lib/zod/invitation-schema';
+import { createInvSchema } from '@/lib/zod/invitation-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -24,10 +24,10 @@ export const CreateInvitationDialog = ({ open, setOpen }: Props) => {
     const trpcUtils = trpc.useUtils();
     const [error, setError] = useState<string | null>(null);
 
-    const form = useForm({ resolver: zodResolver(createInvitationSchema) });
+    const form = useForm({ resolver: zodResolver(createInvSchema) });
 
-    const onSubmit = async ({ email }: z.infer<typeof createInvitationSchema>) => {
-        const res = await createInvitation({ email, organizationId });
+    const onSubmit = async ({ email }: z.infer<typeof createInvSchema>) => {
+        const res = await createInv({ email, organizationId });
 
         if (!res.success) {
             toast.error(res.message);

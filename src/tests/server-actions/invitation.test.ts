@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { createInvitation, updateInvitationStatus } from '@/lib/server-actions/invitation';
+import { createInv, updateInvStatus } from '@/lib/server-actions/invitation';
 import { getSession } from '@/lib/session';
 
 const ownerUserId = 'idOwner';
@@ -47,35 +47,35 @@ test('invitation setup', async () => {
 test('createInvitation - Error permission', async () => {
     const mockedGetSession = getSession as jest.Mock;
     mockedGetSession.mockReturnValueOnce({ userId: managerUserId });
-    const res = await createInvitation({ email: exampleUserEmail, organizationId });
+    const res = await createInv({ email: exampleUserEmail, organizationId });
     expect(res.success).toBe(false);
     expect(res.message).toBe('Error permission');
 
     mockedGetSession.mockReturnValueOnce({ userId: employeeUserId });
-    const res2 = await createInvitation({ email: exampleUserEmail, organizationId });
+    const res2 = await createInv({ email: exampleUserEmail, organizationId });
     expect(res2.success).toBe(false);
     expect(res2.message).toBe('Error permission');
 
     mockedGetSession.mockReturnValueOnce({ userId: exampleUserId });
-    const res3 = await createInvitation({ email: exampleUserEmail, organizationId });
+    const res3 = await createInv({ email: exampleUserEmail, organizationId });
     expect(res3.success).toBe(false);
     expect(res3.message).toBe('Error permission');
 });
 
 test('createInvitation - is already a member error', async () => {
-    const res = await createInvitation({ email: employeeMemberEmail, organizationId });
+    const res = await createInv({ email: employeeMemberEmail, organizationId });
     expect(res.success).toBe(false);
     expect(res.message).toBe(`Error ${employeeMemberEmail} is already a member of this organization`);
 });
 
 test('owner can createInvitation', async () => {
-    const res = await createInvitation({ email: exampleUserEmail, organizationId });
+    const res = await createInv({ email: exampleUserEmail, organizationId });
     expect(res.success).toBe(true);
     expect(res.data?.status).toBe('SENT');
 });
 
 test('createInvitation - already sent error', async () => {
-    const res = await createInvitation({ email: exampleUserEmail, organizationId });
+    const res = await createInv({ email: exampleUserEmail, organizationId });
     expect(res.success).toBe(false);
     expect(res.message).toBe(`Error Invitation was already sent to ${exampleUserEmail}`);
 });
@@ -87,32 +87,32 @@ test('cancelInvitation - Error permission', async () => {
     expect(invitation).not.toBe(null);
 
     mockedGetSession.mockReturnValueOnce({ userId: managerUserId });
-    const res = await updateInvitationStatus({ invitationId: invitation!.id, status: 'CANCELED' });
+    const res = await updateInvStatus({ invitationId: invitation!.id, status: 'CANCELED' });
     expect(res.success).toBe(false);
 
     mockedGetSession.mockReturnValueOnce({ userId: employeeUserId });
-    const res2 = await updateInvitationStatus({ invitationId: invitation!.id, status: 'CANCELED' });
+    const res2 = await updateInvStatus({ invitationId: invitation!.id, status: 'CANCELED' });
     expect(res2.success).toBe(false);
 
     mockedGetSession.mockReturnValueOnce({ userId: exampleUserId });
-    const res3 = await updateInvitationStatus({ invitationId: invitation!.id, status: 'CANCELED' });
+    const res3 = await updateInvStatus({ invitationId: invitation!.id, status: 'CANCELED' });
     expect(res3.success).toBe(false);
 });
 
 test('owner can cancelInvitation', async () => {
     const invitation = await prisma.invitation.findFirst();
     expect(invitation).not.toBe(null);
-    const res = await updateInvitationStatus({ invitationId: invitation!.id, status: 'CANCELED' });
+    const res = await updateInvStatus({ invitationId: invitation!.id, status: 'CANCELED' });
     expect(res.success).toBe(true);
     expect(res.data?.status).toBe('CANCELED');
 });
 
 // acceptInvitation
 test('acceptInvitation - error permission', async () => {
-    await createInvitation({ email: exampleUserEmail, organizationId });
+    await createInv({ email: exampleUserEmail, organizationId });
     const invitation = await prisma.invitation.findFirst({ where: { status: 'SENT' } });
     expect(invitation).not.toBe(null);
-    const res = await updateInvitationStatus({ invitationId: invitation!.id, status: 'ACCEPTED' });
+    const res = await updateInvStatus({ invitationId: invitation!.id, status: 'ACCEPTED' });
     expect(res.success).toBe(false);
 });
 
@@ -121,7 +121,7 @@ test('the invited person can acceptInvitation', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: exampleUserId });
     const invitation = await prisma.invitation.findFirst({ where: { status: 'SENT' } });
     expect(invitation).not.toBe(null);
-    const res = await updateInvitationStatus({ invitationId: invitation!.id, status: 'ACCEPTED' });
+    const res = await updateInvStatus({ invitationId: invitation!.id, status: 'ACCEPTED' });
     expect(res.success).toBe(true);
     expect(res.data?.status).toBe('ACCEPTED');
 });
@@ -132,10 +132,10 @@ test('rejectInvitation - error permission', async () => {
     if (member) {
         await prisma.member.delete({ where: { id: member.id } });
     }
-    await createInvitation({ email: exampleUserEmail, organizationId });
+    await createInv({ email: exampleUserEmail, organizationId });
     const invitation = await prisma.invitation.findFirst({ where: { status: 'SENT' } });
     expect(invitation).not.toBe(null);
-    const res = await updateInvitationStatus({ invitationId: invitation!.id, status: 'REJECTED' });
+    const res = await updateInvStatus({ invitationId: invitation!.id, status: 'REJECTED' });
     expect(res.success).toBe(false);
 });
 
@@ -144,7 +144,7 @@ test('the invited person can rejectInvitation', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: exampleUserId });
     const invitation = await prisma.invitation.findFirst({ where: { status: 'SENT' } });
     expect(invitation).not.toBe(null);
-    const res = await updateInvitationStatus({ invitationId: invitation!.id, status: 'REJECTED' });
+    const res = await updateInvStatus({ invitationId: invitation!.id, status: 'REJECTED' });
     expect(res.success).toBe(true);
     expect(res.data?.status).toBe('REJECTED');
 });

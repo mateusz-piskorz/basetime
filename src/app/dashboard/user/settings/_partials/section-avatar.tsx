@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-
 'use client';
 
 import { DashboardHeading } from '@/components/common/dashboard-heading';
@@ -10,6 +8,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { cn } from '@/lib/utils/common';
 import { ACCEPTED_IMAGE_EXT, updateAvatarSchema } from '@/lib/zod/profile-schema';
 import { Upload } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -60,12 +59,12 @@ export const SectionAvatar = () => {
             <Card className="h-[280px] w-[350px] border-2 border-dashed p-0 shadow-none">
                 {imgSrc && (
                     <div>
-                        <img
+                        <Image
                             src={imgSrc}
-                            className="mx-auto mt-4 h-[180px] w-[300px] bg-center object-cover"
+                            className="mx-auto mt-4 h-[180px] w-[200px] bg-center object-cover"
                             alt="uploaded image"
-                            width={340}
                             height={180}
+                            width={200}
                         />
                     </div>
                 )}

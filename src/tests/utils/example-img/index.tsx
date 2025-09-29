@@ -1,16 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 
-export function loadTestNonSharedBuffer() {
-    const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(__filename);
 
+export function loadTestNonSharedBuffer() {
     const pngPath = path.join(__dirname, 'example.png');
     return fs.readFileSync(pngPath);
 }
 
 export function loadTestFile() {
-    const __dirname = path.dirname(__filename);
-
     const pngPath = path.join(__dirname, 'example.png');
     const buffer = fs.readFileSync(pngPath);
     return new File([buffer], 'example.png', { type: 'image/png' });

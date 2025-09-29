@@ -4,6 +4,7 @@ import { DashboardHeading } from '@/components/common/dashboard-heading';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { removeAvatar, updateAvatar } from '@/lib/avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { cn } from '@/lib/utils/common';
 import { ACCEPTED_IMAGE_EXT, updateAvatarSchema } from '@/lib/zod/profile-schema';
@@ -26,22 +27,9 @@ export const SectionAvatar = () => {
     const handleSubmit = async () => {
         if (img === undefined) return;
         setLoading(true);
-        let res;
-        if (img) {
-            const formData = new FormData();
-            formData.set('file', img);
+        const res = img ? await updateAvatar(img) : await removeAvatar();
 
-            res = await fetch('/api/user-avatar', {
-                method: 'POST',
-                body: formData,
-            });
-        } else {
-            res = await fetch('/api/user-avatar', {
-                method: 'DELETE',
-            });
-        }
-        const data = await res.json();
-        if (!data.success) {
+        if (!res.success) {
             toast.error('something went wrong');
             setLoading(false);
             return;

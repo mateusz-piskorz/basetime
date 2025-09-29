@@ -8,11 +8,13 @@ export async function POST(req: NextRequest) {
     try {
         const session = await getSession();
         if (!session) {
-            return NextResponse.json({ success: false, error: 'Error session invalid' });
+            return NextResponse.json({ success: false, message: 'Error session invalid' });
         }
 
         const formData = await req.formData();
+
         const file = formData.get('file') as unknown as File;
+
         const validated = updateAvatarSchema.safeParse({ profile_img: file });
         if (validated.error) {
             return NextResponse.json({ success: false, message: 'Error validating fields' });
@@ -26,8 +28,7 @@ export async function POST(req: NextRequest) {
         await uploadFile({ bucket: 'main', file: resizedBuffer, fileName });
 
         return NextResponse.json({ success: true, message: 'Avatar updated' });
-    } catch (e) {
-        console.log(e);
+    } catch {
         return NextResponse.json({ success: false, message: 'Something went wrong - update-avatar' });
     }
 }

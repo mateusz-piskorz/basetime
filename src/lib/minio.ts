@@ -20,6 +20,14 @@ export const deleteFile = async ({ bucket, fileName }: { bucket: Bucket; fileNam
     await minioClient.removeObject(bucket, fileName);
 };
 
+export const getStatObject = async ({ bucket, fileName }: { bucket: Bucket; fileName: string }) => {
+    try {
+        return await minioClient.statObject(bucket, fileName);
+    } catch {
+        return undefined;
+    }
+};
+
 const getPresignedUrl = async ({ bucket, fileName }: { bucket: Bucket; fileName: string }) => {
     try {
         const { lastModified } = await minioClient.statObject(bucket, fileName);

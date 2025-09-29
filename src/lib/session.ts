@@ -1,16 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { SignJWT, jwtVerify } from 'jose';
+import { jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { cache } from 'react';
 import 'server-only';
 import { prisma } from './prisma';
+import { encrypt } from './utils/encrypt';
 
 const secretKey = process.env.SESSION_SECRET;
 const encodedKey = new TextEncoder().encode(secretKey);
-
-const encrypt = (payload: { [key: string]: string | Date }) => {
-    return new SignJWT(payload).setProtectedHeader({ alg: 'HS256' }).setIssuedAt().setExpirationTime('7d').sign(encodedKey);
-};
 
 const decrypt = async (session: string | undefined = '') => {
     try {

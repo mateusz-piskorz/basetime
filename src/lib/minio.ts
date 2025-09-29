@@ -1,6 +1,6 @@
-import 'server-only';
-
+import dayjs from 'dayjs';
 import * as Minio from 'minio';
+import 'server-only';
 
 type Bucket = 'main';
 
@@ -21,16 +21,17 @@ export const deleteFile = async ({ bucket, fileName }: { bucket: Bucket; fileNam
 };
 
 const getPresignedUrl = async ({ bucket, fileName }: { bucket: Bucket; fileName: string }) => {
-    let exists;
     try {
-        await minioClient.statObject(bucket, fileName);
-        exists = true;
-    } catch {
-        exists = false;
-    }
-    if (!exists) return undefined;
+        const { lastModified } = await minioClient.statObject(bucket, fileName);
 
-    return await minioClient.presignedGetObject(bucket, fileName, 60 * 24 * 24);
+        const midnight = dayjs().startOf('day').toDate();
+        const isDateNewer = dayjs(lastModified).diff(midnight) > 0;
+        const responseDate = isDateNewer ? lastModified : midnight;
+
+        return await minioClient.presignedGetObject(bucket, fileName, 24 * 60 * 60, { 'response-content-type': 'image/png' }, responseDate);
+    } catch {
+        return undefined;
+    }
 };
 
 export const getUserAvatarUrl = async ({ userId }: { userId: string }) => {

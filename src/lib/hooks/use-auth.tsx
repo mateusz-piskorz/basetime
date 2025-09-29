@@ -7,7 +7,7 @@ type AuthUser = {
     name: string;
     userId: string;
     email: string;
-    avatar: string | undefined;
+    avatar?: string;
 };
 
 type AuthContextType = {

@@ -39,7 +39,6 @@ export const members = publicProcedure.input(z.object({ organizationId: z.string
                 User: { ...member.User, avatar },
                 loggedTime: formatMinutes(sumTimeEntries({ entries: member.TimeEntries, dayjs })),
                 hourlyRate,
-                avatar,
             };
         }),
     );

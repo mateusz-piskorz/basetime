@@ -17,7 +17,7 @@ export const SectionAvatar = () => {
     const router = useRouter();
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
-    const [img, setImg] = useState<File | null | undefined>(undefined);
+    const [img, setImg] = useState<File | undefined | null>(undefined);
 
     const imgSrc = useMemo(() => {
         return img ? URL.createObjectURL(img) : img === null ? null : user?.avatar ? user.avatar : null;
@@ -61,10 +61,10 @@ export const SectionAvatar = () => {
                     <div>
                         <Image
                             src={imgSrc}
-                            className="mx-auto mt-4 h-[180px] w-[300px] bg-center object-cover"
+                            className="mx-auto mt-4 h-[180px] w-[200px] bg-center object-cover"
                             alt="uploaded image"
-                            width={340}
                             height={180}
+                            width={200}
                         />
                     </div>
                 )}

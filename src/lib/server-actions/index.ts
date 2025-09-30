@@ -21,9 +21,3 @@ export function action<T extends z.ZodType, H extends (validated: z.infer<T>, se
         return handler(validated.data, session);
     };
 }
-
-const validate = <T extends z.ZodType>(schema: T, data: any) => {
-    const validated = schema.safeParse(data);
-    if (!validated.success) return { success: false, message: 'Error validating fields' };
-    return validated.data;
-};

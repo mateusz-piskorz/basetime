@@ -77,7 +77,7 @@ test('owner can createInvitation', async () => {
 test('createInvitation - already sent error', async () => {
     const res = await createInv({ email: exampleUserEmail, organizationId });
     expect(res.success).toBe(false);
-    expect(res.message).toBe(`Error Invitation was already sent to ${exampleUserEmail}`);
+    expect(res.message).toBe(`Error invitation was already sent to ${exampleUserEmail}`);
 });
 
 // cancelInvitation

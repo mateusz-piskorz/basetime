@@ -4,7 +4,7 @@
 import { Form } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
 import { useMember } from '@/lib/hooks/use-member';
-import { startTimeTracker, stopTimeTracker } from '@/lib/server-actions/time-entry';
+import { startTimer, stopTimer } from '@/lib/server-actions/time-entry';
 import { trpc } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
 import { startTimeTrackerSchema } from '@/lib/zod/time-entry-schema';
@@ -46,11 +46,11 @@ export const SectionTimeTracker = ({ className }: Props) => {
     const onSubmit = async (data: z.infer<typeof startTimeTrackerSchema>) => {
         let res;
         if (activeTimeEntry) {
-            res = await stopTimeTracker({ timeEntryId: activeTimeEntry.id });
+            res = await stopTimer({ timeEntryId: activeTimeEntry.id });
             form.reset({ name: '', projectId: 'no-project' });
         } else {
             const projectId = data.projectId === 'no-project' ? undefined : data.projectId;
-            res = await startTimeTracker({ ...data, projectId, organizationId, memberId });
+            res = await startTimer({ ...data, projectId, organizationId, memberId });
         }
 
         if (!res.success) {

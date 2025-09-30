@@ -5,14 +5,14 @@ export const startTimeTrackerSchema = z.object({
     projectId: z.string().nullish(),
 });
 
-export const startTimeTrackerServerSchema = z.object({
+export const startTimerSchemaS = z.object({
     name: z.string().optional(),
     projectId: z.string().nullish(),
     organizationId: z.string(),
     memberId: z.string(),
 });
 
-export const manualTimeEntryServerSchema = z.object({
+export const manualTimeEntrySchemaS = z.object({
     timeEntryId: z.string().optional(),
     name: z.string().optional(),
     start: z.date(),
@@ -31,10 +31,10 @@ export const manualTimeEntrySchema = z.object({
     projectId: z.string().optional(),
 });
 
-export const stopTimeTrackerServerSchema = z.object({
+export const stopTimerSchemaS = z.object({
     timeEntryId: z.string().nonempty(),
 });
 
-export const removeTimeEntriesServerSchema = z.object({
+export const removeTimeEntriesSchemaS = z.object({
     timeEntryIds: z.array(z.string()),
 });

@@ -17,6 +17,6 @@ export const createProjectSchemaS = z.object({
     estimatedMinutes: z.number().nullish(),
 });
 
-export const deleteProjectServerSchema = z.object({
+export const deleteProjectSchemaS = z.object({
     projectId: z.string().nonempty(),
 });

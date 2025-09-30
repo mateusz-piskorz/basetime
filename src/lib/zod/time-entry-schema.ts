@@ -1,6 +1,6 @@
 import z from 'zod';
 
-export const startTimeTrackerSchema = z.object({
+export const startTimerSchema = z.object({
     name: z.string().optional(),
     projectId: z.string().nullish(),
 });
@@ -31,10 +31,6 @@ export const manualTimeEntrySchema = z.object({
     projectId: z.string().optional(),
 });
 
-export const stopTimerSchemaS = z.object({
-    timeEntryId: z.string().nonempty(),
-});
+export const stopTimerSchemaS = z.object({ timeEntryId: z.string().nonempty() });
 
-export const removeTimeEntriesSchemaS = z.object({
-    timeEntryIds: z.array(z.string()),
-});
+export const removeTimeEntriesSchemaS = z.object({ timeEntryIds: z.array(z.string()) });

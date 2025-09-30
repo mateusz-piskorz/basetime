@@ -14,6 +14,4 @@ export const updateMemberSchemaS = z.object({
     projectIds: z.array(z.string()).optional(),
 });
 
-export const removeMemberSchemaS = z.object({
-    memberId: z.string().nonempty(),
-});
+export const removeMemberSchemaS = z.object({ memberId: z.string().nonempty() });

@@ -3,9 +3,7 @@ import z from 'zod';
 export const ACCEPTED_IMAGE_EXT = ['svg', 'jpeg', 'jpg', 'png', 'webp'];
 const ACCEPTED_IMAGE_TYPES = ['image/svg+xml', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
-export const updateProfileSchema = z.object({
-    name: z.string().nonempty("Name can't be empty"),
-});
+export const updateProfileSchema = z.object({ name: z.string().nonempty("Name can't be empty") });
 
 export const updatePasswordSchema = z
     .object({
@@ -18,9 +16,7 @@ export const updatePasswordSchema = z
         path: ['password_confirmation'],
     });
 
-export const deleteUserAccountSchema = z.object({
-    password: z.string().nonempty("Password can't be empty"),
-});
+export const deleteUserAccountSchema = z.object({ password: z.string().nonempty("Password can't be empty") });
 
 export const updateAvatarSchema = z.object({
     profile_img: z

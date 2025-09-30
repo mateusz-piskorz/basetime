@@ -4,10 +4,10 @@
 import { Form } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
 import { useMember } from '@/lib/hooks/use-member';
-import { startTimeTracker, stopTimeTracker } from '@/lib/server-actions/time-entry';
+import { startTimer, stopTimer } from '@/lib/server-actions/time-entry';
 import { trpc } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
-import { startTimeTrackerSchema } from '@/lib/zod/time-entry-schema';
+import { startTimerSchema } from '@/lib/zod/time-entry-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -38,19 +38,16 @@ export const SectionTimeTracker = ({ className }: Props) => {
         }
     }, [isPending]);
 
-    const form = useForm({
-        resolver: zodResolver(startTimeTrackerSchema),
-        defaultValues: { projectId: 'no-project' },
-    });
+    const form = useForm({ resolver: zodResolver(startTimerSchema), defaultValues: { projectId: 'no-project' } });
 
-    const onSubmit = async (data: z.infer<typeof startTimeTrackerSchema>) => {
+    const onSubmit = async (data: z.infer<typeof startTimerSchema>) => {
         let res;
         if (activeTimeEntry) {
-            res = await stopTimeTracker({ timeEntryId: activeTimeEntry.id });
+            res = await stopTimer({ timeEntryId: activeTimeEntry.id });
             form.reset({ name: '', projectId: 'no-project' });
         } else {
             const projectId = data.projectId === 'no-project' ? undefined : data.projectId;
-            res = await startTimeTracker({ ...data, projectId, organizationId, memberId });
+            res = await startTimer({ ...data, projectId, organizationId, memberId });
         }
 
         if (!res.success) {

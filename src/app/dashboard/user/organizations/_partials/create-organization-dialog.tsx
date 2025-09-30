@@ -2,9 +2,9 @@ import { InputField } from '@/components/common/form-fields/input-field';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
-import { upsertOrganization } from '@/lib/server-actions/organization';
+import { upsertOrg } from '@/lib/server-actions/organization';
 import { trpc } from '@/lib/trpc/client';
-import { upsertOrganizationSchema } from '@/lib/zod/organization-schema';
+import { upsertOrgSchema } from '@/lib/zod/organization-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -20,12 +20,10 @@ export const CreateOrganizationDialog = ({ open, setOpen }: Props) => {
     const trpcUtils = trpc.useUtils();
     const router = useRouter();
 
-    const form = useForm({
-        resolver: zodResolver(upsertOrganizationSchema),
-    });
+    const form = useForm({ resolver: zodResolver(upsertOrgSchema) });
 
-    const onSubmit = async (data: z.infer<typeof upsertOrganizationSchema>) => {
-        const res = await upsertOrganization({ ...data });
+    const onSubmit = async (data: z.infer<typeof upsertOrgSchema>) => {
+        const res = await upsertOrg({ ...data });
 
         if (!res.success) {
             toast.error(res.message);

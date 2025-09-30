@@ -6,9 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import { useMember } from '@/lib/hooks/use-member';
-import { deleteOrganization } from '@/lib/server-actions/organization';
-
-import { deleteOrganizationSchema } from '@/lib/zod/organization-schema';
+import { deleteOrg } from '@/lib/server-actions/organization';
+import { deleteOrgSchema } from '@/lib/zod/organization-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -21,12 +20,10 @@ export const SectionDeleteOrganization = () => {
 
     const router = useRouter();
     const [error, setError] = useState<undefined | string>(undefined);
-    const form = useForm({
-        resolver: zodResolver(deleteOrganizationSchema),
-    });
+    const form = useForm({ resolver: zodResolver(deleteOrgSchema) });
 
-    const onSubmit = async ({ password }: z.infer<typeof deleteOrganizationSchema>) => {
-        const res = await deleteOrganization({ organizationId, password });
+    const onSubmit = async ({ password }: z.infer<typeof deleteOrgSchema>) => {
+        const res = await deleteOrg({ organizationId, password });
 
         if (!res.success) {
             toast.error(res.message);

@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { deleteOrganization, upsertOrganization } from '@/lib/server-actions/organization';
+import { deleteOrg, upsertOrg } from '@/lib/server-actions/organization';
 import { getSession } from '@/lib/session';
 import bcrypt from 'bcrypt';
 
@@ -60,14 +60,14 @@ const mockedGetSession = getSession as jest.Mock;
 // upsertOrganization
 test('employee cannot update organization', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res = await upsertOrganization({ organizationId, name: 'dwa', currency: 'USD' });
+    const res = await upsertOrg({ organizationId, name: 'dwa', currency: 'USD' });
     expect(res.success).toBe(false);
 });
 
 test('manager can update organization', async () => {
     const newName = 'new organization name';
     mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res = await upsertOrganization({ organizationId, name: newName, currency: 'PLN' });
+    const res = await upsertOrg({ organizationId, name: newName, currency: 'PLN' });
     expect(res.success).toBe(true);
     expect(res.data?.name).toBe(newName);
     expect(res.data?.currency).toBe('PLN');
@@ -76,7 +76,7 @@ test('manager can update organization', async () => {
 test('owner can update organization', async () => {
     const newName = 'new organization name1';
     mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await upsertOrganization({ organizationId, name: newName, currency: 'USD' });
+    const res = await upsertOrg({ organizationId, name: newName, currency: 'USD' });
     expect(res.success).toBe(true);
     expect(res.data?.name).toBe(newName);
     expect(res.data?.currency).toBe('USD');
@@ -85,26 +85,26 @@ test('owner can update organization', async () => {
 // deleteOrganization
 test('employee cannot delete organization', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res = await deleteOrganization({ organizationId, password: 'admin12345' });
+    const res = await deleteOrg({ organizationId, password: 'admin12345' });
     expect(res.success).toBe(false);
 });
 
 test('manager cannot delete organization', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res = await deleteOrganization({ organizationId, password: 'admin12345' });
+    const res = await deleteOrg({ organizationId, password: 'admin12345' });
     expect(res.success).toBe(false);
 });
 
 test('delete organization error password incorrect', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await deleteOrganization({ organizationId, password: 'incorrectPassword' });
+    const res = await deleteOrg({ organizationId, password: 'incorrectPassword' });
     expect(res.success).toBe(false);
     expect(res.message).toBe('Error password incorrect');
 });
 
 test('owner can delete organization', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await deleteOrganization({ organizationId, password: 'admin12345' });
+    const res = await deleteOrg({ organizationId, password: 'admin12345' });
     expect(res.success).toBe(true);
     const organization = await prisma.organization.findUnique({ where: { id: organizationId } });
     expect(organization).toBe(null);

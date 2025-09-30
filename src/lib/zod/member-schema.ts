@@ -7,13 +7,11 @@ export const updateMemberSchema = z.object({
     projectIds: z.array(z.string()).optional(),
 });
 
-export const updateMemberServerSchema = z.object({
+export const updateMemberSchemaS = z.object({
     memberId: z.string().nonempty(),
     role: z.nativeEnum(MEMBER_ROLE).optional(),
     hourlyRate: z.coerce.number().optional(),
     projectIds: z.array(z.string()).optional(),
 });
 
-export const removeMemberServerSchema = z.object({
-    memberId: z.string().nonempty(),
-});
+export const removeMemberSchemaS = z.object({ memberId: z.string().nonempty() });

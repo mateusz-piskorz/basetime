@@ -1,109 +1,54 @@
 'use server';
 
-import z from 'zod';
+import { action } from '.';
 import { prisma } from '../prisma';
-import { getSession } from '../session';
-import {
-    manualTimeEntryServerSchema,
-    removeTimeEntriesServerSchema,
-    startTimeTrackerServerSchema,
-    stopTimeTrackerServerSchema,
-} from '../zod/time-entry-schema';
+import { manualTimeEntrySchemaS, removeTimeEntriesSchemaS, startTimerSchemaS, stopTimerSchemaS } from '../zod/time-entry-schema';
 
-export const startTimeTracker = async (data: z.infer<typeof startTimeTrackerServerSchema>) => {
+// todo: check permission
+export const startTimer = action(startTimerSchemaS, async ({ memberId, organizationId, name, projectId }) => {
     try {
-        const validated = startTimeTrackerServerSchema.safeParse(data);
-
-        if (validated.error) {
-            return { success: false, message: 'Error validating fields' };
-        }
-
-        const session = await getSession();
-        if (!session) {
-            return { success: false, message: 'Error session invalid' };
-        }
-
-        const { name, projectId, memberId, organizationId } = validated.data;
-
         const res = await prisma.timeEntry.create({
             data: { start: new Date(), memberId, name: name || 'unnamed time entry', organizationId, projectId },
         });
 
         return { success: true, data: res };
     } catch {
-        return { success: false, message: 'Error something went wrong - startTimeTracker' };
+        return { success: false, message: 'Error - startTimer' };
     }
-};
+});
 
-export const stopTimeTracker = async (data: z.infer<typeof stopTimeTrackerServerSchema>) => {
+// todo: check permission
+export const stopTimer = action(stopTimerSchemaS, async ({ timeEntryId }) => {
     try {
-        const validated = stopTimeTrackerServerSchema.safeParse(data);
-
-        if (validated.error) {
-            return { success: false, message: 'Error validating fields' };
-        }
-
-        const session = await getSession();
-        if (!session) {
-            return { success: false, message: 'Error session invalid' };
-        }
-
-        await prisma.timeEntry.update({ where: { id: validated.data.timeEntryId, end: null }, data: { end: new Date() } });
+        await prisma.timeEntry.update({ where: { id: timeEntryId, end: null }, data: { end: new Date() } });
 
         return { success: true };
     } catch {
-        return { success: false, message: 'Error something went wrong - stopTimeTracker' };
+        return { success: false, message: 'Error - stopTimer' };
     }
-};
+});
 
-export const removeTimeEntries = async (data: z.infer<typeof removeTimeEntriesServerSchema>) => {
+export const removeTimeEntries = action(removeTimeEntriesSchemaS, async ({ timeEntryIds }, { userId }) => {
     try {
-        const validated = removeTimeEntriesServerSchema.safeParse(data);
-
-        if (validated.error) {
-            return { success: false, message: 'Error validating fields' };
-        }
-
-        const session = await getSession();
-        if (!session) {
-            return { success: false, message: 'Error session invalid' };
-        }
-
         const { count } = await prisma.timeEntry.deleteMany({
             where: {
-                id: { in: validated.data.timeEntryIds },
-                OR: [
-                    { Member: { userId: session.userId } },
-                    { Organization: { Members: { some: { userId: session.userId, role: { in: ['OWNER', 'MANAGER'] } } } } },
-                ],
+                id: { in: timeEntryIds },
+                OR: [{ Member: { userId } }, { Organization: { Members: { some: { userId, role: { in: ['OWNER', 'MANAGER'] } } } } }],
             },
         });
 
         return { success: Boolean(count) };
     } catch {
-        return { success: false, message: 'Error something went wrong - removeTimeEntry' };
+        return { success: false, message: 'Error - removeTimeEntry' };
     }
-};
+});
 
-export const manualTimeEntry = async (data: z.infer<typeof manualTimeEntryServerSchema>) => {
+export const manualTimeEntry = action(manualTimeEntrySchemaS, async (validated, { userId }) => {
     try {
-        const validated = manualTimeEntryServerSchema.safeParse(data);
+        const { name, projectId, organizationId, end, start, timeEntryId } = validated;
+        const member = await prisma.member.findFirst({ where: { userId, organizationId } });
 
-        if (validated.error) {
-            return { success: false, message: 'Error validating fields' };
-        }
-
-        const session = await getSession();
-        if (!session) {
-            return { success: false, message: 'Error session invalid' };
-        }
-
-        const { name, projectId, organizationId, end, start, timeEntryId } = validated.data;
-        const member = await prisma.member.findFirst({ where: { userId: session.userId, organizationId } });
-
-        if (!member) {
-            return { success: false, message: 'Error member not found' };
-        }
+        if (!member) return { success: false, message: 'Error member not found' };
 
         let res;
         if (timeEntryId) {
@@ -111,10 +56,7 @@ export const manualTimeEntry = async (data: z.infer<typeof manualTimeEntryServer
                 data: { start, end, memberId: member.id, name: name || 'unnamed time entry', organizationId, projectId },
                 where: {
                     id: timeEntryId,
-                    OR: [
-                        { Member: { userId: session.userId } },
-                        { Organization: { Members: { some: { userId: session.userId, role: { in: ['OWNER', 'MANAGER'] } } } } },
-                    ],
+                    OR: [{ Member: { userId } }, { Organization: { Members: { some: { userId, role: { in: ['OWNER', 'MANAGER'] } } } } }],
                 },
             });
         } else {
@@ -125,6 +67,6 @@ export const manualTimeEntry = async (data: z.infer<typeof manualTimeEntryServer
 
         return { success: true, data: res };
     } catch {
-        return { success: false, message: 'Error something went wrong - manualTimeEntry' };
+        return { success: false, message: 'Error - manualTimeEntry' };
     }
-};
+});

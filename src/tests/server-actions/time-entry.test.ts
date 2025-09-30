@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { manualTimeEntry, removeTimeEntries, startTimeTracker, stopTimeTracker } from '@/lib/server-actions/time-entry';
+import { manualTimeEntry, removeTimeEntries, startTimer, stopTimer } from '@/lib/server-actions/time-entry';
 import { getSession } from '@/lib/session';
 import bcrypt from 'bcrypt';
 
@@ -61,25 +61,25 @@ const mockedGetSession = getSession as jest.Mock;
 
 test('employee can start and stop timer', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res = await startTimeTracker({ memberId: emp1.memberId, organizationId });
+    const res = await startTimer({ memberId: emp1.memberId, organizationId });
     expect(res.success).toBe(true);
-    const stopRes = await stopTimeTracker({ timeEntryId: res.data!.id });
+    const stopRes = await stopTimer({ timeEntryId: res.data!.id });
     expect(stopRes.success).toBe(true);
 });
 
 test('manager can start and stop timer', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res = await startTimeTracker({ memberId: manager.memberId, organizationId });
+    const res = await startTimer({ memberId: manager.memberId, organizationId });
     expect(res.success).toBe(true);
-    const stopRes = await stopTimeTracker({ timeEntryId: res.data!.id });
+    const stopRes = await stopTimer({ timeEntryId: res.data!.id });
     expect(stopRes.success).toBe(true);
 });
 
 test('owner can start and stop timer', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await startTimeTracker({ memberId: owner.memberId, organizationId });
+    const res = await startTimer({ memberId: owner.memberId, organizationId });
     expect(res.success).toBe(true);
-    const stopRes = await stopTimeTracker({ timeEntryId: res.data!.id });
+    const stopRes = await stopTimer({ timeEntryId: res.data!.id });
     expect(stopRes.success).toBe(true);
 });
 

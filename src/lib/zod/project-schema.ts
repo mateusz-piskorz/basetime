@@ -8,7 +8,7 @@ export const upsertProjectSchema = z.object({
     estimatedDuration: z.string().optional(),
 });
 
-export const createProjectServerSchema = z.object({
+export const createProjectSchemaS = z.object({
     projectId: z.string().optional(),
     organizationId: z.string(),
     name: z.string().nonempty().optional(),
@@ -17,6 +17,6 @@ export const createProjectServerSchema = z.object({
     estimatedMinutes: z.number().nullish(),
 });
 
-export const deleteProjectServerSchema = z.object({
+export const deleteProjectSchemaS = z.object({
     projectId: z.string().nonempty(),
 });

@@ -11,9 +11,11 @@ type Member = {
 
 type MemberContextType = {
     organizationId: string;
+    organizationName: string;
     currency: CURRENCY;
     roundUpMinutesThreshold: number;
     member: Member;
+    logo?: string;
 } | null;
 
 const MemberContext = createContext<MemberContextType>(null);
@@ -24,14 +26,22 @@ export const MemberProvider = ({
     organizationId,
     children,
     roundUpMinutesThreshold,
+    logo,
+    organizationName,
 }: {
+    organizationName: string;
     member: Member;
     currency: CURRENCY;
     organizationId: string;
     roundUpMinutesThreshold: number;
     children: ReactNode;
+    logo?: string;
 }) => {
-    return <MemberContext.Provider value={{ member, currency, organizationId, roundUpMinutesThreshold }}>{children}</MemberContext.Provider>;
+    return (
+        <MemberContext.Provider value={{ member, currency, organizationId, roundUpMinutesThreshold, logo, organizationName }}>
+            {children}
+        </MemberContext.Provider>
+    );
 };
 
 export const useMember = () => {

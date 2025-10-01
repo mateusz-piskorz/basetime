@@ -37,9 +37,17 @@ export default function OrganizationDashboardLayout({
         );
     }
 
-    const { member, currency, id, roundUpMinutesThreshold, weekStart } = data[0];
+    const { member, currency, id, roundUpMinutesThreshold, weekStart, logo, name } = data[0];
+
     return (
-        <MemberProvider member={member} currency={currency} organizationId={id} roundUpMinutesThreshold={roundUpMinutesThreshold}>
+        <MemberProvider
+            member={member}
+            currency={currency}
+            organizationId={id}
+            roundUpMinutesThreshold={roundUpMinutesThreshold}
+            logo={logo}
+            organizationName={name}
+        >
             <DayjsProvider weekStart={weekStart}>
                 <AppLayout type="organization">{children}</AppLayout>
             </DayjsProvider>

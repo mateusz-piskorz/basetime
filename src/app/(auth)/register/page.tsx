@@ -32,7 +32,7 @@ export default function RegisterPage() {
         setError(undefined);
         toast.success('registered successfully');
         form.reset();
-        router.replace('/dashboard/user/organizations');
+        router.replace('/dashboard');
     };
 
     return (

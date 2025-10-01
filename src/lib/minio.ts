@@ -45,3 +45,7 @@ const getPresignedUrl = async ({ bucket, fileName }: { bucket: Bucket; fileName:
 export const getUserAvatarUrl = async ({ userId }: { userId: string }) => {
     return await getPresignedUrl({ bucket: 'main', fileName: `user/${userId}/avatar.png` });
 };
+
+export const getOrgLogoUrl = async ({ organizationId }: { organizationId: string }) => {
+    return await getPresignedUrl({ bucket: 'main', fileName: `organization/${organizationId}/logo.png` });
+};

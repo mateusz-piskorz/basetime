@@ -1,6 +1,9 @@
 import { CURRENCY, WEEK_START } from '@prisma/client';
 import z from 'zod';
 
+export const ACCEPTED_IMAGE_EXT = ['svg', 'jpeg', 'jpg', 'png', 'webp'];
+const ACCEPTED_IMAGE_TYPES = ['image/svg+xml', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
 export const upsertOrgSchema = z.object({
     name: z.string().nonempty(),
     currency: z.nativeEnum(CURRENCY).optional(),
@@ -26,4 +29,12 @@ export const deleteOrgSchema = z.object({ password: z.string().nonempty("Passwor
 export const deleteOrgSchemaS = z.object({
     organizationId: z.string().nonempty(),
     password: z.string().nonempty("Password can't be empty"),
+});
+
+export const updateOrgLogoSchema = z.object({
+    logo: z
+        .instanceof(File)
+        .refine((file) => file.size < 15000000, 'max file size is 15mb')
+        .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), `Allowed file extensions: ${ACCEPTED_IMAGE_EXT.join(', ')}`)
+        .nullable(),
 });

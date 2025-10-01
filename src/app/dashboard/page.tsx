@@ -1,5 +1,11 @@
-import { permanentRedirect } from 'next/navigation';
+import { getQueryClient, trpc } from '@/lib/trpc/server-client';
+import { redirect } from 'next/navigation';
 
-export default function DashboardPage() {
-    permanentRedirect('/dashboard/user/organizations');
+const queryClient = getQueryClient();
+export default async function DashboardPage() {
+    const [organization] = await queryClient.fetchQuery(trpc.organizations.queryOptions({ limit: 1 }));
+    console.log({ organization });
+    if (organization) return redirect(`/dashboard/${organization.id}/overview`);
+
+    return redirect('/dashboard/user/organizations');
 }

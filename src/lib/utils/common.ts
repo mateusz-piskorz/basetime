@@ -91,3 +91,15 @@ export const prepareDateTime = ({ date, dayjs, time }: { date: string | Date | D
     const prepared = dayjs(date).hour(Number(hours)).minute(Number(minutes)).second(0).millisecond(0);
     return prepared.toDate();
 };
+
+export const getInitials = (fullName: string) => {
+    const names = fullName.trim().split(' ');
+
+    if (names.length === 0) return '';
+    if (names.length === 1) return names[0].charAt(0).toUpperCase();
+
+    const firstInitial = names[0].charAt(0);
+    const lastInitial = names[names.length - 1].charAt(0);
+
+    return `${firstInitial}${lastInitial}`.toUpperCase();
+};

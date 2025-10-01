@@ -2,8 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
-import { useInitials } from '@/lib/hooks/use-initials';
-import { cn } from '@/lib/utils/common';
+import { cn, getInitials } from '@/lib/utils/common';
 
 type Props = {
     user?: {
@@ -19,7 +18,6 @@ type Props = {
 };
 
 export function UserInfo(props: Props) {
-    const getInitials = useInitials();
     const auth = useAuth();
     const user = props.user || auth.user;
     const name = user?.name || '';

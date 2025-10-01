@@ -16,7 +16,7 @@ afterEach(() => {
 
 test('organizations setup', async () => {
     const users = [employee, manager, owner];
-    const organization = await prisma.organization.create({ data: { name: '', currency: 'EUR', id: commonOrganizationId } });
+    await prisma.organization.create({ data: { name: '', currency: 'EUR', id: commonOrganizationId } });
 
     for (const index in users) {
         const user = users[index];
@@ -27,7 +27,7 @@ test('organizations setup', async () => {
                 name: index,
                 password: index,
                 id: user.id,
-                Members: { create: { role: user.role, organizationId: organization.id } },
+                Members: { create: { role: user.role, organizationId: commonOrganizationId } },
             },
         });
 
@@ -55,6 +55,17 @@ test('employee can get organization by id', async () => {
     expect(res[0].id).toBe(organizationId);
     expect(res[0].Members[0].userId).toBe(id);
     expect(res[0]?.ownership).toBe(true);
+});
+
+test('limit arg work', async () => {
+    const { id } = employee;
+    mockedGetSession.mockReturnValueOnce({ userId: id });
+    const res = await queryClient.fetchQuery(trpc.organizations.queryOptions({}));
+    expect(res.length).toBe(2);
+
+    mockedGetSession.mockReturnValueOnce({ userId: id });
+    const res2 = await queryClient.fetchQuery(trpc.organizations.queryOptions({ limit: 1 }));
+    expect(res2.length).toBe(1);
 });
 
 test('employee can get his organizations', async () => {

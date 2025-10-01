@@ -32,7 +32,7 @@ export default function LoginPage() {
         setError(undefined);
         toast.success('logged in successfully');
         form.reset();
-        router.replace('/dashboard/user/organizations');
+        router.replace('/dashboard');
     };
 
     return (

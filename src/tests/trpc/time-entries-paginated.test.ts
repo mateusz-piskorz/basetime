@@ -124,7 +124,7 @@ test('owner can get others timeEntries', async () => {
     expect(res.data.length).toBe(3);
 });
 
-test('members all arg works -timeEntries', async () => {
+test('members all arg works - timeEntries', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res1 = await queryClient.fetchQuery(trpc.timeEntriesPaginated.queryOptions({ organizationId }));

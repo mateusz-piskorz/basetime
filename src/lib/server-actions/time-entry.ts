@@ -53,7 +53,7 @@ export const manualTimeEntry = action(manualTimeEntrySchemaS, async (validated, 
         let res;
         if (timeEntryId) {
             res = await prisma.timeEntry.update({
-                data: { start, end, memberId: member.id, name: name || 'unnamed time entry', organizationId, projectId },
+                data: { start, end, name: name || 'unnamed time entry', organizationId, projectId },
                 where: {
                     id: timeEntryId,
                     OR: [{ Member: { userId } }, { Organization: { Members: { some: { userId, role: { in: ['OWNER', 'MANAGER'] } } } } }],

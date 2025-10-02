@@ -97,7 +97,7 @@ test('employee can get his timeEntries', async () => {
     const { id, memberId } = employee;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesByMember.queryOptions({ organizationId, memberIds: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesByMember.queryOptions({ organizationId, members: [manager.memberId, employee.memberId, owner.memberId] }),
     );
 
     expect(res.length).toBe(1);
@@ -108,7 +108,7 @@ test('manager can get others timeEntries', async () => {
     const { id } = manager;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesByMember.queryOptions({ organizationId, memberIds: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesByMember.queryOptions({ organizationId, members: [manager.memberId, employee.memberId, owner.memberId] }),
     );
 
     expect(res.length).toBe(3);
@@ -118,7 +118,7 @@ test('owner can get others timeEntries', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesByMember.queryOptions({ organizationId, memberIds: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesByMember.queryOptions({ organizationId, members: [manager.memberId, employee.memberId, owner.memberId] }),
     );
 
     expect(res.length).toBe(3);
@@ -127,14 +127,23 @@ test('owner can get others timeEntries', async () => {
 test('members arg works - timeEntries', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
-    const res = await queryClient.fetchQuery(
-        trpc.timeEntriesByMember.queryOptions({ organizationId, memberIds: [employee.memberId, owner.memberId] }),
-    );
+    const res = await queryClient.fetchQuery(trpc.timeEntriesByMember.queryOptions({ organizationId, members: [employee.memberId, owner.memberId] }));
 
     expect(res.length).toBe(2);
     res.forEach((member) => {
         expect([employee.memberId, owner.memberId].includes(member.id)).toBe(true);
     });
+});
+
+test('members all arg works - timeEntries', async () => {
+    const { id } = owner;
+    mockedGetSession.mockReturnValueOnce({ userId: id });
+    const res1 = await queryClient.fetchQuery(trpc.timeEntriesByMember.queryOptions({ organizationId }));
+    expect(res1.length).toBe(1);
+
+    mockedGetSession.mockReturnValueOnce({ userId: id });
+    const res2 = await queryClient.fetchQuery(trpc.timeEntriesByMember.queryOptions({ organizationId, members: 'all' }));
+    expect(res2.length).toBe(3);
 });
 
 test('projects arg works - timeEntries', async () => {
@@ -143,7 +152,7 @@ test('projects arg works - timeEntries', async () => {
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesByMember.queryOptions({
             organizationId,
-            memberIds: [employee.memberId, owner.memberId, manager.memberId],
+            members: [employee.memberId, owner.memberId, manager.memberId],
             projectIds: [employee.projectId, manager.projectId],
         }),
     );
@@ -161,7 +170,7 @@ test('projects arg employee permission - timeEntries', async () => {
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesByMember.queryOptions({
             organizationId,
-            memberIds: [employee.memberId, owner.memberId, manager.memberId],
+            members: [employee.memberId, owner.memberId, manager.memberId],
             projectIds: [employee.projectId, manager.projectId],
         }),
     );
@@ -176,7 +185,7 @@ test('startDate, endDate arg works - timeEntries', async () => {
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesByMember.queryOptions({
             organizationId,
-            memberIds: [employee.memberId, owner.memberId, manager.memberId],
+            members: [employee.memberId, owner.memberId, manager.memberId],
             startDate: dayjs().subtract(6, 'h').subtract(30, 'minutes').toDate().toString(),
             endDate: dayjs().subtract(3, 'h').subtract(30, 'minutes').toDate().toString(),
         }),

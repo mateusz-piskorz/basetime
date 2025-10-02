@@ -8,12 +8,12 @@ export const timeEntriesByMember = publicProcedure
         z.object({
             organizationId: z.string(),
             projectIds: z.array(z.string()).nullish(),
-            memberIds: z.array(z.string()).nullish(),
+            members: z.union([z.array(z.string()), z.literal('all')]).nullish(),
             startDate: z.string().nullish(),
             endDate: z.string().nullish(),
         }),
     )
-    .query(async ({ input: { organizationId, memberIds, projectIds, startDate, endDate } }) => {
+    .query(async ({ input: { organizationId, members, projectIds, startDate, endDate } }) => {
         const session = await getSession();
         if (!session) return [];
 
@@ -23,12 +23,17 @@ export const timeEntriesByMember = publicProcedure
         const res = await prisma.member.findMany({
             where: {
                 organizationId,
-
-                ...(memberIds?.length && { id: { in: memberIds } }),
-                OR: [
-                    { userId: session.userId },
-                    { Organization: { Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } } },
-                ],
+                ...(members === 'all'
+                    ? { Organization: { Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } } }
+                    : members?.length
+                      ? {
+                            id: { in: members },
+                            OR: [
+                                { userId: session.userId },
+                                { Organization: { Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } } },
+                            ],
+                        }
+                      : { userId: session.userId }),
             },
             select: {
                 id: true,

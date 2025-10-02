@@ -26,6 +26,8 @@ export const MetricCards = ({ scope, setScope }: Props) => {
         endDate: dayjs().endOf('week').toDate().toString(),
     });
 
+    console.log({ timeEntriesByMember });
+
     const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         organizationId,
         ...(scope === 'organization' && { members: 'all' }),

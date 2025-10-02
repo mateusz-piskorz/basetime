@@ -36,7 +36,7 @@ export const SidebarHeader = () => {
                                     <DropdownMenuItem key={org.id} asChild>
                                         <Link
                                             className="flex w-full items-center gap-2 py-2"
-                                            href={`/dashboard/${org.id}/user-invitations`}
+                                            href={`/dashboard/${org.id}/overview`}
                                             prefetch
                                             onClick={() => setOpenMobile(false)}
                                         >

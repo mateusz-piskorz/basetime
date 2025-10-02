@@ -34,7 +34,7 @@ export const ReportsPage = () => {
     const { data: timeEntriesByMember } = trpc.timeEntriesByMember.useQuery({
         organizationId,
         projectIds: projects,
-        memberIds: members,
+        members,
         startDate: startDate.toString(),
         endDate: endDate.toString(),
     });

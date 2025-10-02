@@ -1,6 +1,7 @@
 import {
     SidebarContent as SidebarContentUI,
     SidebarGroup,
+    SidebarGroupLabel,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
@@ -32,6 +33,9 @@ export const SidebarContent = () => {
             href: `/dashboard/${organizationId}/reports`,
             icon: ChartNoAxesColumnIncreasing,
         },
+    ];
+
+    const manageItems = [
         {
             title: 'Projects',
             href: `/dashboard/${organizationId}/projects`,
@@ -58,6 +62,23 @@ export const SidebarContent = () => {
             <SidebarGroup className="py-0">
                 <SidebarMenu>
                     {items.map((item) => {
+                        return (
+                            <SidebarMenuItem key={item.title}>
+                                <SidebarMenuButton className="py-5" asChild isActive={item.href === pathname} tooltip={{ children: item.title }}>
+                                    <Link href={item.href} prefetch onClick={() => setOpenMobile(false)}>
+                                        {item.icon && <item.icon />}
+                                        <span>{item.title}</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        );
+                    })}
+                </SidebarMenu>
+            </SidebarGroup>
+            <SidebarGroup className="mt-4 py-0">
+                <SidebarGroupLabel>Manage</SidebarGroupLabel>
+                <SidebarMenu>
+                    {manageItems.map((item) => {
                         return (
                             <SidebarMenuItem key={item.title}>
                                 <SidebarMenuButton className="py-5" asChild isActive={item.href === pathname} tooltip={{ children: item.title }}>

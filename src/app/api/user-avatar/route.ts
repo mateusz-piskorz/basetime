@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
         const file = formData.get('file') as unknown as File;
 
-        const validated = updateAvatarSchema.safeParse({ profile_img: file });
+        const validated = updateAvatarSchema.safeParse({ img: file });
         if (validated.error) {
             return NextResponse.json({ success: false, message: 'Error validating fields' });
         }

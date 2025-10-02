@@ -2,6 +2,8 @@ import { prisma } from '@/lib/prisma';
 import { deleteOrg, upsertOrg } from '@/lib/server-actions/organization';
 import { getSession } from '@/lib/session';
 import bcrypt from 'bcrypt';
+import { getStatObject, uploadFile } from '../../lib/minio';
+import { loadTestNonSharedBuffer } from '../utils/example-img';
 
 const owner = {
     id: 'idOwner',
@@ -108,4 +110,26 @@ test('owner can delete organization', async () => {
     expect(res.success).toBe(true);
     const organization = await prisma.organization.findUnique({ where: { id: organizationId } });
     expect(organization).toBe(null);
+});
+
+test('deleteOrganization also deletes logo', async () => {
+    await prisma.organization.create({
+        data: {
+            id: organizationId,
+            name: 'o',
+            currency: 'EUR',
+            Members: {
+                createMany: {
+                    data: [{ role: 'OWNER', userId: owner.id, id: owner.memberId }],
+                },
+            },
+        },
+    });
+    const fileName = `organization/${organizationId}/logo.png`;
+    await uploadFile({ bucket: 'main', file: loadTestNonSharedBuffer(), fileName });
+    expect(await getStatObject({ bucket: 'main', fileName })).not.toBe(undefined);
+
+    const res = await deleteOrg({ organizationId, password: 'admin12345' });
+    expect(res.success).toBe(true);
+    expect(await getStatObject({ bucket: 'main', fileName })).toBe(undefined);
 });

@@ -57,7 +57,7 @@ test('employee can get organization by id', async () => {
     expect(res[0]?.ownership).toBe(true);
 });
 
-test('limit arg work', async () => {
+test('limit arg works', async () => {
     const { id } = employee;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(trpc.organizations.queryOptions({}));

@@ -7,7 +7,7 @@ import sharp from 'sharp';
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ orgId: string }> }) {
     const { orgId } = await params;
-    console.log('params:', orgId);
+
     try {
         const session = await getSession();
         if (!session) {
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ org
 
         const file = formData.get('file') as unknown as File;
 
-        const validated = updateOrgLogoSchema.safeParse({ logo: file });
+        const validated = updateOrgLogoSchema.safeParse({ img: file });
         if (validated.error) {
             return NextResponse.json({ success: false, message: 'Error validating fields' });
         }
@@ -40,8 +40,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ org
         await uploadFile({ bucket: 'main', file: resizedBuffer, fileName });
 
         return NextResponse.json({ success: true, message: 'logo updated' });
-    } catch (e) {
-        console.log(e);
+    } catch {
         return NextResponse.json({ success: false, message: 'Something went wrong - update-logo' });
     }
 }

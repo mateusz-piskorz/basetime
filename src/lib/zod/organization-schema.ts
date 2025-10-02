@@ -1,7 +1,7 @@
 import { CURRENCY, WEEK_START } from '@prisma/client';
 import z from 'zod';
+import { ACCEPTED_IMAGE_EXT } from '../constants/accepted-image-ext';
 
-export const ACCEPTED_IMAGE_EXT = ['svg', 'jpeg', 'jpg', 'png', 'webp'];
 const ACCEPTED_IMAGE_TYPES = ['image/svg+xml', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 export const upsertOrgSchema = z.object({
@@ -32,7 +32,7 @@ export const deleteOrgSchemaS = z.object({
 });
 
 export const updateOrgLogoSchema = z.object({
-    logo: z
+    img: z
         .instanceof(File)
         .refine((file) => file.size < 15000000, 'max file size is 15mb')
         .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), `Allowed file extensions: ${ACCEPTED_IMAGE_EXT.join(', ')}`)

@@ -1,7 +1,7 @@
 import { deleteFile, uploadFile } from '@/lib/minio'; // your existing upload function
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
-import { updateOrgLogoSchema } from '@/lib/zod/organization-schema';
+import { imgSchema } from '@/lib/zod/img-schema';
 import { NextRequest, NextResponse } from 'next/server';
 import sharp from 'sharp';
 
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ org
 
         const file = formData.get('file') as unknown as File;
 
-        const validated = updateOrgLogoSchema.safeParse({ img: file });
+        const validated = imgSchema.safeParse({ img: file });
         if (validated.error) {
             return NextResponse.json({ success: false, message: 'Error validating fields' });
         }

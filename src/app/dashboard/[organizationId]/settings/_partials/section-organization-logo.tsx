@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { useMember } from '@/lib/hooks/use-member';
 import { removeLogo, updateLogo } from '@/lib/logo';
 import { trpc } from '@/lib/trpc/client';
-import { updateOrgLogoSchema } from '@/lib/zod/organization-schema';
+
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -59,7 +59,7 @@ export const SectionOrganizationLogo = () => {
                     </div>
                 )}
 
-                <ImgInput imgSrc={imgSrc} schema={updateOrgLogoSchema} setImg={setImg} />
+                <ImgInput imgSrc={imgSrc} setImg={setImg} />
             </Card>
             <Button
                 disabled={loading}

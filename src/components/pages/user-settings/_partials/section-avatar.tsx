@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { removeAvatar, updateAvatar } from '@/lib/avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
-import { updateAvatarSchema } from '@/lib/zod/profile-schema';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -55,7 +54,7 @@ export const SectionAvatar = () => {
                     </div>
                 )}
 
-                <ImgInput imgSrc={imgSrc} schema={updateAvatarSchema} setImg={setImg} />
+                <ImgInput imgSrc={imgSrc} setImg={setImg} />
             </Card>
             <Button
                 disabled={loading}

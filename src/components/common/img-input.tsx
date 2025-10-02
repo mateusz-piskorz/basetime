@@ -2,17 +2,17 @@ import { ACCEPTED_IMAGE_EXT } from '@/lib/constants/accepted-image-ext';
 import { cn } from '@/lib/utils/common';
 import { Upload } from 'lucide-react';
 import { toast } from 'sonner';
-import z from 'zod';
+
+import { imgSchema } from '@/lib/zod/img-schema';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 
 type Props = {
     imgSrc: string | null;
-    schema: z.ZodType;
     setImg: (arg: File | null) => void;
 };
 
-export const ImgInput = ({ imgSrc, schema, setImg }: Props) => {
+export const ImgInput = ({ imgSrc, setImg }: Props) => {
     return (
         <div className={cn(imgSrc ? 'space-x-4 text-center' : 'h-full')}>
             <label className={cn('relative mx-auto', !imgSrc && 'flex h-full w-full flex-col items-center justify-center')}>
@@ -31,7 +31,7 @@ export const ImgInput = ({ imgSrc, schema, setImg }: Props) => {
                     accept="image/*"
                     onChange={async (event) => {
                         const file = event.target.files && event.target.files[0];
-                        const validated = schema.safeParse({ img: file });
+                        const validated = imgSchema.safeParse({ img: file });
                         if (validated.success) {
                             setImg(file);
                         } else {

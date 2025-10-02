@@ -2,6 +2,7 @@
 
 import bcrypt from 'bcrypt';
 import { action } from '.';
+import { deleteFile } from '../minio';
 import { prisma } from '../prisma';
 import { deleteOrgSchemaS, upsertOrgSchemaS } from '../zod/organization-schema';
 
@@ -40,6 +41,9 @@ export const deleteOrg = action(deleteOrgSchemaS, async ({ organizationId, passw
         if (!(await bcrypt.compare(password, user?.password))) return { success: false, message: 'Error password incorrect' };
 
         await prisma.organization.delete({ where: { id: organizationId, Members: { some: { userId, role: 'OWNER' } } } });
+
+        const fileName = `organization/${organizationId}/logo.png`;
+        await deleteFile({ bucket: 'main', fileName });
 
         return { success: true };
     } catch {

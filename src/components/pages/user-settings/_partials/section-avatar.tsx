@@ -1,14 +1,11 @@
 'use client';
 
 import { DashboardHeading } from '@/components/common/dashboard-heading';
+import { ImgInput } from '@/components/common/img-input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { removeAvatar, updateAvatar } from '@/lib/avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
-import { cn } from '@/lib/utils/common';
-import { ACCEPTED_IMAGE_EXT, updateAvatarSchema } from '@/lib/zod/profile-schema';
-import { Upload } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -57,44 +54,7 @@ export const SectionAvatar = () => {
                     </div>
                 )}
 
-                <div className={cn(imgSrc ? 'space-x-4 text-center' : 'h-full')}>
-                    <label className={cn('relative mx-auto', !imgSrc && 'flex h-full w-full flex-col items-center justify-center')}>
-                        {imgSrc ? (
-                            <Button>Choose different</Button>
-                        ) : (
-                            <>
-                                <Upload className="size-11" />
-                                <p className="font-medium">Choose File</p>
-                                <p className="text-muted-foreground font-normal">{ACCEPTED_IMAGE_EXT.join(', ')}</p>
-                            </>
-                        )}
-                        <Input
-                            className={cn('absolute top-0 left-0 h-full w-full cursor-pointer opacity-0')}
-                            type="file"
-                            accept="image/*"
-                            onChange={async (event) => {
-                                const file = event.target.files && event.target.files[0];
-                                const validated = updateAvatarSchema.safeParse({ profile_img: file });
-                                if (validated.success) {
-                                    setImg(file);
-                                } else {
-                                    toast.error(validated.error.errors[0]?.message || 'Invalid image file');
-                                }
-                            }}
-                        />
-                    </label>
-                    {imgSrc && (
-                        <Button
-                            className="mx-auto"
-                            variant="destructive"
-                            onClick={() => {
-                                setImg(null);
-                            }}
-                        >
-                            Remove
-                        </Button>
-                    )}
-                </div>
+                <ImgInput imgSrc={imgSrc} setImg={setImg} />
             </Card>
             <Button
                 disabled={loading}

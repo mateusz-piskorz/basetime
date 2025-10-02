@@ -7,6 +7,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Form } from '@/components/ui/form';
 import { useMember } from '@/lib/hooks/use-member';
 import { deleteOrg } from '@/lib/server-actions/organization';
+import { trpc } from '@/lib/trpc/client';
 import { deleteOrgSchema } from '@/lib/zod/organization-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -16,6 +17,7 @@ import { toast } from 'sonner';
 import z from 'zod';
 
 export const SectionDeleteOrganization = () => {
+    const trpcUtils = trpc.useUtils();
     const { organizationId } = useMember();
 
     const router = useRouter();
@@ -31,6 +33,7 @@ export const SectionDeleteOrganization = () => {
             return;
         }
 
+        trpcUtils.organizations.refetch();
         toast.success('organization deleted successfully');
         router.replace('/dashboard/user/organizations');
     };

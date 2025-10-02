@@ -1,4 +1,5 @@
 import { dayjs } from '@/lib/dayjs';
+import { getOrgLogoUrl } from '@/lib/minio';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
 import { formatMinutes, sumTimeEntries } from '@/lib/utils/common';
@@ -6,8 +7,8 @@ import z from 'zod';
 import { publicProcedure } from '../init';
 
 export const organizations = publicProcedure
-    .input(z.object({ organizationId: z.string().nullish() }))
-    .query(async ({ input: { organizationId } }) => {
+    .input(z.object({ organizationId: z.string().nullish(), limit: z.number().optional() }))
+    .query(async ({ input: { organizationId, limit } }) => {
         const session = await getSession();
         if (!session) return [];
 
@@ -21,18 +22,21 @@ export const organizations = publicProcedure
                 TimeEntries: true,
                 Members: { where: { userId: session.userId } },
             },
+            take: limit,
         });
 
-        const data = res.map((organization) => {
-            const member = organization.Members[0];
+        return Promise.all(
+            res.map(async (organization) => {
+                const member = organization.Members[0];
+                const logo = await getOrgLogoUrl({ organizationId: organization.id });
 
-            return {
-                ...organization,
-                loggedTime: formatMinutes(sumTimeEntries({ entries: organization.TimeEntries, dayjs })),
-                ownership: member.role === 'OWNER',
-                member,
-            };
-        });
-
-        return data;
+                return {
+                    ...organization,
+                    loggedTime: formatMinutes(sumTimeEntries({ entries: organization.TimeEntries, dayjs })),
+                    ownership: member.role === 'OWNER',
+                    member,
+                    logo,
+                };
+            }),
+        );
     });

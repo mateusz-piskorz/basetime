@@ -1,6 +1,8 @@
 import { CURRENCY, WEEK_START } from '@prisma/client';
 import z from 'zod';
 
+const ACCEPTED_IMAGE_TYPES = ['image/svg+xml', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
 export const upsertOrgSchema = z.object({
     name: z.string().nonempty(),
     currency: z.nativeEnum(CURRENCY).optional(),

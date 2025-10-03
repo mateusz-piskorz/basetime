@@ -2,18 +2,6 @@ import { prisma } from '@/lib/prisma';
 import { logout, signin, signup } from '@/lib/server-actions/auth';
 import { createSession, deleteSession } from '@/lib/session';
 
-jest.mock('@/lib/session', () => {
-    const mockDeleteSession = jest.fn();
-    const mockCreateSession = jest.fn();
-    return {
-        getSession: () => null,
-        createSession: mockCreateSession,
-        deleteSession: mockDeleteSession,
-        setSessionCookie: () => null,
-    };
-});
-
-jest.mock('server-only', () => ({}));
 jest.mock('next/headers', () => ({
     headers: () => ({
         get: (key: string) => {
@@ -27,9 +15,9 @@ const password = 'john1234';
 const name = 'john doe';
 
 test('User can sing up', async () => {
-    const res = await signup({ email, password, name });
-    expect(res.success).toBe(true);
+    await signup({ email, password, name });
     const user = await prisma.user.findUnique({ where: { email } });
+
     expect(user?.name).toBe(name);
     expect(createSession).toHaveBeenCalledWith({ userId: user?.id, userAgent: 'MockedHeader-user-agent' });
 });

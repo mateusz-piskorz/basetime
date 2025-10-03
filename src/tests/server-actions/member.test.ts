@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { removeMember, updateMember } from '@/lib/server-actions/member';
-import { getSession } from '@/lib/session';
+import { mockSession } from '../utils/mock-session';
 
 const owner = {
     id: 'idOwner',
@@ -20,16 +20,9 @@ const emp2 = {
 };
 
 const organizationId = 'organizationId123';
+const memberPrisma = async (id: string) => await prisma.member.findUnique({ where: { id }, include: { HourlyRates: true } });
 
-jest.mock('@/lib/session', () => {
-    const mockGetSession = jest.fn();
-    mockGetSession.mockReturnValue({ userId: owner.id });
-    return {
-        getSession: mockGetSession,
-    };
-});
-
-test('member setup', async () => {
+beforeAll(async () => {
     await prisma.user.create({ data: { email: '1', name: '', password: '', id: owner.id } });
     await prisma.user.create({ data: { email: '2', name: '', password: '', id: manager.id } });
     await prisma.user.create({ data: { email: '3', name: '', password: '', id: emp1.id } });
@@ -53,85 +46,87 @@ test('member setup', async () => {
     });
 });
 
-const mockedGetSession = getSession as jest.Mock;
+describe('removeMember', () => {
+    test('owner cannot be removed', async () => {
+        mockSession(owner.id);
+        expect((await removeMember({ memberId: owner.memberId })).success).toBe(false);
+        expect(await memberPrisma(owner.memberId)).not.toBe(null);
+    });
 
-// updateMember
-test('employee can not updateMember', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res = await updateMember({ memberId: emp2.memberId, hourlyRate: 24 });
-    expect(res.success).toBe(false);
+    test('employee cannot removeMember', async () => {
+        mockSession(emp1.id);
+        expect((await removeMember({ memberId: emp2.memberId })).success).toBe(false);
+        expect(await memberPrisma(emp2.memberId)).not.toBe(null);
+    });
+
+    test('manager can removeMember', async () => {
+        mockSession(manager.id);
+        expect((await removeMember({ memberId: emp2.memberId })).success).toBe(true);
+        expect(await memberPrisma(emp2.memberId)).toBe(null);
+    });
+
+    test('owner can removeMember', async () => {
+        mockSession(owner.id);
+        expect((await removeMember({ memberId: manager.memberId })).success).toBe(true);
+        expect(await memberPrisma(manager.memberId)).toBe(null);
+    });
 });
 
-test('manager can updateMember', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res = await updateMember({ memberId: emp2.memberId, hourlyRate: 24 });
-    expect(res.success).toBe(true);
-});
+describe('updateMember', () => {
+    beforeAll(async () => {
+        await prisma.member.create({ data: { organizationId, userId: manager.id, role: 'MANAGER', id: manager.memberId } });
+        await prisma.member.create({ data: { organizationId, userId: emp2.id, role: 'EMPLOYEE', id: emp2.memberId } });
+    });
+    test('employee can not updateMember', async () => {
+        mockSession(emp1.id);
+        expect((await updateMember({ memberId: emp2.memberId, hourlyRate: 24 })).success).toBe(false);
+        expect((await memberPrisma(emp2.memberId))?.HourlyRates.length).toBe(0);
+    });
 
-test('owner can updateMember', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await updateMember({ memberId: emp2.memberId, hourlyRate: 50 });
-    expect(res.success).toBe(true);
-});
+    test('manager can updateMember', async () => {
+        mockSession(manager.id);
+        expect((await updateMember({ memberId: emp2.memberId, hourlyRate: 24 })).success).toBe(true);
+        expect((await memberPrisma(emp2.memberId))?.HourlyRates.length).toBe(1);
+    });
 
-test('manager can change employee/manager role', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res = await updateMember({ memberId: emp2.memberId, role: 'MANAGER' });
-    expect(res.success).toBe(true);
-});
+    test('owner can updateMember', async () => {
+        mockSession(owner.id);
+        expect((await updateMember({ memberId: emp2.memberId, hourlyRate: 50 })).success).toBe(true);
+        expect((await memberPrisma(emp2.memberId))?.HourlyRates.length).toBe(2);
+    });
 
-test('no one can assign owner role', async () => {
-    await prisma.member.update({ where: { id: emp2.memberId }, data: { role: 'EMPLOYEE' } });
+    test('manager can change employee/manager role', async () => {
+        mockSession(manager.id);
+        expect((await updateMember({ memberId: emp2.memberId, role: 'MANAGER' })).success).toBe(true);
+        expect((await memberPrisma(emp2.memberId))?.role).toBe('MANAGER');
+    });
 
-    mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    await updateMember({ memberId: emp2.memberId, role: 'OWNER' });
+    test('no one can assign owner role', async () => {
+        await prisma.member.update({ where: { id: emp2.memberId }, data: { role: 'EMPLOYEE' } });
 
-    mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    await updateMember({ memberId: emp2.memberId, role: 'OWNER' });
+        mockSession(manager.id);
+        await updateMember({ memberId: emp2.memberId, role: 'OWNER' });
 
-    mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await updateMember({ memberId: emp2.memberId, role: 'OWNER' });
-    expect(res.data?.role).toBe('EMPLOYEE');
-});
+        mockSession(emp1.id);
+        await updateMember({ memberId: emp2.memberId, role: 'OWNER' });
 
-test('no one can change owners role', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    await updateMember({ memberId: owner.memberId, role: 'MANAGER' });
+        mockSession(owner.id);
+        await updateMember({ memberId: emp2.memberId, role: 'OWNER' });
 
-    mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    await updateMember({ memberId: owner.memberId, role: 'EMPLOYEE' });
+        expect((await memberPrisma(emp2.memberId))?.role).toBe('EMPLOYEE');
+    });
 
-    mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    await updateMember({ memberId: owner.memberId, role: 'MANAGER' });
+    test('no one can change owners role', async () => {
+        mockSession(manager.id);
+        await updateMember({ memberId: owner.memberId, role: 'MANAGER' });
 
-    const ownerMember = await prisma.member.findUnique({ where: { id: owner.memberId } });
-    expect(ownerMember?.role).toBe('OWNER');
-});
+        mockSession(emp1.id);
+        await updateMember({ memberId: owner.memberId, role: 'EMPLOYEE' });
 
-// removeMember
-test('owner cannot be removed', async () => {
-    const res = await removeMember({ memberId: owner.memberId });
-    expect(res.success).toBe(false);
-});
+        mockSession(owner.id);
+        await updateMember({ memberId: owner.memberId, role: 'MANAGER' });
 
-test('employee cannot removeMember', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res = await removeMember({ memberId: emp2.memberId });
-    expect(res.success).toBe(false);
-});
-
-test('manager can removeMember', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res = await removeMember({ memberId: emp2.memberId });
-    expect(res.success).toBe(true);
-    const user = await prisma.member.findUnique({ where: { id: emp2.memberId } });
-    expect(user).toBe(null);
-});
-
-test('owner can removeMember', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await removeMember({ memberId: manager.memberId });
-    expect(res.success).toBe(true);
-    const user = await prisma.member.findUnique({ where: { id: manager.memberId } });
-    expect(user).toBe(null);
+        await prisma.member.findUnique({ where: { id: owner.memberId } });
+        expect((await memberPrisma(owner.memberId))?.role).toBe('OWNER');
+    });
 });

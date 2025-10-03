@@ -1,5 +1,4 @@
 import { execSync } from 'child_process';
-
 // it's executed before every .test.ts file
 
 jest.mock('server-only', () => ({}));

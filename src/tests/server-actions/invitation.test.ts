@@ -1,30 +1,21 @@
 import { prisma } from '@/lib/prisma';
-import { createInv, updateInvStatus } from '@/lib/server-actions/invitation';
-import { getSession } from '@/lib/session';
+import { createInv as createInvAction, updateInvStatus } from '@/lib/server-actions/invitation';
+import { INVITATION_STATUS } from '@prisma/client';
+import { mockSession } from '../utils/mock-session';
 
-const ownerUserId = 'idOwner';
-const managerUserId = 'idManager';
-const employeeUserId = 'idEmployee';
-const employeeMemberEmail = 'employee@onet.pl';
-
+const owner = 'idOwner';
+const manager = 'idManager';
+const employee = 'idEmployee';
+const employeeEmail = 'employee@onet.pl';
 const organizationId = 'organizationId123';
+const testUser = 'johnId';
+const testUserEmail = 'johnDoe@onet.pl';
 
-const exampleUserId = 'idExample';
-const exampleUserEmail = 'johnDoe@onet.pl';
-
-jest.mock('@/lib/session', () => {
-    const mockGetSession = jest.fn();
-    mockGetSession.mockReturnValue({ userId: ownerUserId });
-    return {
-        getSession: mockGetSession,
-    };
-});
-
-test('invitation setup', async () => {
-    await prisma.user.create({ data: { email: '1', name: '', password: '', id: ownerUserId } });
-    await prisma.user.create({ data: { email: '2', name: '', password: '', id: managerUserId } });
-    await prisma.user.create({ data: { email: employeeMemberEmail, name: '', password: '', id: employeeUserId } });
-    await prisma.user.create({ data: { email: exampleUserEmail, name: '', password: '', id: exampleUserId } });
+beforeAll(async () => {
+    await prisma.user.create({ data: { email: '1', name: '', password: '', id: owner } });
+    await prisma.user.create({ data: { email: '2', name: '', password: '', id: manager } });
+    await prisma.user.create({ data: { email: employeeEmail, name: '', password: '', id: employee } });
+    await prisma.user.create({ data: { email: testUserEmail, name: '', password: '', id: testUser } });
     await prisma.organization.create({
         data: {
             id: organizationId,
@@ -33,9 +24,9 @@ test('invitation setup', async () => {
             Members: {
                 createMany: {
                     data: [
-                        { role: 'OWNER', userId: ownerUserId },
-                        { role: 'MANAGER', userId: managerUserId },
-                        { role: 'EMPLOYEE', userId: employeeUserId },
+                        { role: 'OWNER', userId: owner },
+                        { role: 'MANAGER', userId: manager },
+                        { role: 'EMPLOYEE', userId: employee },
                     ],
                 },
             },
@@ -43,108 +34,132 @@ test('invitation setup', async () => {
     });
 });
 
-// createInvitation
-test('createInvitation - Error permission', async () => {
-    const mockedGetSession = getSession as jest.Mock;
-    mockedGetSession.mockReturnValueOnce({ userId: managerUserId });
-    const res = await createInv({ email: exampleUserEmail, organizationId });
-    expect(res.success).toBe(false);
-    expect(res.message).toBe('Error permission');
+describe('createInv', () => {
+    const createInv = async (email: string) => await createInvAction({ email, organizationId });
 
-    mockedGetSession.mockReturnValueOnce({ userId: employeeUserId });
-    const res2 = await createInv({ email: exampleUserEmail, organizationId });
-    expect(res2.success).toBe(false);
-    expect(res2.message).toBe('Error permission');
+    test('error permission', async () => {
+        for (const userId of [testUser, employee, manager]) {
+            mockSession(userId);
+            expect((await createInv(testUserEmail)).success).toBe(false);
+        }
+        expect((await prisma.invitation.findMany()).length).toBe(0);
+    });
 
-    mockedGetSession.mockReturnValueOnce({ userId: exampleUserId });
-    const res3 = await createInv({ email: exampleUserEmail, organizationId });
-    expect(res3.success).toBe(false);
-    expect(res3.message).toBe('Error permission');
+    test(`error couldn't find user with email`, async () => {
+        mockSession(owner);
+        const res = await createInv('fake@email.com');
+        expect(res.success).toBe(false);
+        expect(res.message).toBe(`Error couldn't find user with email fake@email.com`);
+        expect((await prisma.invitation.findMany()).length).toBe(0);
+    });
+
+    test('error is already a member', async () => {
+        mockSession(owner);
+        const res = await createInv(employeeEmail);
+        expect(res.success).toBe(false);
+        expect(res.message).toBe(`Error ${employeeEmail} is already a member of this organization`);
+        expect((await prisma.invitation.findMany()).length).toBe(0);
+    });
+
+    test('owner can createInvitation', async () => {
+        mockSession(owner);
+        expect((await createInv(testUserEmail)).success).toBe(true);
+        const invs = await prisma.invitation.findMany();
+        expect(invs.length).toBe(1);
+        expect(invs[0].status).toBe('SENT');
+        expect(invs[0].organizationId).toBe(organizationId);
+        expect(invs[0].userId).toBe(testUser);
+    });
+
+    test('error already sent', async () => {
+        mockSession(owner);
+        const res = await createInv(testUserEmail);
+        expect(res.success).toBe(false);
+        expect(res.message).toBe(`Error invitation was already sent to ${testUserEmail}`);
+        expect((await prisma.invitation.findMany()).length).toBe(1);
+    });
 });
 
-test('createInvitation - is already a member error', async () => {
-    const res = await createInv({ email: employeeMemberEmail, organizationId });
-    expect(res.success).toBe(false);
-    expect(res.message).toBe(`Error ${employeeMemberEmail} is already a member of this organization`);
-});
+describe('updateInvStatus', () => {
+    const invId = 'invId123';
+    const assertInvStatus = async (status: string) => expect((await prisma.invitation.findUnique({ where: { id: invId } }))?.status).toBe(status);
+    const updateInv = async (status: INVITATION_STATUS) => await updateInvStatus({ invitationId: invId, status });
+    const updateInvPrisma = async (status: INVITATION_STATUS) => await prisma.invitation.update({ where: { id: invId }, data: { status } });
 
-test('owner can createInvitation', async () => {
-    const res = await createInv({ email: exampleUserEmail, organizationId });
-    expect(res.success).toBe(true);
-    expect(res.data?.status).toBe('SENT');
-});
+    beforeAll(async () => {
+        await prisma.invitation.deleteMany();
+        await prisma.invitation.create({ data: { organizationId, status: 'SENT', userId: testUser, id: invId } });
+    });
 
-test('createInvitation - already sent error', async () => {
-    const res = await createInv({ email: exampleUserEmail, organizationId });
-    expect(res.success).toBe(false);
-    expect(res.message).toBe(`Error invitation was already sent to ${exampleUserEmail}`);
-});
+    test('cancel - Error permission', async () => {
+        for (const userId of [testUser, employee, manager]) {
+            mockSession(userId);
+            expect((await updateInv('CANCELED')).success).toBe(false);
+        }
+        await assertInvStatus('SENT');
+    });
 
-// cancelInvitation
-test('cancelInvitation - Error permission', async () => {
-    const mockedGetSession = getSession as jest.Mock;
-    const invitation = await prisma.invitation.findFirst();
-    expect(invitation).not.toBe(null);
+    test('reject - Error permission', async () => {
+        for (const userId of [owner, employee, manager]) {
+            mockSession(userId);
+            expect((await updateInv('REJECTED')).success).toBe(false);
+        }
+        await assertInvStatus('SENT');
+    });
 
-    mockedGetSession.mockReturnValueOnce({ userId: managerUserId });
-    const res = await updateInvStatus({ invitationId: invitation!.id, status: 'CANCELED' });
-    expect(res.success).toBe(false);
+    test('accept - Error permission', async () => {
+        for (const userId of [owner, employee, manager]) {
+            mockSession(userId);
+            expect((await updateInv('ACCEPTED')).success).toBe(false);
+        }
+        await assertInvStatus('SENT');
+    });
 
-    mockedGetSession.mockReturnValueOnce({ userId: employeeUserId });
-    const res2 = await updateInvStatus({ invitationId: invitation!.id, status: 'CANCELED' });
-    expect(res2.success).toBe(false);
+    test(`can't cancel inv in status other that SENT`, async () => {
+        for (const status of ['ACCEPTED', 'CANCELED', 'REJECTED'] as const) {
+            mockSession(owner);
+            await updateInvPrisma(status);
+            expect((await updateInv('CANCELED')).success).toBe(false);
+            await assertInvStatus(status);
+        }
+    });
 
-    mockedGetSession.mockReturnValueOnce({ userId: exampleUserId });
-    const res3 = await updateInvStatus({ invitationId: invitation!.id, status: 'CANCELED' });
-    expect(res3.success).toBe(false);
-});
+    test(`can't reject inv in status other that SENT`, async () => {
+        for (const status of ['ACCEPTED', 'CANCELED', 'REJECTED'] as const) {
+            mockSession(testUser);
+            await updateInvPrisma(status);
+            expect((await updateInv('REJECTED')).success).toBe(false);
+            await assertInvStatus(status);
+        }
+    });
 
-test('owner can cancelInvitation', async () => {
-    const invitation = await prisma.invitation.findFirst();
-    expect(invitation).not.toBe(null);
-    const res = await updateInvStatus({ invitationId: invitation!.id, status: 'CANCELED' });
-    expect(res.success).toBe(true);
-    expect(res.data?.status).toBe('CANCELED');
-});
+    test(`can't accept inv in status other that SENT`, async () => {
+        for (const status of ['ACCEPTED', 'CANCELED', 'REJECTED'] as const) {
+            mockSession(testUser);
+            await updateInvPrisma(status);
+            expect((await updateInv('ACCEPTED')).success).toBe(false);
+            await assertInvStatus(status);
+        }
+    });
 
-// acceptInvitation
-test('acceptInvitation - error permission', async () => {
-    await createInv({ email: exampleUserEmail, organizationId });
-    const invitation = await prisma.invitation.findFirst({ where: { status: 'SENT' } });
-    expect(invitation).not.toBe(null);
-    const res = await updateInvStatus({ invitationId: invitation!.id, status: 'ACCEPTED' });
-    expect(res.success).toBe(false);
-});
+    test('owner can cancel invitation', async () => {
+        await updateInvPrisma('SENT');
+        mockSession(owner);
+        expect((await updateInv('CANCELED')).success).toBe(true);
+        await assertInvStatus('CANCELED');
+    });
 
-test('the invited person can acceptInvitation', async () => {
-    const mockedGetSession = getSession as jest.Mock;
-    mockedGetSession.mockReturnValueOnce({ userId: exampleUserId });
-    const invitation = await prisma.invitation.findFirst({ where: { status: 'SENT' } });
-    expect(invitation).not.toBe(null);
-    const res = await updateInvStatus({ invitationId: invitation!.id, status: 'ACCEPTED' });
-    expect(res.success).toBe(true);
-    expect(res.data?.status).toBe('ACCEPTED');
-});
+    test('the invited person can accept invitation', async () => {
+        await updateInvPrisma('SENT');
+        mockSession(testUser);
+        expect((await updateInv('ACCEPTED')).success).toBe(true);
+        await assertInvStatus('ACCEPTED');
+    });
 
-// rejectInvitation
-test('rejectInvitation - error permission', async () => {
-    const member = await prisma.member.findFirst({ where: { userId: exampleUserId } });
-    if (member) {
-        await prisma.member.delete({ where: { id: member.id } });
-    }
-    await createInv({ email: exampleUserEmail, organizationId });
-    const invitation = await prisma.invitation.findFirst({ where: { status: 'SENT' } });
-    expect(invitation).not.toBe(null);
-    const res = await updateInvStatus({ invitationId: invitation!.id, status: 'REJECTED' });
-    expect(res.success).toBe(false);
-});
-
-test('the invited person can rejectInvitation', async () => {
-    const mockedGetSession = getSession as jest.Mock;
-    mockedGetSession.mockReturnValueOnce({ userId: exampleUserId });
-    const invitation = await prisma.invitation.findFirst({ where: { status: 'SENT' } });
-    expect(invitation).not.toBe(null);
-    const res = await updateInvStatus({ invitationId: invitation!.id, status: 'REJECTED' });
-    expect(res.success).toBe(true);
-    expect(res.data?.status).toBe('REJECTED');
+    test('the invited person can reject invitation', async () => {
+        await updateInvPrisma('SENT');
+        mockSession(testUser);
+        expect((await updateInv('REJECTED')).success).toBe(true);
+        await assertInvStatus('REJECTED');
+    });
 });

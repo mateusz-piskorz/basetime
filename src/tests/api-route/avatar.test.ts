@@ -36,7 +36,7 @@ describe('avatar', () => {
         const data = await fetch(apiUrl, {
             method: 'POST',
             body: getTestFileFormData(),
-            headers: headers,
+            headers,
         }).then((res) => res.json());
 
         expect(data.success).toBe(true);
@@ -52,7 +52,7 @@ describe('avatar', () => {
     test('user can delete avatar', async () => {
         const data = await fetch(apiUrl, {
             method: 'DELETE',
-            headers: headers,
+            headers,
         }).then((res) => res.json());
 
         expect(data.success).toBe(true);

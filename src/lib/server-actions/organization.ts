@@ -6,8 +6,9 @@ import { deleteFile } from '../minio';
 import { prisma } from '../prisma';
 import { deleteOrgSchemaS, upsertOrgSchemaS } from '../zod/organization-schema';
 
-export const upsertOrg = action(upsertOrgSchemaS, async (validated, { userId }) => {
+export const upsertOrg = action(upsertOrgSchemaS, async (validated, session) => {
     const { name, currency, organizationId, roundUpMinutesThreshold, weekStart } = validated;
+    const { userId } = session;
     try {
         let res;
         if (organizationId) {
@@ -19,7 +20,7 @@ export const upsertOrg = action(upsertOrgSchemaS, async (validated, { userId }) 
             res = await prisma.organization.create({
                 data: {
                     currency: currency || 'EUR',
-                    name,
+                    name: name || `${session.name}'s organization`,
                     Members: { create: { role: 'OWNER', userId } },
                     roundUpMinutesThreshold,
                     weekStart,

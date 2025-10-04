@@ -13,3 +13,10 @@ export function loadTestFile() {
     const buffer = fs.readFileSync(pngPath);
     return new File([buffer], 'example.png', { type: 'image/png' });
 }
+
+export function getTestFileFormData() {
+    const img = loadTestFile();
+    const formData = new FormData();
+    formData.set('file', img);
+    return formData;
+}

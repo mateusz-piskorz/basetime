@@ -1,8 +1,6 @@
 import { CURRENCY, WEEK_START } from '@prisma/client';
 import z from 'zod';
 
-const ACCEPTED_IMAGE_TYPES = ['image/svg+xml', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-
 export const upsertOrgSchema = z.object({
     name: z.string().nonempty(),
     currency: z.nativeEnum(CURRENCY).optional(),
@@ -15,7 +13,7 @@ export const upsertOrgSchema = z.object({
 
 export const upsertOrgSchemaS = z.object({
     organizationId: z.string().optional(),
-    name: z.string().nonempty(),
+    name: z.string().nonempty().optional(),
     currency: z.nativeEnum(CURRENCY).optional(),
     weekStart: z.nativeEnum(WEEK_START).optional(),
     roundUpMinutesThreshold: z

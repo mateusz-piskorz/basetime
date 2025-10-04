@@ -10,7 +10,8 @@
         "format": "prettier --write .",
         "lint": "eslint . --fix",
         "types": "tsc --noEmit",
-        "test": "jest --runInBand"
+        "test": "jest --runInBand",
+        "seed": "ts-node scripts/seed.ts"
     },
     "dependencies": {
         "@hookform/resolvers": "^5.2.1",

@@ -94,5 +94,8 @@ jobs:
       - name: Run Prisma migrate deploy
         run: docker compose --file docker-compose.prod.yml run --rm -e HOME=/tmp -e NPM_CONFIG_CACHE=/tmp/.npm app npx prisma migrate deploy
 
+      - name: Run seed script
+        run: docker compose --file docker-compose.prod.yml run --rm app npm run seed
+
       - name: Prune Docker (optional)
         run: docker system prune -f

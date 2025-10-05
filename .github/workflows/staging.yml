@@ -93,11 +93,5 @@ jobs:
       - name: Wait for containers
         run: sleep 10
 
-      - name: Run Prisma migrate deploy
-        run: docker compose --file docker-compose.stg.yml run --rm -e HOME=/tmp -e NPM_CONFIG_CACHE=/tmp/.npm app npx prisma migrate deploy
-
-      - name: Run seed script
-        run: docker compose --file docker-compose.stg.yml run --rm -e HOME=/tmp -e NPM_CONFIG_CACHE=/tmp/.npm app npx prisma db seed
-
       - name: Prune Docker (optional)
         run: docker system prune -f

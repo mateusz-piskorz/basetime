@@ -2,13 +2,9 @@
     "name": "basetime",
     "version": "0.1.0",
     "private": true,
-    "prisma": {
-        "seed": "ts-node prisma/seed.ts"
-    },
     "scripts": {
         "dev": "next dev --turbopack",
-        "start:prod": "npx prisma migrate deploy & node server.js",
-        "start:2": "npx prisma migrate deploy && npx prisma db seed",
+        "start:prod": "node server.js",
         "build": "next build --turbopack",
         "start": "next start",
         "format": "prettier --write .",

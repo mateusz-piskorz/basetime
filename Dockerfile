@@ -21,7 +21,6 @@ RUN \
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/package.json ./package.json
 COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.
@@ -68,4 +67,3 @@ ENV PORT=3000
 # server.js is created by next build from the standalone output
 # https://nextjs.org/docs/pages/api-reference/config/next-config-js/output
 ENV HOSTNAME="0.0.0.0"
-CMD ["npm","run","start:prod"]

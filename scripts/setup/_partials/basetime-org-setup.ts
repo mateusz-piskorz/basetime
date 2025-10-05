@@ -44,7 +44,6 @@ const getRandomTimeEntries = () =>
                 end: dayStart.hour(startHour + duration).toDate(),
             };
         });
-        //
 
         return timeEntries;
     }).flat();

@@ -13,7 +13,7 @@ export const OrganizationDashboard = () => {
     const [scope, setScope] = useState<Scope>('member');
 
     return (
-        <div className="space-y-12 py-8">
+        <div className="space-y-16 py-8">
             <SectionTimeTracker />
 
             <div className="px-4 md:px-6 lg:px-8">
@@ -23,7 +23,8 @@ export const OrganizationDashboard = () => {
                     <ActivityGraph scope={scope} />
                 </div>
             </div>
-            <div className="mt-16 flex flex-col gap-8 px-4 md:flex-row md:px-6 lg:px-8">
+
+            <div className="mt-[80px] flex flex-col gap-8 px-4 md:flex-row md:px-6 lg:px-8">
                 <ThisWeekChart scope={scope} />
                 <MetricCards scope={scope} setScope={setScope} />
             </div>

@@ -50,7 +50,7 @@ services:
       minio:
         condition: service_healthy
       db:
-        condition: service_healthy
+        condition: service_started
     entrypoint: /app/scripts/setup/index.sh
 
   db:
@@ -60,11 +60,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'postgres']
-      interval: 5s
-      timeout: 5s
-      retries: 5
     volumes:
       - postgres_data_stg:/var/lib/postgresql/data
     networks:

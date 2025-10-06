@@ -30,23 +30,32 @@ const availableTimeEntries = [
 
 const randomTimeEntry = () => availableTimeEntries[Math.floor(Math.random() * availableTimeEntries.length)];
 
-const getRandomTimeEntries = () =>
-    Array.from({ length: 5 }, (_, weekdayIndex) => {
-        const timeEntries = Array.from({ length: 3 }, (_, timeEntryIndex) => {
-            const dayStart = dayjs().startOf('week').add(weekdayIndex, 'day');
+const getRandomTimeEntries = () => {
+    const today = dayjs();
+    const startDate = today.subtract(3, 'month').startOf('day');
+    const endDate = today.endOf('week');
+    const timeEntries = [];
+
+    for (let d = startDate; d.isBefore(endDate); d = d.add(1, 'day')) {
+        const weekday = d.day();
+        if (weekday === 0 || weekday === 6) continue;
+
+        const numEntries = Math.floor(Math.random() * 6) + 1;
+        for (let timeEntryIndex = 0; timeEntryIndex < numEntries; timeEntryIndex++) {
             const { projectId, name } = randomTimeEntry();
             const startHour = 7 + Math.floor(Math.random() * 6) + timeEntryIndex * Math.floor(Math.random() * 3);
-            const duration = 1 + Math.floor(Math.random() * 3);
-            return {
+            const duration = Math.floor(Math.random() * 4);
+
+            timeEntries.push({
                 name,
                 projectId,
-                start: dayStart.hour(startHour).toDate(),
-                end: dayStart.hour(startHour + duration).toDate(),
-            };
-        });
-
-        return timeEntries;
-    }).flat();
+                start: d.hour(startHour).toDate(),
+                end: d.hour(startHour + duration).toDate(),
+            });
+        }
+    }
+    return timeEntries;
+};
 
 const owner = {
     id: 'basetimeIdOwner',

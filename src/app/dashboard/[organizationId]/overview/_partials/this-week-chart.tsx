@@ -44,7 +44,7 @@ export const ThisWeekChart = ({ scope }: Props) => {
                     <Clock className="text-muted-foreground size-5" />
                     <h2>This Week</h2>
                 </div>
-                <TimeEntryReportChart data={segments} className="h-[310px]" />
+                <TimeEntryReportChart data={segments} />
             </>
         </div>
     );

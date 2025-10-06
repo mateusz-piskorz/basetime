@@ -80,7 +80,7 @@ export const ReportsPage = () => {
                     </div>
                     <PeriodDropdown startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} />
                 </div>
-                <TimeEntryReportChart data={segments} />
+                <TimeEntryReportChart data={segments} className="h-[450px]" />
                 <div className="mt-10 flex flex-wrap gap-x-10 gap-y-4">
                     <Card className="min-w-[250px] py-4">
                         <CardContent>

@@ -44,9 +44,9 @@ export const timeEntriesPaginated = publicProcedure
             const start = startDate ? new Date(startDate) : undefined;
             const end = endDate ? new Date(endDate) : undefined;
 
-            const limit = Number(limitInput) || 25;
+            const limit = Number(limitInput) || undefined;
             const page = Number(pageInput) || 1;
-            const skip = (page - 1) * limit;
+            const skip = limit ? (page - 1) * limit : undefined;
 
             const where = {
                 organizationId,
@@ -103,7 +103,7 @@ export const timeEntriesPaginated = publicProcedure
                 return { ...timeEntry, duration: formatMinutes(getDurationInMinutes({ start: timeEntry.start, end: timeEntry.end, dayjs })) };
             });
 
-            const totalPages = Math.ceil(total / limit) || 1;
+            const totalPages = limit ? Math.ceil(total / limit) : 1;
             return { totalPages, total, page, limit, data };
         },
     );

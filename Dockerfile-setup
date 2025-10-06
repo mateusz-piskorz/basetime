@@ -1,0 +1,9 @@
+FROM node:24.8.0
+WORKDIR /app
+COPY . .
+RUN npm ci
+
+# Install MinIO Client (mc)
+RUN curl -L https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/bin/mc \
+    && chmod +x /usr/bin/mc
+

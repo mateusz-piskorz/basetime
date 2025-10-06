@@ -13,9 +13,9 @@ const prisma = new PrismaClient();
 
 const orgId = 'basetime';
 
-const designProject = { color: 'BLUE' as const, name: 'Design', estimatedMinutes: 9000, id: 'basetimeIdProject1' };
-const developmentProject = { color: 'GRAY' as const, name: 'Development', estimatedMinutes: 8000, id: 'basetimeIdProject2' };
-const researchProject = { color: 'ORANGE' as const, name: 'Research', estimatedMinutes: 5000, id: 'basetimeIdProject3' };
+const designProject = { color: 'BLUE' as const, name: 'Design', estimatedMinutes: 90000, id: 'basetimeIdProject1' };
+const developmentProject = { color: 'GRAY' as const, name: 'Development', estimatedMinutes: 70000, id: 'basetimeIdProject2' };
+const researchProject = { color: 'ORANGE' as const, name: 'Research', estimatedMinutes: 40000, id: 'basetimeIdProject3' };
 
 const projectArr = [designProject, developmentProject, researchProject];
 

@@ -8,7 +8,7 @@ export default function Home() {
         <>
             <HeroSection />
             <DocumentsSection />
-            <div className="bg-background h-[1200px] w-full">Here will be blog</div>
+            <div className="bg-background h-[600px] w-full">Here will be blog</div>
         </>
     );
 }

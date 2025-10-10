@@ -2,29 +2,26 @@ import { cn } from '@/lib/utils/common';
 import { useEffect, useState } from 'react';
 
 type Props = {
-    startDate: Date;
+    initialSeconds: number;
     isActive: boolean;
     className?: string;
 };
 
 const returnTime = (seconds: number) => {
-    const h = Math.floor(seconds / 3600)
-        .toString()
-        .padStart(2, '0');
     const m = Math.floor((seconds % 3600) / 60)
         .toString()
-        .padStart(2, '0');
+        .padStart(1, '0');
     const s = (seconds % 60).toString().padStart(2, '0');
-    return { h, m, s };
+    return { m, s };
 };
 
-export const Timer = ({ startDate, isActive, className }: Props) => {
-    const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
+export const TimerSeconds = ({ initialSeconds, isActive, className }: Props) => {
+    const [elapsedSeconds, setElapsedSeconds] = useState<number>(initialSeconds);
 
     useEffect(() => {
         if (isActive) {
             const updateElapsed = () => {
-                setElapsedSeconds(Math.floor((Date.now() - startDate.getTime()) / 1000));
+                setElapsedSeconds((prev) => prev + 1);
             };
 
             updateElapsed();
@@ -33,17 +30,13 @@ export const Timer = ({ startDate, isActive, className }: Props) => {
             return () => {
                 clearInterval(interval);
             };
-        } else {
-            setElapsedSeconds(0);
         }
-    }, [startDate, isActive]);
+    }, [isActive]);
 
-    const { h, m, s } = returnTime(elapsedSeconds);
+    const { m, s } = returnTime(elapsedSeconds);
 
     return (
         <div className={cn('flex min-w-[70px] items-center text-center text-sm sm:gap-[1px] sm:text-base sm:font-bold', className)}>
-            <span className="inline-block w-[22px] sm:w-[24px]">{h}</span>
-            <span className="mb-0.5">:</span>
             <span className="inline-block w-[22px] text-right sm:w-[24px]">{m}</span>
             <span className="mb-0.5">:</span>
             <span className="inline-block w-[22px] sm:w-[24px]">{s}</span>

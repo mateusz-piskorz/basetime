@@ -5,6 +5,7 @@ import { useTheme } from 'next-themes';
 
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils/common';
 import { useEffect, useState } from 'react';
 
 type Props = {
@@ -23,7 +24,7 @@ export function AppearanceToggle({ align = 'start', variant = 'default' }: Props
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" size={variant}>
+                <Button variant="secondary" size={variant} className={cn(variant === 'icon' && 'h-[32px] min-h-[32px] w-[36px]')}>
                     <Sun className="dark:hidden" />
                     <Moon className="hidden dark:block" />
                     {variant === 'default' && <span>{mounted ? resolvedTheme : 'theme'}</span>}

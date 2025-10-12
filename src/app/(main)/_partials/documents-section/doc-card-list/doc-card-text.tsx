@@ -20,7 +20,7 @@ export const DocCardText = ({ Icon, badges, description, heading }: Props) => {
             <p className="text-muted-foreground font-mono text-sm">{description}</p>
             <div className="mt-10 flex flex-wrap justify-center gap-4 lg:justify-start">
                 {badges.map((badge) => (
-                    <Badge variant="outline" size="small" key={badge}>
+                    <Badge variant="secondary" size="small" key={badge}>
                         {badge}
                     </Badge>
                 ))}

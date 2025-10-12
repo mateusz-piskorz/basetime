@@ -1,12 +1,12 @@
 'use client';
 import { AppearanceToggle } from '@/components/common/appearance-toggle';
+import { AuthButton } from '@/components/common/auth-button';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { NAV_LIST } from '@/lib/constants/nav-list';
 import { Menu } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-import { AuthButton } from './auth-button';
 
 export const MobileNavigation = () => {
     const [open, setOpen] = useState(false);

@@ -1,7 +1,7 @@
 import { AppearanceToggle } from '@/components/common/appearance-toggle';
+import { AuthButton } from '@/components/common/auth-button';
 import { NAV_LIST } from '@/lib/constants/nav-list';
 import Link from 'next/link';
-import { AuthButton } from './auth-button';
 
 export const DesktopNavigation = () => {
     return (

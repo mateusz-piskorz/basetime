@@ -1,14 +1,21 @@
 'use client';
 
+import { BlogSection } from './_partials/blog-section';
 import { DocumentsSection } from './_partials/documents-section';
+import FAQSection from './_partials/FAQ-section';
 import { HeroSection } from './_partials/hero-section';
+import PricingSection from './_partials/pricing-section';
+import { TeamImgContent } from './_partials/team-img-content';
 
 export default function Home() {
     return (
         <>
             <HeroSection />
             <DocumentsSection />
-            <div className="bg-background h-[600px] w-full">Here will be blog</div>
+            <TeamImgContent />
+            <BlogSection />
+            <FAQSection />
+            <PricingSection />
         </>
     );
 }

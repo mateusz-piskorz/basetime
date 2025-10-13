@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export const DesktopNavigation = () => {
     return (
-        <div className="flex items-center gap-8">
+        <div className="hidden items-center gap-8 lg:flex">
             <nav>
                 <ul className="flex list-none flex-row items-center gap-11">
                     {NAV_LIST.map((item) => (

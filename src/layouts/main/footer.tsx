@@ -143,32 +143,6 @@ export const Footer = () => {
                         </div>
 
                         <div className="text-center sm:text-left">
-                            <p className="text-lg font-medium">Helpful Links</p>
-                            <ul className="mt-8 space-y-4 text-sm">
-                                {helpfulLinks.map(({ text, href, hasIndicator }) => (
-                                    <li key={text}>
-                                        <a
-                                            href={href}
-                                            className={`${
-                                                hasIndicator
-                                                    ? 'group flex justify-center gap-1.5 sm:justify-start'
-                                                    : 'text-secondary-foreground/70 transition'
-                                            }`}
-                                        >
-                                            <span className="text-secondary-foreground/70 transition">{text}</span>
-                                            {hasIndicator && (
-                                                <span className="relative flex size-2">
-                                                    <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
-                                                    <span className="bg-primary relative inline-flex size-2 rounded-full" />
-                                                </span>
-                                            )}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div className="text-center sm:text-left">
                             <p className="text-lg font-medium">Contact Us</p>
                             <ul className="mt-8 space-y-4 text-sm">
                                 {contactInfo.map(({ icon: Icon, text, isAddress }) => (

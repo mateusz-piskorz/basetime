@@ -14,7 +14,7 @@ type Props = {
     href: string;
 };
 
-export const BlogCard = ({ badges, date, description, readTime, title, imgSrc, href }: Props) => {
+export const BlogCardMobile = ({ badges, date, description, readTime, title, imgSrc, href }: Props) => {
     return (
         <Link href={href} className="cursor-pointer">
             <Card className="w-full max-w-[400px] min-w-[400px] py-0">

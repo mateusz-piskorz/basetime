@@ -11,8 +11,8 @@ export const TeamImgContent = () => {
                     className="bg-card rounded-(--radius) grayscale dark:opacity-90"
                     src="/team-img-content-photo.avif"
                     alt="team image"
-                    height={1684}
-                    width={2747}
+                    height={1080}
+                    width={1760}
                     loading="lazy"
                 />
 

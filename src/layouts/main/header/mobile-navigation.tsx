@@ -14,15 +14,15 @@ export const MobileNavigation = () => {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <Button size="icon" variant="ghost" className="h-[32px] min-h-[32px]">
+                <Button size="icon" variant="ghost" className="h-[32px] min-h-[32px] lg:hidden">
                     <Menu className="size-8" />
                 </Button>
             </SheetTrigger>
-            <SheetHeader className="sr-only">
+            <SheetHeader className="sr-only lg:hidden">
                 <SheetTitle>Navigation</SheetTitle>
                 <SheetDescription>Displays the mobile navigation</SheetDescription>
             </SheetHeader>
-            <SheetContent side="left" className="max-w-sm px-8 py-12">
+            <SheetContent side="left" className="max-w-sm px-8 py-12 lg:hidden">
                 <Navigation closeSidebar={() => setOpen(false)} />
             </SheetContent>
         </Sheet>

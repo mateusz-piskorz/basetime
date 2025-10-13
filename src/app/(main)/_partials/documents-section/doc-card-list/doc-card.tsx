@@ -18,7 +18,7 @@ type Props = {
 export const DocCard = ({ className, badges, description, heading, Icon, imgDarkSrc, imgLightSrc }: Props) => {
     return (
         <div className={cn('bg-background space-y-10 rounded-md px-5 py-10 lg:pr-0 xl:pl-10 2xl:px-10', className)}>
-            <div className="relative aspect-video min-h-[350px] w-full overflow-hidden rounded-md sm:min-h-[400px]">
+            <div className="relative aspect-video min-h-[350px] w-full overflow-hidden rounded-md sm:min-h-[400px] lg:rounded-s-none">
                 <Image
                     src={imgLightSrc}
                     alt="product"

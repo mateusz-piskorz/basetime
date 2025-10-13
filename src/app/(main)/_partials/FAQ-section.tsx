@@ -43,7 +43,7 @@ export default function FAQSection() {
                 </div>
 
                 <div className="mx-auto mt-12 max-w-xl 2xl:mt-20 2xl:max-w-[800px]">
-                    <Accordion type="single" collapsible className="ring-muted w-full rounded-2xl border px-8 py-3 ring-4 dark:ring-0">
+                    <Accordion type="single" collapsible className="w-full rounded-2xl border px-8 py-3">
                         {faqItems.map((item) => (
                             <AccordionItem key={item.id} value={item.id} className="border-dashed font-mono">
                                 <AccordionTrigger className="text-muted-foreground cursor-pointer text-base hover:no-underline 2xl:text-xl">

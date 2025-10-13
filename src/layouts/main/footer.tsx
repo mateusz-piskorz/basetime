@@ -87,7 +87,7 @@ const contactInfo = [
 
 export const Footer = () => {
     return (
-        <footer className="bg-sidebar w-full">
+        <footer className="bg-sidebar w-full" id="footer-section">
             <div className="mx-auto max-w-[1920px] px-5 pt-24 pb-5 sm:px-6 sm:pt-6 sm:pb-6 md:px-8 md:pb-8 lg:px-10 2xl:px-20 2xl:pt-40">
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                     <div className="flex flex-col items-center sm:items-start">

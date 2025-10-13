@@ -5,7 +5,7 @@ import { Check } from 'lucide-react';
 
 export default function PricingSection() {
     return (
-        <div className="bg-background px-5 py-24 sm:px-6 md:px-8 lg:px-10 2xl:mx-auto 2xl:max-w-[1920px] 2xl:px-20 2xl:py-40">
+        <div className="bg-background px-5 py-24 sm:px-6 md:px-8 lg:px-10 2xl:mx-auto 2xl:max-w-[1920px] 2xl:px-20 2xl:py-40" id="pricing-section">
             <div className="mx-auto">
                 <div className="mx-auto max-w-2xl text-center 2xl:max-w-4xl">
                     <h2 className="text-3xl font-bold text-balance md:text-4xl lg:text-5xl 2xl:text-6xl">

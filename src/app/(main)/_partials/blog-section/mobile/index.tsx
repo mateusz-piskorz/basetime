@@ -17,7 +17,7 @@ export const BlogSectionMobile = () => {
         }
     };
     return (
-        <section className="bg-background space-y-24 py-24 lg:hidden">
+        <section className="bg-background space-y-24 py-24 lg:hidden" id="blog-section">
             <BlogHeading />
             <div className="flex gap-6 overflow-x-auto pb-4 pl-5 sm:pl-6 md:pl-8 lg:hidden" ref={scrollRef}>
                 {articlesArr.map((args, index) => (

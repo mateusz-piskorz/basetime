@@ -22,7 +22,10 @@ export const BlogSectionDesktop = () => {
     }, [api]);
 
     return (
-        <section className="bg-background hidden space-y-24 py-24 pl-10 lg:block 2xl:mx-auto 2xl:max-w-[1920px] 2xl:py-40 2xl:pl-20">
+        <section
+            className="bg-background hidden space-y-24 py-24 pl-10 lg:block 2xl:mx-auto 2xl:max-w-[1920px] 2xl:py-40 2xl:pl-20"
+            id="blog-section"
+        >
             <Carousel setApi={setApi} opts={{ align: 'start' }} className="w-full space-y-10">
                 <BlogHeadingDesktop />
 

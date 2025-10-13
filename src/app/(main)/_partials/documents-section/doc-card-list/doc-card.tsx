@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils/common';
 import { LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { DocCardText } from './doc-card-text';
+import './doc-card.css';
 
 type Props = {
     imgDarkSrc: string;
@@ -17,8 +18,8 @@ type Props = {
 
 export const DocCard = ({ className, badges, description, heading, Icon, imgDarkSrc, imgLightSrc }: Props) => {
     return (
-        <div className={cn('bg-background space-y-10 rounded-md px-5 py-10 lg:pr-0 xl:pl-10 2xl:px-10', className)}>
-            <div className="relative aspect-video min-h-[350px] w-full overflow-hidden rounded-md sm:min-h-[400px] lg:rounded-s-none">
+        <div className={cn('bg-background custom-doc-card-radius space-y-10 rounded-md px-5 py-10 lg:pr-0 xl:pl-10 2xl:px-10', className)}>
+            <div className="custom-doc-card-img-radius relative aspect-video min-h-[350px] w-full overflow-hidden rounded-md sm:min-h-[400px] lg:rounded-se-none">
                 <Image
                     src={imgLightSrc}
                     alt="product"

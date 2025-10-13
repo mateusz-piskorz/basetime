@@ -17,7 +17,7 @@ type Props = {
 export const BlogCardMobile = ({ badges, date, description, readTime, title, imgSrc, href }: Props) => {
     return (
         <Link href={href} className="cursor-pointer">
-            <Card className="w-full max-w-[400px] min-w-[400px] py-0">
+            <Card className="w-full max-w-[400px] min-w-[400px] overflow-hidden rounded-md py-0">
                 <Image src={imgSrc} width={540} height={280} alt={title} />
                 <div className="space-y-4 px-4 pb-4">
                     <div className="mb-8 flex flex-wrap gap-4">
@@ -30,7 +30,7 @@ export const BlogCardMobile = ({ badges, date, description, readTime, title, img
                     <span className="text-muted-foreground text-sm">
                         {dayjs(date).format('MMMM D, YYYY')} - {readTime}
                     </span>
-                    <h1 className="text-2xl">{title}</h1>
+                    <h1 className="text-xl">{title}</h1>
                     <p className="text-muted-foreground font-mono">{description}</p>
                 </div>
             </Card>

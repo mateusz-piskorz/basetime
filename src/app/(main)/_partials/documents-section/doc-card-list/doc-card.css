@@ -1,0 +1,17 @@
+@media (min-width: 1024px) {
+    .custom-doc-card-img-radius {
+        border-start-end-radius: 0px;
+        border-end-end-radius: 0px;
+    }
+    .custom-doc-card-radius {
+        border-start-end-radius: 0px;
+        border-end-end-radius: 0px;
+    }
+}
+
+@media (min-width: 1536px) {
+    .custom-doc-card-img-radius {
+        border-start-end-radius: 8px;
+        border-end-end-radius: 8px;
+    }
+}

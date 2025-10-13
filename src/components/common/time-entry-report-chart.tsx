@@ -21,7 +21,6 @@ export const TimeEntryReportChart = ({ className, data }: Props) => {
         <ChartContainer config={chartConfig} className={cn('aspect-auto h-[350px] w-full', className)}>
             <BarChart accessibilityLayer data={data}>
                 <CartesianGrid vertical={false} stroke="var(--border)" />
-                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
                 <ChartTooltip
                     content={
                         <ChartTooltipContent
@@ -34,7 +33,8 @@ export const TimeEntryReportChart = ({ className, data }: Props) => {
                         />
                     }
                 />
-                <Bar dataKey="loggedMinutes" fill="var(--accent-secondary)" radius={2} />
+                <XAxis dataKey="name" tickLine={false} tickMargin={10} axisLine={false} />
+                <Bar dataKey="loggedMinutes" fill="var(--accent)" radius={2} />
             </BarChart>
         </ChartContainer>
     );

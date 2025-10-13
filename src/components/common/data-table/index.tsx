@@ -20,13 +20,13 @@ export function DataTable<TData>({ totalPages, className, table, toolbar }: Data
                 {toolbar}
                 <div className="rounded border">
                     <Table>
-                        <TableHeader className="bg-accent">
+                        <TableHeader className="bg-accent/80">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <TableRow key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => {
                                         return (
                                             <TableHead
-                                                className={cn(headerGroup.headers[0].id === header.id ? 'pl-6' : '')}
+                                                className={cn('text-accent-foreground', headerGroup.headers[0].id === header.id ? 'pl-6' : '')}
                                                 key={header.id}
                                                 colSpan={header.colSpan}
                                             >

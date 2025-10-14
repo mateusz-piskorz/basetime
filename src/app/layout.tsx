@@ -21,6 +21,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
     title: 'BaseTime - Time Tracker',
     description: 'Modern Time Tracker',
+    robots: 'noindex,nofollow',
 };
 
 export default async function RootLayout({

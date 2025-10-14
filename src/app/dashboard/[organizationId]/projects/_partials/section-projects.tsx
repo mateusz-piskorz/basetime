@@ -79,7 +79,7 @@ export const SectionProjects = () => {
                             );
                         })}
                     {role !== 'EMPLOYEE' && (
-                        <Card className="w-full md:max-w-[325px]">
+                        <Card className="bg-bg dark:bg-card w-full border md:max-w-[325px]">
                             <CardContent className="flex h-full min-h-[200px] items-center justify-center">
                                 <Button onClick={() => setOpen(true)} className="h-14 w-14">
                                     <Plus className="size-8" />

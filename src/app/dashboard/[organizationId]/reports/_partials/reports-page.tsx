@@ -82,13 +82,13 @@ export const ReportsPage = () => {
                 </div>
                 <TimeEntryReportChart data={segments} className="h-[450px]" />
                 <div className="mt-10 flex flex-wrap gap-x-10 gap-y-4">
-                    <Card className="min-w-[250px] py-4">
+                    <Card className="bg-bg dark:bg-card min-w-[250px] border py-4">
                         <CardContent>
                             <span className="text-muted-foreground block text-sm">Total Time</span>
                             <span className="font-mono">{formatMinutes(totalMinutes)}</span>
                         </CardContent>
                     </Card>
-                    <Card className="min-w-[250px] py-4">
+                    <Card className="bg-bg dark:bg-card min-w-[250px] border py-4">
                         <CardContent>
                             <span className="text-muted-foreground block text-sm">Billable Amount</span>
                             <span className="font-mono">{billableAmount} PLN</span>

@@ -20,7 +20,7 @@ export function DataTable<TData>({ totalPages, className, table, toolbar }: Data
                 {toolbar}
                 <div className="rounded border">
                     <Table>
-                        <TableHeader className="bg-accent">
+                        <TableHeader className="bg-border">
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <TableRow key={headerGroup.id}>
                                     {headerGroup.headers.map((header) => {

@@ -8,14 +8,9 @@ type Props = {
 export function AppLogo({ className, textClassName }: Props) {
     return (
         <>
-            <div
-                className={cn(
-                    'bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-md',
-                    className,
-                )}
-            >
+            <div className={cn('bg-accent flex aspect-square size-8 items-center justify-center rounded-md', className)}>
                 <svg
-                    className="dark: size-5 fill-current text-[#e3c9d7] dark:text-[#98838F]"
+                    className="text-accent-foreground size-5 fill-current"
                     width="166"
                     height="114"
                     viewBox="0 0 166 114"

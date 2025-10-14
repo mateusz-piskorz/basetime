@@ -46,7 +46,7 @@ export const ActivityGraph = ({ scope }: Props) => {
                 <h2>Activity Graph</h2>
             </div>
 
-            <Card className="h-[300px] py-0 pt-4">
+            <Card className="dark:bg-card h-[300px] border bg-transparent py-0 pt-4">
                 <CardContent className="space-y-3 px-4 sm:px-6">
                     <div className="flex justify-around sm:ml-[36px]">
                         {monthSegments.map((month) => (
@@ -69,9 +69,9 @@ export const ActivityGraph = ({ scope }: Props) => {
                             {segments.map(({ loggedMinutes, name, start }) => (
                                 <Tooltip key={name}>
                                     <TooltipTrigger asChild>
-                                        <div className="bg-accent flex min-h-[21px] rounded sm:h-auto">
+                                        <div className="bg-secondary flex min-h-[21px] rounded sm:h-auto">
                                             <div
-                                                className="w-full rounded bg-[#116329] dark:bg-[#56d364]"
+                                                className="bg-accent w-full rounded"
                                                 style={{
                                                     opacity:
                                                         max !== 0

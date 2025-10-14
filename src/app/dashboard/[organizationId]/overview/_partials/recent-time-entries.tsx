@@ -34,7 +34,7 @@ export const RecentTimeEntries = ({ scope }: Props) => {
                 <CircleCheckBig className="text-muted-foreground size-5" />
                 <h2>Recent Time Entries</h2>
             </div>
-            <Card className="h-[300px] py-0">
+            <Card className="dark:bg-card h-[300px] border bg-transparent py-0">
                 <CardContent className="flex h-full flex-col p-0">
                     {paddedEntries.map((entry, idx) => (
                         <div

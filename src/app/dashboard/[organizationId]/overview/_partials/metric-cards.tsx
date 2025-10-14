@@ -51,7 +51,7 @@ export const MetricCards = ({ scope, setScope }: Props) => {
         <div className="flex flex-1 flex-col gap-8 md:flex-2/6">
             {member.role !== 'EMPLOYEE' && (
                 <Select onValueChange={setScope} value={scope}>
-                    <SelectTrigger className="w-[150px]">
+                    <SelectTrigger className="border-border w-[150px]">
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -63,13 +63,13 @@ export const MetricCards = ({ scope, setScope }: Props) => {
                     </SelectContent>
                 </Select>
             )}
-            <Card className="py-4">
+            <Card className="dark:bg-card border bg-transparent py-4">
                 <CardContent>
                     <span className="text-muted-foreground block text-sm">Total Time</span>
                     <span className="font-mono">{formatMinutes(totalMinutes)}</span>
                 </CardContent>
             </Card>
-            <Card className="py-4">
+            <Card className="dark:bg-card border bg-transparent py-4">
                 <CardContent>
                     <span className="text-muted-foreground block text-sm">Billable Amount</span>
                     <span className="font-mono">{billableAmount} PLN</span>

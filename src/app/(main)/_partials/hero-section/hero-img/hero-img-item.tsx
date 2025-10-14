@@ -1,3 +1,5 @@
+'use client';
+
 import { TimerSeconds } from '@/components/common/TimerSeconds';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/common';
@@ -6,7 +8,7 @@ import { Clock } from 'lucide-react';
 const heroImgItemType = {
     Design: { name: 'Design', color: '#449DD1' },
     Research: { name: 'Research', color: '#F49D37' },
-    Development: { name: 'Development', color: '#E5E7E6' },
+    Development: { name: 'Development', color: '#94BAA7' },
 };
 
 type Props = {

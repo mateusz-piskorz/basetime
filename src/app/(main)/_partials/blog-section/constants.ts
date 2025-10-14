@@ -5,7 +5,7 @@ export const articlesArr = [
         readTime: '9min read',
         title: 'Maximize Productivity: How a Time Tracker App Transforms Your Workday',
         description: 'Learn about the unexpected advantages of time tracking, from better work-life balance to improved project estimates.',
-        imgSrc: '/blog/Porsche-1.jpeg',
+        imgSrc: '/blog/porsche-1.jpeg',
         href: '#',
     },
     {
@@ -14,7 +14,7 @@ export const articlesArr = [
         readTime: '9min read',
         title: 'Maximize Productivity: How a Time Tracker App Transforms Your Workday',
         description: 'Learn about the unexpected advantages of time tracking, from better work-life balance to improved project estimates.',
-        imgSrc: '/blog/Porsche-2.jpeg',
+        imgSrc: '/blog/porsche-2.jpeg',
         href: '#',
     },
     {
@@ -23,7 +23,7 @@ export const articlesArr = [
         readTime: '9min read',
         title: 'Maximize Productivity: How a Time Tracker App Transforms Your Workday',
         description: 'Learn about the unexpected advantages of time tracking, from better work-life balance to improved project estimates.',
-        imgSrc: '/blog/Porsche-3.jpeg',
+        imgSrc: '/blog/porsche-3.jpeg',
         href: '#',
     },
 ];

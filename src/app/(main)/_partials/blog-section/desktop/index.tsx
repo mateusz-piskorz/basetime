@@ -37,7 +37,7 @@ export const BlogSectionDesktop = () => {
                                 key={index}
                                 className={cn(
                                     'flex h-[350px] basis-5/6 gap-6 opacity-50 grayscale-100 xl:h-[400px] 2xl:h-[450px]',
-                                    index !== 0 && 'pl-4 xl:pl-6 2xl:pl-8',
+                                    index !== 0 && 'ml-4 xl:ml-6 2xl:ml-8',
                                     selected && 'opacity-100 grayscale-0',
                                 )}
                             >

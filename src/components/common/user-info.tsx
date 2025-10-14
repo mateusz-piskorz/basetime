@@ -26,7 +26,7 @@ export function UserInfo(props: Props) {
         <>
             <Avatar className={cn('h-8 w-8 overflow-hidden rounded-full', props.size === 'lg' && 'h-[100px] w-[100px]')}>
                 <AvatarImage src={user?.avatar} alt={name} />
-                <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                <AvatarFallback className="bg-sidebar-accent rounded-lg text-black dark:bg-neutral-700 dark:text-white">
                     {getInitials(name)}
                 </AvatarFallback>
             </Avatar>

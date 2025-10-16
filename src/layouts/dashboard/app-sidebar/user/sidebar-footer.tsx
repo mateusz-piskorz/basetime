@@ -1,3 +1,5 @@
+'use client';
+
 import { UserInfo } from '@/components/common/user-info';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,14 +12,17 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarFooter as SidebarFooterUI, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 import { logout } from '@/lib/server-actions/auth';
-import { LogOut, Settings } from 'lucide-react';
+import { Box, LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 export const SidebarFooter = () => {
+    const { user } = useAuth();
+
     const { state, setOpenMobile } = useSidebar();
     const isMobile = useIsMobile();
 
@@ -54,6 +59,14 @@ export const SidebarFooter = () => {
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
+                                {user?.role === 'ADMIN' && (
+                                    <DropdownMenuItem asChild>
+                                        <Link className="block w-full" href="/dashboard/admin-panel" prefetch onClick={() => setOpenMobile(false)}>
+                                            <Box className="mr-2" />
+                                            Admin Panel
+                                        </Link>
+                                    </DropdownMenuItem>
+                                )}
                                 <DropdownMenuItem asChild>
                                     <Link className="block w-full" href="/dashboard/user/settings" prefetch onClick={() => setOpenMobile(false)}>
                                         <Settings className="mr-2" />

@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import * as Minio from 'minio';
 import 'server-only';
 
-type Bucket = 'main';
+type Bucket = 'main' | 'public';
 
 export const minioClient = new Minio.Client({
     endPoint: process.env.MINIO_ENDPOINT!,

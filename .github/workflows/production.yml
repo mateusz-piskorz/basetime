@@ -55,6 +55,7 @@ jobs:
     runs-on: self-hosted
     env:
       BT_USER_PASSWORD: ${{ secrets.BT_USER_PASSWORD }}
+      ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
       NEXT_PUBLIC_URL: ${{ vars.NEXT_PUBLIC_URL }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
@@ -87,7 +88,8 @@ jobs:
 
       - name: Build and run containers
         run: |
-          docker compose --file docker-compose.prod.yml up -d --build --force-recreate
+          docker compose --file docker-compose.stg.yml up -d --build --force-recreate db minio setup-job && \
+          docker compose --file docker-compose.stg.yml up -d --build --force-recreate app
 
       - name: Wait for containers
         run: sleep 10

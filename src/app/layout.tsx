@@ -1,6 +1,3 @@
-import { AuthProvider } from '@/lib/hooks/use-auth';
-import { getUserAvatarUrl } from '@/lib/minio';
-import { getSession } from '@/lib/session';
 import { QueryProvider } from '@/lib/trpc/queryProvider';
 import type { Metadata } from 'next';
 import { ThemeProvider } from 'next-themes';
@@ -29,18 +26,13 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const user = await getSession();
-    const avatar = user ? await getUserAvatarUrl({ userId: user?.userId }) : undefined;
-
     return (
         <html lang="en" suppressHydrationWarning>
             <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
                     <QueryProvider>
-                        <AuthProvider user={user ? { ...user, avatar } : null}>
-                            <Toaster />
-                            {children}
-                        </AuthProvider>
+                        <Toaster />
+                        {children}
                     </QueryProvider>
                 </ThemeProvider>
             </body>

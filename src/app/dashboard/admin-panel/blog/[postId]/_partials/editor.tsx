@@ -30,7 +30,7 @@ export const Editor = ({ post }: Props) => {
         <div className="space-y-8 px-8">
             <MetadataForm post={post} />
 
-            <MDEditor value={content} onChange={setContent} />
+            <MDEditor value={content} onChange={setContent} className="min-h-[700px]" />
             <Button onClick={saveContent}>Save Content</Button>
         </div>
     );

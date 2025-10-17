@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
@@ -21,8 +22,12 @@ export default async function BlogAdminPanelPage() {
                 {blogPosts.map((post) => (
                     <li key={post.id}>
                         <Card>
-                            <CardContent>{post.slug}</CardContent>
-                            <Link href={`/dashboard/admin-panel/blog/${post.id}`}>Manage</Link>
+                            <CardContent className="flex items-center gap-4">
+                                /{post.slug}
+                                <Button asChild>
+                                    <Link href={`/dashboard/admin-panel/blog/${post.id}`}>Manage</Link>
+                                </Button>
+                            </CardContent>
                         </Card>
                     </li>
                 ))}

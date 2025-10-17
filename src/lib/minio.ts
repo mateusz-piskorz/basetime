@@ -20,6 +20,23 @@ export const deleteFile = async ({ bucket, fileName }: { bucket: Bucket; fileNam
     await minioClient.removeObject(bucket, fileName);
 };
 
+export const listObjects = async ({ bucket, fileName }: { bucket: Bucket; fileName: string }) => {
+    try {
+        const data: Minio.BucketItem[] = [];
+        const stream = minioClient.listObjectsV2(bucket, fileName);
+
+        await new Promise<void>((resolve, reject) => {
+            stream.on('data', (obj) => data.push(obj));
+            stream.on('end', () => resolve());
+            stream.on('error', (err) => reject(err));
+        });
+
+        return data;
+    } catch {
+        return undefined;
+    }
+};
+
 export const getStatObject = async ({ bucket, fileName }: { bucket: Bucket; fileName: string }) => {
     try {
         return await minioClient.statObject(bucket, fileName);

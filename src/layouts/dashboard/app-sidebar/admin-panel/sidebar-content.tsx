@@ -6,7 +6,7 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from '@/components/ui/sidebar';
-import { Book, User } from 'lucide-react';
+import { Book, File, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -20,6 +20,11 @@ const items = [
         title: 'Blog',
         href: '/dashboard/admin-panel/blog',
         icon: Book,
+    },
+    {
+        title: 'Public Images',
+        href: '/dashboard/admin-panel/public-images',
+        icon: File,
     },
 ];
 

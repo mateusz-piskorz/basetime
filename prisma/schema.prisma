@@ -48,16 +48,17 @@ enum WEEK_START {
 }
 
 model BlogPost {
-  id         String           @id @default(cuid())
-  content    String
-  slug       String           @unique
-  title      String
-  ogImageUrl String?
-  readTime   String?
-  tags       String[]
-  status     BLOG_POST_STATUS @default(DRAFT)
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
+  id          String           @id @default(cuid())
+  content     String
+  slug        String           @unique
+  title       String
+  description String?
+  ogImageUrl  String?
+  readTime    String?
+  tags        String[]
+  status      BLOG_POST_STATUS @default(DRAFT)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
 
 model Session {

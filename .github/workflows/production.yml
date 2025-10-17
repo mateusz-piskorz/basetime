@@ -94,5 +94,5 @@ jobs:
       - name: Wait for containers
         run: sleep 10
 
-      - name: Prune Docker (optional)
+      - name: Prune Docker
         run: docker system prune -f

@@ -20,11 +20,11 @@ export default async function BlogPage({ params }: Params) {
     }
 
     return (
-        <main className="bg-background">
+        <div className="bg-background">
             <article className="mx-auto max-w-3xl px-5 py-24 sm:px-6 md:px-8 lg:py-28 2xl:py-40">
                 <Markdown>{post.content}</Markdown>
             </article>
-        </main>
+        </div>
     );
 }
 

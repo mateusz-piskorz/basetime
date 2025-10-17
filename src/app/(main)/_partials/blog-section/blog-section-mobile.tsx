@@ -1,11 +1,17 @@
+'use client';
+
+import { BlogPostCard } from '@/components/common/blog-post-card';
 import { Button } from '@/components/ui/button';
+import { BlogPost } from '@prisma/client';
 import { MoveRight } from 'lucide-react';
 import { useRef } from 'react';
-import { articlesArr } from '../constants';
-import { BlogCardMobile } from './blog-card-mobile';
-import { BlogHeading } from './blog-heading';
+import { BlogSectionHeading } from './blog-section-heading';
 
-export const BlogSectionMobile = () => {
+type Props = {
+    posts: BlogPost[];
+};
+
+export const BlogSectionMobile = ({ posts }: Props) => {
     const scrollRef = useRef<HTMLDivElement | null>(null);
     const handleScrollToEnd = () => {
         const node = scrollRef.current;
@@ -16,20 +22,23 @@ export const BlogSectionMobile = () => {
             });
         }
     };
+
     return (
-        <section className="bg-background space-y-24 py-24 lg:hidden" id="blog-section">
-            <BlogHeading />
-            <div className="flex gap-6 overflow-x-auto pb-4 pl-5 sm:pl-6 md:pl-8 lg:hidden" ref={scrollRef}>
-                {articlesArr.map((args, index) => (
-                    <BlogCardMobile key={index} {...args} />
+        <div className="lg:hidden">
+            <BlogSectionHeading className="mb-12 px-5 sm:px-6 md:px-8" />
+
+            <div className="flex gap-6 overflow-x-auto px-5 pb-4 sm:px-6 md:px-8" ref={scrollRef}>
+                {posts.map((post, index) => (
+                    <BlogPostCard key={index} post={post} className="min-w-[400px]" />
                 ))}
             </div>
-            <div className="-mt-24 px-5 text-right sm:px-6 md:px-8 lg:hidden">
+
+            <div className="px-5 text-right sm:px-6 md:px-8">
                 <Button variant="ghost" size="icon" onClick={handleScrollToEnd}>
                     <span className="sr-only">scroll to end</span>
                     <MoveRight />
                 </Button>
             </div>
-        </section>
+        </div>
     );
 };

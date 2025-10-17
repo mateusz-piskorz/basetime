@@ -1,4 +1,5 @@
 'use client';
+
 import { AppearanceToggle } from '@/components/common/appearance-toggle';
 import { AuthButton } from '@/components/common/auth-button';
 import { Button } from '@/components/ui/button';

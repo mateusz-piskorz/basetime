@@ -5,6 +5,7 @@ import { getSession } from '@/lib/session';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { CreateNewPost } from './_partials/create-new-post';
+import { SeedPosts } from './_partials/seed-blog-posts';
 
 export default async function BlogAdminPanelPage() {
     const user = await getSession();
@@ -15,15 +16,18 @@ export default async function BlogAdminPanelPage() {
 
     return (
         <div className="container mx-auto space-y-8 px-8 py-8">
-            <CreateNewPost />
+            <div className="space-x-8">
+                <SeedPosts />
+                <CreateNewPost />
+            </div>
 
             {blogPosts.length === 0 && <h1>No blog posts yet</h1>}
-            <ul>
+            <ul className="space-y-8">
                 {blogPosts.map((post) => (
                     <li key={post.id}>
                         <Card>
                             <CardContent className="flex items-center gap-4">
-                                /{post.slug}
+                                {post.slug}
                                 <Button asChild>
                                     <Link href={`/dashboard/admin-panel/blog/${post.id}`}>Manage</Link>
                                 </Button>

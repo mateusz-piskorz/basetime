@@ -2,7 +2,6 @@
 
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
-import { InputHTMLAttributes } from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { InputTags } from '../../ui/input-tags';
 
@@ -12,7 +11,6 @@ type Props<T extends FieldValues> = {
     form: UseFormReturn<T>;
     name: TypedFieldPath<T, FieldType>;
     label?: string;
-    inputMode?: InputHTMLAttributes<''>['inputMode'];
     className?: React.HTMLAttributes<'div'>['className'];
     classNameInput?: React.HTMLAttributes<'input'>['className'];
     onFocus?: () => void;
@@ -27,7 +25,6 @@ export const InputFieldTags = <T extends FieldValues>({
     form,
     label,
     name: propsName,
-    inputMode,
     className,
     classNameInput,
     placeholder,
@@ -54,7 +51,6 @@ export const InputFieldTags = <T extends FieldValues>({
                             placeholder={placeholder}
                             value={field.value || []}
                             onChange={field.onChange}
-                            inputMode={inputMode}
                             onBlur={(e) => {
                                 field.onBlur();
                                 onBlur?.(e.target.value);

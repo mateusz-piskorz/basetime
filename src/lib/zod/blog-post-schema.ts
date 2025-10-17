@@ -9,6 +9,7 @@ export const updateBlogPostSchema = z.object({
     id: z.string(),
     title: z.string().optional(),
     content: z.string().optional(),
+    description: z.string().nullish(),
     oldSlug: z.string().optional(),
     slug: z.string().optional(),
     ogImageUrl: z.string().nullish(),

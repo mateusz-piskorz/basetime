@@ -40,8 +40,9 @@ export const MetadataForm = ({ post }: Props) => {
                     <InputField form={form} type="text" name="slug" label="Slug" placeholder="title" />
                     <InputField form={form} type="text" name="ogImageUrl" label="ogImageUrl" placeholder="https://minio.basetime.online/..." />
                     <InputField form={form} type="text" name="readTime" label="readTime" placeholder="13min read" />
+                    <InputField form={form} type="text" name="description" label="description" placeholder="some cool description" />
 
-                    <InputFieldTags form={form} name="tags" label="tags" />
+                    <InputFieldTags form={form} name="tags" label="tags" className="w-full" />
                 </div>
 
                 <Button disabled={form.formState.isSubmitting} type="submit">

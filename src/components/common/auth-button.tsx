@@ -15,7 +15,7 @@ export const AuthButton = ({ variant = 'secondary', size = 'sm', text }: Props) 
     const { data } = trpc.currentUser.useQuery();
 
     return (
-        <Button className="min-h-[36px]" size={size} variant={variant} asChild>
+        <Button size={size} variant={variant} asChild>
             {data ? <Link href="/dashboard">{text || 'Dashboard'}</Link> : <Link href="/login">{text || 'Log in'}</Link>}
         </Button>
     );

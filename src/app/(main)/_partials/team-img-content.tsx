@@ -32,7 +32,7 @@ export const TeamImgContent = () => {
                             impedit modi, neque non id ad dignissimos? Saepe deleniti perferendis beatae.
                         </p>
 
-                        <Button asChild size="lg" className="gap-1 px-6">
+                        <Button asChild size="default" className="gap-1 px-6">
                             <Link href="#">
                                 <span>Learn More</span>
                                 <ChevronRight className="size-4" />

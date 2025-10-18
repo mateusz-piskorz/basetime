@@ -1,9 +1,7 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { BlogPostCard } from './_partials/blog-post-card';
 import { CreateNewPost } from './_partials/create-new-post';
 import { SeedPosts } from './_partials/seed-blog-posts';
 
@@ -25,14 +23,7 @@ export default async function BlogAdminPanelPage() {
             <ul className="space-y-8">
                 {blogPosts.map((post) => (
                     <li key={post.id}>
-                        <Card>
-                            <CardContent className="flex items-center gap-4">
-                                {post.slug}
-                                <Button asChild>
-                                    <Link href={`/dashboard/admin-panel/blog/${post.id}`}>Manage</Link>
-                                </Button>
-                            </CardContent>
-                        </Card>
+                        <BlogPostCard post={post} />
                     </li>
                 ))}
             </ul>

@@ -1,5 +1,4 @@
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { dayjs } from '@/lib/dayjs';
 import { cn } from '@/lib/utils/common';
@@ -7,6 +6,7 @@ import { BlogPost } from '@prisma/client';
 import { ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Button } from '../ui/button';
 
 type Props = {
     post: BlogPost;
@@ -18,19 +18,19 @@ export const BlogPostCard = ({ post, className }: Props) => {
         <article>
             <Card
                 className={cn(
-                    'flex w-full max-w-[400px] gap-0 overflow-hidden rounded-md py-0 lg:h-[350px] lg:max-w-full lg:flex-row xl:h-[400px] 2xl:h-[450px]',
+                    'h-full w-full max-w-[400px] gap-0 overflow-hidden rounded-md py-0 lg:h-[350px] lg:max-w-full lg:flex-row xl:h-[400px] 2xl:h-[450px]',
                     className,
                 )}
             >
                 <Image
                     src={post.ogImageUrl || '/placeholder.png'}
-                    width={910}
+                    width={1024}
                     height={450}
                     alt={post.title}
-                    className="object-cover grayscale-25 lg:w-[60%] dark:opacity-90"
+                    className="h-[240px] object-cover grayscale-25 lg:h-full lg:w-[60%] dark:opacity-90"
                 />
 
-                <div className="flex flex-col items-start gap-4 px-6 py-8 lg:w-[40%] lg:py-6 2xl:p-10">
+                <div className="flex h-full flex-col items-start gap-4 px-6 py-8 lg:w-[40%] lg:py-6 2xl:p-10">
                     <div className="mb-4 flex flex-wrap gap-4 lg:hidden">
                         {post.tags.map((tag) => (
                             <Badge variant="outline" key={tag}>

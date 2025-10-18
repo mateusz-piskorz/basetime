@@ -40,8 +40,10 @@ const Navigation = ({ closeSidebar }: NavProps) => {
             <nav>
                 <ul className="flex list-none flex-col gap-5">
                     {NAV_LIST.map((item) => (
-                        <li onClick={closeSidebar} key={item.label} className="flex cursor-pointer items-center gap-4 text-xl">
-                            <Link href={item.href}>{item.label}</Link>
+                        <li key={item.label} className="flex cursor-pointer items-center gap-4 text-xl">
+                            <Link onClick={closeSidebar} href={item.href}>
+                                {item.label}
+                            </Link>
                         </li>
                     ))}
                     <li>

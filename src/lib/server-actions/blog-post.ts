@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { action } from '.';
+import { initialBlogArticles } from '../constants/blog-initial-articles';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
 import { createBlogPostSchema, removeBlogPostSchema, updateBlogPostSchema } from '../zod/blog-post-schema';
@@ -55,36 +56,6 @@ export const removeBlogPost = action(removeBlogPostSchema, async ({ blogPostId }
     }
 });
 
-const articlesArr = [
-    {
-        slug: 'post-1',
-        tags: ['UI/UX', 'Inspiration', 'Graphic Design'],
-        readTime: '9min read',
-        title: 'Maximize Productivity: How a Time Tracker App Transforms Your Workday',
-        description: 'Learn about the unexpected advantages of time tracking, from better work-life balance to improved project estimates.',
-        content: '',
-        ogImageUrl: '/blog/porsche-1.jpeg',
-    },
-    {
-        slug: 'post-2',
-        tags: ['UI/UX', 'Inspiration', 'Graphic Design'],
-        readTime: '9min read',
-        title: 'Maximize Productivity: How a Time Tracker App Transforms Your Workday',
-        description: 'Learn about the unexpected advantages of time tracking, from better work-life balance to improved project estimates.',
-        content: '',
-        ogImageUrl: '/blog/porsche-2.jpeg',
-    },
-    {
-        slug: 'post-3',
-        tags: ['UI/UX', 'Inspiration', 'Graphic Design'],
-        readTime: '9min read',
-        title: 'Maximize Productivity: How a Time Tracker App Transforms Your Workday',
-        description: 'Learn about the unexpected advantages of time tracking, from better work-life balance to improved project estimates.',
-        content: '',
-        ogImageUrl: '/blog/porsche-3.jpeg',
-    },
-];
-
 export const seedBlogPost = async () => {
     try {
         const session = await getSession();
@@ -94,7 +65,7 @@ export const seedBlogPost = async () => {
         if (session.role !== 'ADMIN') return { success: false, message: 'Error permission invalid' };
 
         await prisma.blogPost.createMany({
-            data: articlesArr.map(({ description, ogImageUrl, tags, readTime, slug, title, content }) => ({
+            data: initialBlogArticles.map(({ description, ogImageUrl, tags, readTime, slug, title, content }) => ({
                 slug,
                 content,
                 title,
@@ -106,13 +77,12 @@ export const seedBlogPost = async () => {
         });
 
         revalidatePath('/blog');
-        for (const article of articlesArr) {
+        for (const article of initialBlogArticles) {
             revalidatePath(`/blog/${article.slug}`);
         }
 
         return { success: true };
-    } catch (e) {
-        console.log(e);
+    } catch {
         return { success: false, message: 'Error - seedBlogPost' };
     }
 };

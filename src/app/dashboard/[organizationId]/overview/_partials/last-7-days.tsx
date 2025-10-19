@@ -44,7 +44,7 @@ export const Last7Days = ({ scope }: Props) => {
                 <CalendarRange className="text-muted-foreground size-5" />
                 <h2>Last 7 Days</h2>
             </div>
-            <Card className="dark:bg-card h-[300px] border bg-transparent py-0">
+            <Card className="dark:bg-card h-[300px] border bg-transparent py-0 shadow-none">
                 <CardContent className="flex h-full flex-col p-0">
                     {segments.map((segment, idx) => (
                         <div

@@ -28,6 +28,8 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED=1
 ARG MINIO_ENDPOINT
+ARG DATABASE_URL
+ARG BUILDKIT_PROGRESS
 
 RUN npx prisma generate
 

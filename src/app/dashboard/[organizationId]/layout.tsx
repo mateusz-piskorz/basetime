@@ -33,6 +33,8 @@ export default function OrganizationDashboardLayout({
             <NotFound
                 title="Organization not found"
                 description="Ensure that the organization ID in the address bar matches an existing organization. You may also need to verify your permissions."
+                buttonText="Return to dashboard"
+                href="/dashboard"
             />
         );
     }

@@ -1,15 +1,18 @@
 import { Footer } from '@/layouts/main/footer';
 import { Header } from '@/layouts/main/header/header';
 
-export default function AuthLayout({
+export default function MainLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
     return (
         <>
+            <a href="#main-content" className="absolute z-10 w-0 overflow-hidden focus:w-fit">
+                Skip to main content
+            </a>
             <Header />
-            {children}
+            <main id="main-content">{children}</main>
             <Footer />
         </>
     );

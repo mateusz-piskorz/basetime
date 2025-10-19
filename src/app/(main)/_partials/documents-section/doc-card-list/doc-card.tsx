@@ -1,5 +1,3 @@
-'use client';
-
 import { cn } from '@/lib/utils/common';
 import { LucideIcon } from 'lucide-react';
 import Image from 'next/image';

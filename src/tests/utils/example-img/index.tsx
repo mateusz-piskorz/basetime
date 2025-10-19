@@ -8,14 +8,14 @@ export function loadTestNonSharedBuffer() {
     return fs.readFileSync(pngPath);
 }
 
-export function loadTestFile() {
+export function loadTestFile(fileName?: string) {
     const pngPath = path.join(__dirname, 'example.png');
     const buffer = fs.readFileSync(pngPath);
-    return new File([buffer], 'example.png', { type: 'image/png' });
+    return new File([buffer], fileName || 'example.png', { type: 'image/png' });
 }
 
-export function getTestFileFormData() {
-    const img = loadTestFile();
+export function getTestFileFormData(fileName?: string) {
+    const img = loadTestFile(fileName);
     const formData = new FormData();
     formData.set('file', img);
     return formData;

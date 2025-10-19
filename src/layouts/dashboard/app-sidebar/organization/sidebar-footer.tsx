@@ -9,15 +9,17 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarFooter as SidebarFooterUI, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useIsMobile } from '@/lib/hooks/use-is-mobile';
 import { useMember } from '@/lib/hooks/use-member';
 import { logout } from '@/lib/server-actions/auth';
-import { LogOut, Send, Settings } from 'lucide-react';
+import { Box, LogOut, Send, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 export const SidebarFooter = () => {
+    const { user } = useAuth();
     const { organizationId } = useMember();
     const { state, setOpenMobile } = useSidebar();
     const isMobile = useIsMobile();
@@ -55,6 +57,15 @@ export const SidebarFooter = () => {
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
+
+                            {user?.role === 'ADMIN' && (
+                                <DropdownMenuItem asChild>
+                                    <Link className="block w-full" href="/dashboard/admin-panel" prefetch onClick={() => setOpenMobile(false)}>
+                                        <Box className="mr-2" />
+                                        Admin Panel
+                                    </Link>
+                                </DropdownMenuItem>
+                            )}
 
                             <DropdownMenuItem asChild>
                                 <Link

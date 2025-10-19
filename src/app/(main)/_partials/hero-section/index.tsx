@@ -1,4 +1,3 @@
-'use client';
 import { HeroCardList } from './hero-card-list';
 import { HeroImg } from './hero-img';
 import { HeroText } from './hero-text';

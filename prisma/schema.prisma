@@ -7,6 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum USER_ROLE {
+  USER
+  ADMIN
+}
+
+enum BLOG_POST_STATUS {
+  DRAFT
+  PUBLISHED
+}
+
 enum PROJECT_COLOR {
   GRAY
   BLUE
@@ -37,6 +47,20 @@ enum WEEK_START {
   SUNDAY
 }
 
+model BlogPost {
+  id          String           @id @default(cuid())
+  content     String
+  slug        String           @unique
+  title       String
+  description String?
+  ogImageUrl  String?
+  readTime    String?
+  tags        String[]
+  status      BLOG_POST_STATUS @default(DRAFT)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
 model Session {
   id        String   @id @default(cuid())
   expiresAt DateTime
@@ -49,12 +73,13 @@ model Session {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String    @id @default(cuid())
+  email     String    @unique
   name      String
   password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      USER_ROLE @default(USER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   Session     Session[]
   Members     Member[]

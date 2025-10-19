@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/lib/hooks/use-auth';
+import { trpc } from '@/lib/trpc/client';
 import Link from 'next/link';
 import { ComponentProps } from 'react';
 
@@ -12,11 +12,11 @@ type Props = {
 };
 
 export const AuthButton = ({ variant = 'secondary', size = 'sm', text }: Props) => {
-    const { user } = useAuth();
+    const { data } = trpc.currentUser.useQuery();
 
     return (
-        <Button className="min-h-[36px]" size={size} variant={variant} asChild>
-            {user ? <Link href="/dashboard">{text || 'Dashboard'}</Link> : <Link href="/login">{text || 'Log in'}</Link>}
+        <Button size={size} variant={variant} asChild>
+            {data ? <Link href="/dashboard">{text || 'Dashboard'}</Link> : <Link href="/login">{text || 'Log in'}</Link>}
         </Button>
     );
 };

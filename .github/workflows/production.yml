@@ -51,6 +51,7 @@ jobs:
 
   deploy:
     needs: tests
+    timeout-minutes: 10
     environment: prod
     runs-on: self-hosted
     env:

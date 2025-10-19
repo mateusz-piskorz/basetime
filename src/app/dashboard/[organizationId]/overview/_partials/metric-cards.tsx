@@ -63,13 +63,13 @@ export const MetricCards = ({ scope, setScope }: Props) => {
                     </SelectContent>
                 </Select>
             )}
-            <Card className="dark:bg-card border bg-transparent py-4">
+            <Card className="dark:bg-card border bg-transparent py-4 shadow-none">
                 <CardContent>
                     <span className="text-muted-foreground block text-sm">Total Time</span>
                     <span className="font-mono">{formatMinutes(totalMinutes)}</span>
                 </CardContent>
             </Card>
-            <Card className="dark:bg-card border bg-transparent py-4">
+            <Card className="dark:bg-card border bg-transparent py-4 shadow-none">
                 <CardContent>
                     <span className="text-muted-foreground block text-sm">Billable Amount</span>
                     <span className="font-mono">{billableAmount} PLN</span>

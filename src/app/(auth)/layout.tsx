@@ -39,7 +39,9 @@ export default function AuthLayout({
                         <Link href={'/'} className="relative z-20 flex items-center justify-center lg:hidden">
                             <AppLogo className="size-10 fill-current text-black" />
                         </Link>
-                        <main id="main-content">{children}</main>
+                        <main className="space-y-6" id="main-content">
+                            {children}
+                        </main>
                     </div>
                 </div>
             </div>

@@ -46,7 +46,7 @@ export const ActivityGraph = ({ scope }: Props) => {
                 <h2>Activity Graph</h2>
             </div>
 
-            <Card className="dark:bg-card h-[300px] border bg-transparent py-0 pt-4">
+            <Card className="dark:bg-card h-[300px] border bg-transparent py-0 pt-4 shadow-none">
                 <CardContent className="space-y-3 px-4 sm:px-6">
                     <div className="flex justify-around sm:ml-[36px]">
                         {monthSegments.map((month) => (

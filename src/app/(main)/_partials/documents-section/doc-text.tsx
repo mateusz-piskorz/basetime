@@ -1,5 +1,3 @@
-'use client';
-
 import { AuthButton } from '@/components/common/auth-button';
 import { cn } from '@/lib/utils/common';
 

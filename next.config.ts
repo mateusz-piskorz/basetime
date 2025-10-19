@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-    // output: 'standalone',
+    output: 'standalone',
     images: {
         domains: ['localhost', 'minio.basetime.online', 'stagingminio.basetime.online'],
     },

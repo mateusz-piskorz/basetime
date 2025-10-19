@@ -1,5 +1,3 @@
-'use client';
-
 import { cn } from '@/lib/utils/common';
 import { CheckCircle, Crosshair, UserCheck2, Zap } from 'lucide-react';
 import { DocCard } from './doc-card';

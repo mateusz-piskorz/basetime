@@ -9,16 +9,15 @@ import { createBlogPostSchema, removeBlogPostSchema, updateBlogPostSchema } from
 
 export const createBlogPost = action(createBlogPostSchema, async ({ slug }, session) => {
     try {
-        console.log(session);
         if (session.role !== 'ADMIN') return { success: false, message: 'Error permission invalid' };
 
         const res = await prisma.blogPost.create({ data: { content: '', slug, title: slug, tags: [] } });
+        revalidatePath('/');
         revalidatePath('/blog');
         revalidatePath(`/blog/${slug}`);
 
         return { success: true, post: res };
-    } catch (e) {
-        console.log(e);
+    } catch {
         return { success: false, message: 'Error - createBlogPost' };
     }
 });
@@ -33,6 +32,7 @@ export const updateBlogPost = action(
                 where: { id },
                 data: { description, content, slug, status, title, ogImageUrl, readTime, tags },
             });
+            revalidatePath('/');
             if (oldSlug) revalidatePath(`/blog/${oldSlug}`);
             revalidatePath('/blog');
             revalidatePath(`/blog/${res.slug}`);
@@ -49,6 +49,7 @@ export const removeBlogPost = action(removeBlogPostSchema, async ({ blogPostId }
         if (role !== 'ADMIN') return { success: false, message: 'Error permission invalid' };
 
         const res = await prisma.blogPost.delete({ where: { id: blogPostId } });
+        revalidatePath('/');
         revalidatePath('/blog');
         revalidatePath(`/blog/${res.slug}`);
 
@@ -78,6 +79,7 @@ export const seedBlogPost = async () => {
             })),
         });
 
+        revalidatePath('/');
         revalidatePath('/blog');
         for (const article of initialBlogArticles) {
             revalidatePath(`/blog/${article.slug}`);

@@ -1,5 +1,3 @@
-'use client';
-
 import { DocCardList } from './doc-card-list';
 import { DocText } from './doc-text';
 

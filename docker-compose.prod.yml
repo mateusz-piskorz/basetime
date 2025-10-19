@@ -13,8 +13,10 @@ services:
       dockerfile: Dockerfile
       args:
         MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+        BUILDKIT_PROGRESS: ${BUILDKIT_PROGRESS}
         DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
     environment:
+      BUILDKIT_PROGRESS: ${BUILDKIT_PROGRESS}
       NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
       SESSION_SECRET: ${SESSION_SECRET}
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public

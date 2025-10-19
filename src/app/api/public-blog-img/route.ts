@@ -33,9 +33,9 @@ export async function DELETE(req: NextRequest) {
         if (!session || session.role !== 'ADMIN') return NextResponse.json({ success: false, message: 'Error permission invalid' });
 
         const formData = await req.formData();
-        const fileName = formData.get('fileName') as unknown as string;
+        const filePath = formData.get('filePath') as unknown as string;
 
-        await deleteFile({ bucket: 'public', fileName });
+        await deleteFile({ bucket: 'public', fileName: filePath });
 
         return NextResponse.json({ success: true, message: 'img deleted' });
     } catch {

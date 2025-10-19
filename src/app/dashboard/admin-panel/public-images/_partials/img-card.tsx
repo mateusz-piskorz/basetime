@@ -5,7 +5,7 @@ import ConfirmDialog from '@/components/common/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CopyButton } from '@/components/ui/copy-button';
-import { removePublicImg } from '@/lib/public-img';
+import { removePublicBlogImg } from '@/lib/public-blog-img';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -13,10 +13,10 @@ import { toast } from 'sonner';
 type Props = {
     url: string;
     alt: string;
-    imgName: string;
+    imgPath: string;
 };
 
-export const ImgCard = ({ alt, url, imgName }: Props) => {
+export const ImgCard = ({ alt, url, imgPath }: Props) => {
     const [open, setOpen] = useState(false);
     const router = useRouter();
     return (
@@ -25,7 +25,7 @@ export const ImgCard = ({ alt, url, imgName }: Props) => {
                 open={open}
                 setOpen={setOpen}
                 onContinue={async () => {
-                    const res = await removePublicImg({ imgName });
+                    const res = await removePublicBlogImg({ imgPath });
                     if (!res.success) toast.error('something went wrong - removePublicImg');
                     else toast.success('removed public img');
                     router.refresh();

@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
 // it's executed before every .test.ts file
 
+jest.mock('next/cache', () => ({ revalidatePath: () => {} }));
 jest.mock('server-only', () => ({}));
 jest.mock('@/lib/session', () => {
     const mockGetSession = jest.fn();

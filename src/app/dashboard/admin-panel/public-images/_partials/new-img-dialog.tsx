@@ -5,7 +5,7 @@ import { ImgInput } from '@/components/common/img-input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { addPublicImg } from '@/lib/public-img';
+import { addPublicBlogImg } from '@/lib/public-blog-img';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -28,7 +28,7 @@ export const NewImgDialog = ({ open, setOpen }: Props) => {
     const handleSubmit = async () => {
         if (!img) return;
         setLoading(true);
-        const res = await addPublicImg({ img });
+        const res = await addPublicBlogImg({ img });
 
         if (!res.success) {
             toast.error('something went wrong');

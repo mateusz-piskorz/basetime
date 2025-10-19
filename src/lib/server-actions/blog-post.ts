@@ -7,16 +7,18 @@ import { prisma } from '../prisma';
 import { getSession } from '../session';
 import { createBlogPostSchema, removeBlogPostSchema, updateBlogPostSchema } from '../zod/blog-post-schema';
 
-export const createBlogPost = action(createBlogPostSchema, async ({ slug }, { role }) => {
+export const createBlogPost = action(createBlogPostSchema, async ({ slug }, session) => {
     try {
-        if (role !== 'ADMIN') return { success: false, message: 'Error permission invalid' };
+        console.log(session);
+        if (session.role !== 'ADMIN') return { success: false, message: 'Error permission invalid' };
 
         const res = await prisma.blogPost.create({ data: { content: '', slug, title: slug, tags: [] } });
         revalidatePath('/blog');
         revalidatePath(`/blog/${slug}`);
 
         return { success: true, post: res };
-    } catch {
+    } catch (e) {
+        console.log(e);
         return { success: false, message: 'Error - createBlogPost' };
     }
 });

@@ -1,10 +1,10 @@
 'use client';
 
-export const addPublicImg = async ({ img }: { img: File }) => {
+export const addPublicBlogImg = async ({ img }: { img: File }) => {
     const formData = new FormData();
     formData.set('file', img);
 
-    const res = await fetch('/api/public-img', {
+    const res = await fetch('/api/public-blog-img', {
         method: 'POST',
         body: formData,
     });
@@ -13,11 +13,11 @@ export const addPublicImg = async ({ img }: { img: File }) => {
     return { success: data.success as boolean };
 };
 
-export const removePublicImg = async ({ imgName }: { imgName: string }) => {
+export const removePublicBlogImg = async ({ imgPath }: { imgPath: string }) => {
     const formData = new FormData();
-    formData.set('fileName', imgName);
+    formData.set('filePath', imgPath);
 
-    const res = await fetch('/api/public-img', {
+    const res = await fetch('/api/public-blog-img', {
         method: 'DELETE',
         body: formData,
     });

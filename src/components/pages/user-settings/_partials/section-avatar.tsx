@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { removeAvatar, updateAvatar } from '@/lib/avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { getUserAvatarUrl } from '@/lib/utils/common';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -18,7 +19,7 @@ export const SectionAvatar = () => {
     const [img, setImg] = useState<File | undefined | null>(undefined);
 
     const imgSrc = useMemo(() => {
-        return img ? URL.createObjectURL(img) : img === null ? null : user?.avatar ? user.avatar : null;
+        return img ? URL.createObjectURL(img) : img === null ? null : user?.avatarId ? getUserAvatarUrl({ avatarId: user.avatarId }) : null;
     }, [img, user]);
 
     const handleSubmit = async () => {

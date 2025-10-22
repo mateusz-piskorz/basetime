@@ -15,7 +15,7 @@ export const blogPostComments = publicProcedure
 
         const data = await prisma.blogPostComment.findMany({
             where: { blogPostId },
-            include: { User: { select: { email: true, name: true } } },
+            include: { User: { select: { email: true, name: true, avatarId: true } } },
             take: limit,
             skip,
         });

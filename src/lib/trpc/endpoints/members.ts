@@ -1,5 +1,4 @@
 import { dayjs } from '@/lib/dayjs';
-import { getUserAvatarUrl } from '@/lib/minio';
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
 import { formatMinutes, sumTimeEntries } from '@/lib/utils/common';
@@ -24,7 +23,7 @@ export const members = publicProcedure.input(z.object({ organizationId: z.string
                 },
                 orderBy: { createdAt: 'desc' },
             },
-            User: { select: { id: true, name: true, email: true } },
+            User: { select: { id: true, name: true, email: true, avatarId: true } },
             TimeEntries: true,
             Projects: true,
         },
@@ -32,11 +31,10 @@ export const members = publicProcedure.input(z.object({ organizationId: z.string
 
     return Promise.all(
         res.map(async (member) => {
-            const avatar = await getUserAvatarUrl({ userId: member.userId });
             const hourlyRate = member.HourlyRates?.length > 0 ? member.HourlyRates[0].value : undefined;
             return {
                 ...member,
-                User: { ...member.User, avatar },
+                User: member.User,
                 loggedTime: formatMinutes(sumTimeEntries({ entries: member.TimeEntries, dayjs })),
                 hourlyRate,
             };

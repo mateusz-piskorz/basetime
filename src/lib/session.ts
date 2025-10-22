@@ -75,7 +75,7 @@ export const getSession = cache(async () => {
 
     const res = await prisma.session.findUnique({
         where: { id: session.sessionId as string, expiresAt: { gte: new Date() } },
-        select: { id: true, User: { select: { id: true, email: true, name: true, role: true } } },
+        select: { id: true, User: { select: { id: true, email: true, name: true, role: true, avatarId: true } } },
     });
 
     if (!res) {

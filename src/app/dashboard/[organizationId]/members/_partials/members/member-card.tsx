@@ -26,7 +26,7 @@ export const MemberCard = ({ member: { id, User, _count, loggedTime, role, hourl
         >
             <CardContent className={cn('min-h-[200px] space-y-6', currentUserRole === 'EMPLOYEE' && 'min-h-[150px]')}>
                 <div className="flex gap-2">
-                    <UserInfo showEmail user={User} showCurrentUserIndicator={currentMemberId === id} />
+                    <UserInfo textUnder={User.email} name={User.name} avatarId={User.avatarId} currentUserIndicator={currentMemberId === id} />
                     {role}
                 </div>
 

@@ -44,7 +44,7 @@ export const SidebarFooter = () => {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <SidebarMenuButton size="lg" className="text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent group">
-                                <UserInfo />
+                                <UserInfo name={user.name} avatarId={user.avatarId} textUnder={user.email} />
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
@@ -54,7 +54,7 @@ export const SidebarFooter = () => {
                         >
                             <DropdownMenuLabel className="p-0 font-normal">
                                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                    <UserInfo showEmail={true} />
+                                    <UserInfo name={user.name} avatarId={user.avatarId} textUnder={user.email} />
                                 </div>
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />

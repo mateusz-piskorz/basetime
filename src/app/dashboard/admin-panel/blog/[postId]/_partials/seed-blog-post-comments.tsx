@@ -1,31 +1,35 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { seedBlogPost } from '@/lib/server-actions/blog-post-admin';
+import { seedBlogPostComments } from '@/lib/server-actions/blog-post-admin';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-export const SeedPosts = () => {
+type Props = {
+    blogPostId: string;
+};
+
+export const SeedBlogPostComments = ({ blogPostId }: Props) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
     const seed = async () => {
         setLoading(true);
-        const res = await seedBlogPost();
+        const res = await seedBlogPostComments({ blogPostId });
         if (!res.success) {
             setLoading(false);
-            toast.error(res.message || 'something went wrong - seedPost');
+            toast.error(res.message || 'something went wrong - seedBlogPostComments');
             return '';
         }
-        toast.success('blog post seeding completed');
+        toast.success('blog post comments seeding completed');
         setLoading(false);
         router.refresh();
     };
 
     return (
         <Button disabled={loading} onClick={seed}>
-            Seed
+            Add random ~100 comments
         </Button>
     );
 };

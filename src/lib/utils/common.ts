@@ -103,3 +103,10 @@ export const getInitials = (fullName: string) => {
 
     return `${firstInitial}${lastInitial}`.toUpperCase();
 };
+
+export const getAppEnv = () => {
+    const environments = { production: 'production', staging: 'staging', localhost: 'localhost' } as const;
+    const env = process.env.NEXT_PUBLIC_APP_ENV as keyof typeof environments;
+
+    return environments[env] || 'production';
+};

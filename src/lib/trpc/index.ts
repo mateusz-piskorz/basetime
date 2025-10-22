@@ -1,5 +1,6 @@
 import { activeSessions } from './endpoints/active-sessions';
 import { activeTimeEntry } from './endpoints/active-time-entry';
+import { blogPostComments } from './endpoints/blog-post-comments';
 import { currentUser } from './endpoints/current-user';
 import { invitations } from './endpoints/invitations';
 import { members } from './endpoints/members';
@@ -11,6 +12,7 @@ import { timeEntriesPaginated } from './endpoints/time-entries-paginated';
 import { createTRPCRouter } from './init';
 
 export const appRouter = createTRPCRouter({
+    blogPostComments,
     currentUser,
     activeSessions,
     organizations,

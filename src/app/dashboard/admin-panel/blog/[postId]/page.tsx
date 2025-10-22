@@ -1,6 +1,8 @@
 import { NotFound } from '@/components/common/not-found';
 import { prisma } from '@/lib/prisma';
+import { getAppEnv } from '@/lib/utils/common';
 import { Editor } from './_partials/editor';
+import { SeedBlogPostComments } from './_partials/seed-blog-post-comments';
 
 type Props = { params: Awaited<{ postId: string }> };
 
@@ -13,6 +15,8 @@ const PostPage = async ({ params }: Props) => {
 
     return (
         <div className="space-y-8 py-8">
+            {getAppEnv() !== 'production' && <SeedBlogPostComments blogPostId={post.id} />}
+
             <Editor post={post} />
         </div>
     );

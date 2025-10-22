@@ -3,7 +3,7 @@
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { removeBlogPost } from '@/lib/server-actions/blog-post';
+import { removeBlogPost } from '@/lib/server-actions/blog-post-admin';
 import { BlogPost } from '@prisma/client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

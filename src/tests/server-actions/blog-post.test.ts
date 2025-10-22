@@ -1,6 +1,6 @@
 import { initialBlogArticles } from '@/lib/constants/blog-initial-articles';
 import { prisma } from '@/lib/prisma';
-import { createBlogPost, removeBlogPost, seedBlogPost, updateBlogPost } from '@/lib/server-actions/blog-post';
+import { createBlogPost, removeBlogPost, seedBlogPost, updateBlogPost } from '@/lib/server-actions/blog-post-admin';
 import { mockSession } from '../utils/mock-session';
 
 describe('createBlogPost', () => {

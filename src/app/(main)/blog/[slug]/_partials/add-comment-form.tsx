@@ -41,11 +41,11 @@ export const AddCommentForm = ({ parentId, blogPostId }: Props) => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" style={{ marginBottom: '16px' }}>
-                <TextareaField form={form} name="content" placeholder="What are your thoughts?" />
+            <form onSubmit={form.handleSubmit(onSubmit)} className="mb-6 space-y-8 px-6">
+                <TextareaField form={form} name="content" placeholder="What are your thoughts?" className="max-h-[150px]" />
 
                 <Button disabled={form.formState.isSubmitting} type="submit">
-                    Save
+                    Respond
                 </Button>
             </form>
         </Form>

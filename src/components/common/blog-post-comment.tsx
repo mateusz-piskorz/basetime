@@ -1,28 +1,76 @@
+'use client';
+
+import { CommentListCollapsible } from '@/app/(main)/blog/[slug]/_partials/comment-list-collapsible';
 import { dayjs } from '@/lib/dayjs';
+import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { TrpcRouterOutput } from '@/lib/trpc/client';
-import { Card, CardContent } from '../ui/card';
+import { cn } from '@/lib/utils/common';
+import { MessageCircle, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from '../ui/button';
 import { UserInfo } from './user-info';
 
 type Props = {
     comment: NonNullable<TrpcRouterOutput['blogPostComments']>['data'][number];
+    nestLevel: number;
+    className?: string;
+    initialDisplayResponses?: boolean;
 };
 
-export const BlogPostComment = ({ comment }: Props) => {
+const maxLength = 175;
+
+export const BlogPostComment = ({ comment, nestLevel, className, initialDisplayResponses }: Props) => {
+    const { setActiveCommentThread } = useBlogCommentsSheet();
+    const [displayResponses, setDisplayResponses] = useState(initialDisplayResponses);
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const displayedText = isExpanded ? comment.content : `${comment.content.substring(0, maxLength)}...`;
     return (
-        <Card>
-            <CardContent>
-                <div>
-                    <UserInfo name={comment.User.name} avatarId={comment.User.avatarId} />
-                    <div>
-                        <p>{comment.User.name}</p>
+        <div className={cn('flex flex-col gap-6 rounded py-6', className)}>
+            <div className="flex gap-2">
+                <UserInfo
+                    name={comment.User.name}
+                    avatarId={comment.User.avatarId}
+                    textUnder={
                         <time className="text-muted-foreground" title="Commented at" dateTime={dayjs(comment.updatedAt).format('YYYY-MM-DD')}>
                             {dayjs(comment.updatedAt).format('MMMM D, YYYY')}
                         </time>
-                    </div>
-                </div>
+                    }
+                />
+            </div>
 
-                <p>{comment.content}</p>
-            </CardContent>
-        </Card>
+            <p className="font-sm">
+                {displayedText}
+                {!isExpanded && (
+                    <Button className="text-muted-foreground inline-block pl-1" onClick={() => setIsExpanded(true)} variant="link">
+                        more
+                    </Button>
+                )}
+            </p>
+
+            <div>
+                <Button variant="ghost">
+                    <Sparkles /> {comment._count.Upvotes}
+                </Button>
+
+                <Button
+                    variant="ghost"
+                    onClick={() => {
+                        if (comment._count.Replies === 0) return;
+
+                        if (nestLevel >= 2) {
+                            setActiveCommentThread(comment.id);
+                            return;
+                        }
+
+                        setDisplayResponses(true);
+                    }}
+                >
+                    <MessageCircle /> {comment._count.Replies}
+                </Button>
+            </div>
+
+            {displayResponses && <CommentListCollapsible nestLevel={nestLevel + 1} blogPostId={comment.blogPostId} parentId={comment.id} />}
+        </div>
     );
 };

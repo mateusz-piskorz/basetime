@@ -43,7 +43,7 @@ export const BlogPostCard = ({ post, className }: Props) => {
                         {` - ${post.readTime}`}
                     </span>
                     <h1 className="text-xl xl:text-2xl 2xl:text-3xl">{post.title}</h1>
-                    <p className="text-muted-foreground font-mono text-sm 2xl:text-base">{post.description}</p>
+                    <p className="text-muted-foreground text-sm 2xl:text-base">{post.description}</p>
                     <Button asChild variant="link" className="mt-auto pb-0 pl-0 text-base xl:text-xl">
                         <Link href={`/blog/${post.slug}`}>
                             Read More <ChevronRight />

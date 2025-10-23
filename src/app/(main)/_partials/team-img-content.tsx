@@ -22,12 +22,12 @@ export const TeamImgContent = () => {
                 <div className="grid gap-6 md:grid-cols-2 md:gap-12">
                     <h2 className="text-3xl font-semibold 2xl:text-6xl">The Lyra ecosystem brings together our models, products and platforms.</h2>
                     <div className="text-muted-foreground space-y-6">
-                        <p className="font-mono 2xl:text-xl">
+                        <p className="2xl:text-xl">
                             Lyra is evolving to be more than just the models. It supports an entire ecosystem — from products to the APIs and
                             platforms helping developers and businesses innovate.
                         </p>
 
-                        <p className="font-mono 2xl:text-xl">
+                        <p className="2xl:text-xl">
                             Lyra. It supports an entire ecosystem — from products innovate. Sit minus, quod debitis autem quia aspernatur delectus
                             impedit modi, neque non id ad dignissimos? Saepe deleniti perferendis beatae.
                         </p>

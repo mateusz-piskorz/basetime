@@ -2,6 +2,7 @@
 
 import { MarkdownRenderer } from '@/components/common/markdown-renderer';
 import { Button } from '@/components/ui/button';
+import { BlogCommentsSheetProvider } from '@/lib/hooks/use-blog-comments-sheet';
 import { BlogPost } from '@prisma/client';
 import { MessageCircle } from 'lucide-react';
 import { useState } from 'react';
@@ -16,7 +17,9 @@ export const ArticleClientWrapper = ({ post }: Props) => {
 
     return (
         <>
-            <CommentsSheet open={open} setOpen={setOpen} post={post} />
+            <BlogCommentsSheetProvider>
+                <CommentsSheet open={open} setOpen={setOpen} post={post} />
+            </BlogCommentsSheetProvider>
 
             <div className="my-4 border-y py-4">
                 <Button variant="ghost" onClick={() => setOpen(true)}>

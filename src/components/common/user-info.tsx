@@ -6,7 +6,7 @@ import { cn, getInitials, getUserAvatarUrl } from '@/lib/utils/common';
 
 type Props = {
     name: string;
-    textUnder?: string;
+    textUnder?: React.ReactNode | string;
     avatarId?: string | null;
     currentUserIndicator?: boolean;
 };

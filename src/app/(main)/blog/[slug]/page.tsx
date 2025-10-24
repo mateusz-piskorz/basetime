@@ -15,7 +15,7 @@ type Params = {
 
 export default async function BlogPage({ params }: Params) {
     const { slug } = await params;
-    const post = await prisma.blogPost.findUnique({ where: { slug } });
+    const post = await prisma.blogPost.findUnique({ where: { slug }, include: { _count: true } });
 
     if (!post) {
         return notFound();

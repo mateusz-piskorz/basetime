@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { createBlogPostComment } from '@/lib/server-actions/blog-post';
 import { trpc } from '@/lib/trpc/client';
+import { cn } from '@/lib/utils/common';
 import { blogPostCommentSchema } from '@/lib/zod/blog-post-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
@@ -36,17 +37,29 @@ export const AddCommentForm = ({ parentId, blogPostId }: Props) => {
         }
 
         toast.success('Comment added successfully');
-        // trpcUtils.members.refetch()
+        await trpcUtils.blogPostComments.refetch();
     };
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="mb-6 space-y-8 px-6">
-                <TextareaField form={form} name="content" placeholder="What are your thoughts?" className="max-h-[150px]" />
+            <form onSubmit={form.handleSubmit(onSubmit)} className={cn('mb-6 space-y-8', !parentId && 'px-6')}>
+                <div className="dark:bg-input/30 border-input rounded-md">
+                    <TextareaField
+                        form={form}
+                        name="content"
+                        placeholder="What are your thoughts?"
+                        classNameInput="border-none  max-h-[150px] resize-none  dark:bg-transparent"
+                    />
 
-                <Button disabled={form.formState.isSubmitting} type="submit">
-                    Respond
-                </Button>
+                    <div className="flex justify-end gap-2 p-4">
+                        <Button type="button" onClick={() => form.reset({ blogPostId, parentId, content: '' })} variant="link">
+                            Cancel
+                        </Button>
+                        <Button disabled={form.formState.isSubmitting} type="submit" variant="secondary">
+                            Respond
+                        </Button>
+                    </div>
+                </div>
             </form>
         </Form>
     );

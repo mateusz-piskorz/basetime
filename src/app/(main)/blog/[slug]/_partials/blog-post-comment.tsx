@@ -1,14 +1,16 @@
 'use client';
 
-import { CommentListCollapsible } from '@/app/(main)/blog/[slug]/_partials/comment-list-collapsible';
+import { AddCommentForm } from '@/app/(main)/blog/[slug]/_partials/add-comment-form';
+import { BlogUpvoteButton } from '@/app/(main)/blog/[slug]/_partials/blog-upvote-button';
+import { CommentList } from '@/app/(main)/blog/[slug]/_partials/comment-list';
 import { dayjs } from '@/lib/dayjs';
 import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { TrpcRouterOutput } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
-import { MessageCircle, Sparkles } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '../ui/button';
-import { UserInfo } from './user-info';
+import { UserInfo } from '../../../../../components/common/user-info';
+import { Button } from '../../../../../components/ui/button';
 
 type Props = {
     comment: NonNullable<TrpcRouterOutput['blogPostComments']>['data'][number];
@@ -22,6 +24,7 @@ const maxLength = 225;
 export const BlogPostComment = ({ comment, nestLevel, className, initialDisplayResponses }: Props) => {
     const { setActiveCommentThread } = useBlogCommentsSheet();
     const [displayResponses, setDisplayResponses] = useState(initialDisplayResponses);
+    const [showReplyForm, setShowReplyForm] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
     const isTooLong = comment.content.length > maxLength;
@@ -43,7 +46,6 @@ export const BlogPostComment = ({ comment, nestLevel, className, initialDisplayR
 
             <p className="font-sm">
                 {displayedText}
-                {/* todo: fix me */}
                 {isTooLong && !isExpanded && (
                     <Button className="text-muted-foreground inline-block pl-1" onClick={() => setIsExpanded(true)} variant="link">
                         more
@@ -51,10 +53,8 @@ export const BlogPostComment = ({ comment, nestLevel, className, initialDisplayR
                 )}
             </p>
 
-            <div>
-                <Button variant="ghost">
-                    <Sparkles /> {comment._count.Upvotes}
-                </Button>
+            <div className="flex items-center">
+                <BlogUpvoteButton upvotes={comment._count.Upvotes} voteType="comment" entityId={comment.id} />
 
                 <Button
                     variant="ghost"
@@ -71,11 +71,14 @@ export const BlogPostComment = ({ comment, nestLevel, className, initialDisplayR
                 >
                     <MessageCircle /> {comment._count.Replies}
                 </Button>
+
+                <Button variant="ghost" onClick={() => setShowReplyForm((prev) => !prev)}>
+                    Reply
+                </Button>
             </div>
 
-            {displayResponses && (
-                <CommentListCollapsible sorting="oldest" nestLevel={nestLevel + 1} blogPostId={comment.blogPostId} parentId={comment.id} />
-            )}
+            {showReplyForm && <AddCommentForm blogPostId={comment.blogPostId} parentId={comment.id} />}
+            {displayResponses && <CommentList sorting="oldest" nestLevel={nestLevel + 1} blogPostId={comment.blogPostId} parentId={comment.id} />}
         </div>
     );
 };

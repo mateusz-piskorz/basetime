@@ -1,85 +1,81 @@
-import { initialBlogArticles } from '@/lib/constants/blog-initial-articles';
 import { prisma } from '@/lib/prisma';
-import { createBlogPost, removeBlogPost, seedBlogPost, updateBlogPost } from '@/lib/server-actions/blog-post-admin';
+import { createBlogPostComment, upvoteBlogPost, upvoteBlogPostComment } from '@/lib/server-actions/blog-post';
 import { mockSession } from '../utils/mock-session';
 
-describe('createBlogPost', () => {
-    const createdBlogPostSlug = 'new-blog-post';
-    test('regular user cannot create blog post', async () => {
-        mockSession('', 'USER');
-
-        expect((await await createBlogPost({ slug: createdBlogPostSlug })).success).toBe(false);
-        expect(await prisma.blogPost.findUnique({ where: { slug: createdBlogPostSlug } })).toBe(null);
+describe('createBlogPostComment', () => {
+    const userId = 'userId1';
+    const blogPostId = 'blogPostId1';
+    beforeAll(async () => {
+        await prisma.user.create({ data: { email: '', password: '', name: '', id: userId } });
+        await prisma.blogPost.create({ data: { content: '', slug: '', title: '', id: blogPostId } });
     });
 
-    test('admin can create blog post', async () => {
-        mockSession('', 'ADMIN');
+    test('unAuthenticated user cannot create comment', async () => {
+        expect((await createBlogPostComment({ blogPostId, content: 'content' })).success).toBe(false);
+        expect((await prisma.blogPostComment.findMany({ where: { blogPostId } })).length).toBe(0);
+    });
 
-        expect((await await createBlogPost({ slug: createdBlogPostSlug })).success).toBe(true);
-        expect(await prisma.blogPost.findUnique({ where: { slug: createdBlogPostSlug } })).not.toBe(null);
+    test('authenticated user can create comment', async () => {
+        mockSession(userId, 'USER');
+        expect((await createBlogPostComment({ blogPostId, content: 'content' })).success).toBe(true);
+        expect((await prisma.blogPostComment.findMany({ where: { blogPostId } })).length).toBe(1);
     });
 });
 
-describe('updateBlogPost', () => {
-    const blogPostId = 'updateBlogPostId';
+describe('upvoteBlogPost', () => {
+    const userId = 'userId2';
+    const blogPostId = 'blogPostId2';
     beforeAll(async () => {
-        await prisma.blogPost.deleteMany({});
-        await prisma.blogPost.create({ data: { slug: '', content: '', title: 'old title', id: blogPostId } });
+        await prisma.blogPost.deleteMany();
+        await prisma.user.deleteMany();
+        await prisma.user.create({ data: { email: '', password: '', name: '', id: userId } });
+        await prisma.blogPost.create({ data: { content: '', slug: '', title: '', id: blogPostId } });
     });
 
-    test('regular user can not update blog post', async () => {
-        mockSession('', 'USER');
-        expect((await updateBlogPost({ id: blogPostId, title: 'new title' })).success).toBe(false);
-        expect((await prisma.blogPost.findUnique({ where: { id: blogPostId } }))?.title).toBe('old title');
+    test('unAuthenticated user cannot upvote blog post', async () => {
+        expect((await upvoteBlogPost({ blogPostId })).success).toBe(false);
+        expect((await prisma.blogPostUpvote.findMany({ where: { blogPostId } })).length).toBe(0);
     });
 
-    test('admin can update blog post', async () => {
-        mockSession('', 'ADMIN');
-        expect((await updateBlogPost({ id: blogPostId, title: 'new title' })).success).toBe(true);
-        expect((await prisma.blogPost.findUnique({ where: { id: blogPostId } }))?.title).toBe('new title');
+    test('authenticated user can upvote blog post', async () => {
+        mockSession(userId, 'USER');
+        expect((await upvoteBlogPost({ blogPostId })).success).toBe(true);
+        expect((await prisma.blogPostUpvote.findMany({ where: { blogPostId } })).length).toBe(1);
+    });
+
+    test('authenticated user can remove upvote blog post', async () => {
+        mockSession(userId, 'USER');
+        expect((await upvoteBlogPost({ blogPostId })).success).toBe(true);
+        expect((await prisma.blogPostUpvote.findMany({ where: { blogPostId } })).length).toBe(0);
     });
 });
 
-describe('removeBlogPost', () => {
-    const blogPostId = 'removeBlogPostId';
+describe('upvoteBlogPostComment', () => {
+    const userId = 'userId3';
+    const blogPostId = 'blogPostId3';
+    const commentId = 'blogPostCommentId3';
     beforeAll(async () => {
-        await prisma.blogPost.deleteMany({});
-        await prisma.blogPost.create({ data: { slug: '', content: '', title: '', id: blogPostId } });
+        await prisma.blogPost.deleteMany();
+        await prisma.user.deleteMany();
+        await prisma.user.create({ data: { email: '', password: '', name: '', id: userId } });
+        await prisma.blogPost.create({ data: { content: '', slug: '', title: '', id: blogPostId } });
+        await prisma.blogPostComment.create({ data: { content: '', blogPostId, id: commentId, userId } });
     });
 
-    test('regular user can not remove blog post', async () => {
-        mockSession('', 'USER');
-        expect((await removeBlogPost({ blogPostId })).success).toBe(false);
-        expect(await prisma.blogPost.findUnique({ where: { id: blogPostId } })).not.toBe(null);
+    test('unAuthenticated user cannot upvote blog post', async () => {
+        expect((await upvoteBlogPostComment({ commentId })).success).toBe(false);
+        expect((await prisma.blogPostCommentUpvote.findMany({ where: { blogPostCommentId: commentId } })).length).toBe(0);
     });
 
-    test('admin can remove blog post', async () => {
-        mockSession('', 'ADMIN');
-        expect((await removeBlogPost({ blogPostId })).success).toBe(true);
-        expect(await prisma.blogPost.findUnique({ where: { id: blogPostId } })).toBe(null);
-    });
-});
-
-describe('seedBlogPost', () => {
-    beforeAll(async () => {
-        await prisma.blogPost.deleteMany({});
+    test('authenticated user can upvote blog post', async () => {
+        mockSession(userId, 'USER');
+        expect((await upvoteBlogPostComment({ commentId })).success).toBe(true);
+        expect((await prisma.blogPostCommentUpvote.findMany({ where: { blogPostCommentId: commentId } })).length).toBe(1);
     });
 
-    test('regular user can not seed blog post', async () => {
-        mockSession('', 'USER');
-        expect((await seedBlogPost()).success).toBe(false);
-        expect((await prisma.blogPost.findMany()).length).toBe(0);
-    });
-
-    test('admin can seed blog post', async () => {
-        mockSession('', 'ADMIN');
-        expect((await seedBlogPost()).success).toBe(true);
-        expect((await prisma.blogPost.findMany()).length).toBe(initialBlogArticles.length);
-    });
-
-    test('seedBlogPost can not be used again', async () => {
-        mockSession('', 'ADMIN');
-        expect((await seedBlogPost()).success).toBe(false);
-        expect((await prisma.blogPost.findMany()).length).toBe(initialBlogArticles.length);
+    test('authenticated user can remove upvote blog post', async () => {
+        mockSession(userId, 'USER');
+        expect((await upvoteBlogPostComment({ commentId })).success).toBe(true);
+        expect((await prisma.blogPostCommentUpvote.findMany({ where: { blogPostCommentId: commentId } })).length).toBe(0);
     });
 });

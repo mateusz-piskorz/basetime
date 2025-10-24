@@ -1,6 +1,6 @@
-import { BlogPostComment } from '@/components/common/blog-post-comment';
+import { BlogPostComment } from '@/app/(main)/blog/[slug]/_partials/blog-post-comment';
 import { SpinLoader } from '@/components/common/spin-loader';
-import { trpc } from '@/lib/trpc/client';
+import { trpc, TrpcRouterInput } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
 import { useCallback, useRef } from 'react';
 
@@ -8,15 +8,14 @@ type Props = {
     blogPostId: string;
     parentId: null | string;
     nestLevel: number;
-    sorting: 'featured' | 'latest';
+    sorting: TrpcRouterInput['blogPostComments']['sorting'];
 };
 
-export const CommentListCollapsibleInfiniteScroll = ({ blogPostId, parentId, nestLevel, sorting }: Props) => {
+export const CommentListInfiniteScroll = ({ blogPostId, parentId, nestLevel, sorting }: Props) => {
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } = trpc.blogPostComments.useInfiniteQuery(
-        { blogPostId, limit: 20, parentId, sorting },
+        { blogPostId, limit: 30, parentId, sorting },
         { getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined), initialCursor: 1 },
     );
-
     const results = data?.pages.flatMap((e) => e.data);
 
     const intObserver = useRef<IntersectionObserver>(null);

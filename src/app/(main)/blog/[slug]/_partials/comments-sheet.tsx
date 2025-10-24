@@ -1,30 +1,32 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 'use client';
 
-import { BlogPostComment } from '@/components/common/blog-post-comment';
+import { BlogPostComment } from '@/app/(main)/blog/[slug]/_partials/blog-post-comment';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
-import { trpc } from '@/lib/trpc/client';
+import { trpc, TrpcRouterInput } from '@/lib/trpc/client';
 import { BlogPost } from '@prisma/client';
 import { ChevronLeft } from 'lucide-react';
 import { useState } from 'react';
 import { AddCommentForm } from './add-comment-form';
-import { CommentListCollapsibleInfiniteScroll } from './comment-list-collapsible-infinite-scroll';
+import { CommentListInfiniteScroll } from './comment-list-infinite-scroll';
 
 type Props = {
     open: boolean;
     setOpen: (val: boolean) => void;
-    post: BlogPost;
+    post: {
+        _count: {
+            Comments: number;
+            Upvotes: number;
+        };
+    } & BlogPost;
 };
 
 export const CommentsSheet = ({ open, setOpen, post }: Props) => {
     const { reset, activeCommentThread, goBack } = useBlogCommentsSheet();
     const { data: activeComment } = trpc.blogPostComment.useQuery({ commentId: activeCommentThread! }, { enabled: Boolean(activeCommentThread) });
-
-    const [sorting, setSorting] = useState('featured');
+    const [sorting, setSorting] = useState<TrpcRouterInput['blogPostComments']['sorting']>('featured');
 
     return (
         <Sheet
@@ -44,19 +46,20 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
                                 <ChevronLeft className="size-6" />
                             </Button>
                         )}
-                        <SheetTitle className="text-2xl">{activeCommentThread ? 'Replies' : `Responses (304)`}</SheetTitle>
+                        <SheetTitle className="text-2xl">{activeCommentThread ? 'Replies' : `Responses (${post._count.Comments})`}</SheetTitle>
                     </div>
                     <SheetDescription className="sr-only">responses to this blog post, added by other users</SheetDescription>
                 </SheetHeader>
+
                 {activeCommentThread ? (
                     <>{activeComment && <BlogPostComment initialDisplayResponses nestLevel={0} comment={activeComment} className="px-6" />}</>
                 ) : (
                     <>
                         <AddCommentForm blogPostId={post.id} />
 
-                        <Select onValueChange={setSorting} value={sorting}>
-                            <SelectTrigger className="w-full">
-                                <SelectValue />
+                        <Select onValueChange={(val) => setSorting(val as typeof sorting)} value={sorting}>
+                            <SelectTrigger className="mx-6 border-none bg-transparent dark:bg-transparent">
+                                <SelectValue className="bg-transparent" />
                             </SelectTrigger>
                             <SelectContent>
                                 {['featured', 'latest'].map((elem) => (
@@ -66,7 +69,8 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
                                 ))}
                             </SelectContent>
                         </Select>
-                        <CommentListCollapsibleInfiniteScroll sorting={sorting as any} nestLevel={0} blogPostId={post.id} parentId={null} />
+
+                        <CommentListInfiniteScroll sorting={sorting} nestLevel={0} blogPostId={post.id} parentId={null} />
                     </>
                 )}
             </SheetContent>

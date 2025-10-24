@@ -1,3 +1,6 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "avatarId" TEXT;
+
 -- CreateTable
 CREATE TABLE "BlogPostUpvote" (
     "id" TEXT NOT NULL,
@@ -23,7 +26,7 @@ CREATE TABLE "BlogPostComment" (
 -- CreateTable
 CREATE TABLE "BlogPostCommentUpvote" (
     "id" TEXT NOT NULL,
-    "blogPostId" TEXT NOT NULL,
+    "blogPostCommentId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
 
     CONSTRAINT "BlogPostCommentUpvote_pkey" PRIMARY KEY ("id")
@@ -45,7 +48,7 @@ ALTER TABLE "BlogPostComment" ADD CONSTRAINT "BlogPostComment_userId_fkey" FOREI
 ALTER TABLE "BlogPostComment" ADD CONSTRAINT "BlogPostComment_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "BlogPostComment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "BlogPostCommentUpvote" ADD CONSTRAINT "BlogPostCommentUpvote_blogPostId_fkey" FOREIGN KEY ("blogPostId") REFERENCES "BlogPostComment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "BlogPostCommentUpvote" ADD CONSTRAINT "BlogPostCommentUpvote_blogPostCommentId_fkey" FOREIGN KEY ("blogPostCommentId") REFERENCES "BlogPostComment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "BlogPostCommentUpvote" ADD CONSTRAINT "BlogPostCommentUpvote_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

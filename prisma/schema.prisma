@@ -92,10 +92,10 @@ model BlogPostComment {
 model BlogPostCommentUpvote {
   id String @id @default(cuid())
 
-  blogPostId      String
-  userId          String
-  BlogPostComment BlogPostComment @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
-  User            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blogPostCommentId String
+  userId            String
+  BlogPostComment   BlogPostComment @relation(fields: [blogPostCommentId], references: [id], onDelete: Cascade)
+  User              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Session {

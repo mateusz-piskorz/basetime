@@ -1,14 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client';
 
 import { BlogPostComment } from '@/components/common/blog-post-comment';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { trpc } from '@/lib/trpc/client';
 import { BlogPost } from '@prisma/client';
 import { ChevronLeft } from 'lucide-react';
+import { useState } from 'react';
 import { AddCommentForm } from './add-comment-form';
-import { CommentListCollapsible } from './comment-list-collapsible';
+import { CommentListCollapsibleInfiniteScroll } from './comment-list-collapsible-infinite-scroll';
 
 type Props = {
     open: boolean;
@@ -19,6 +23,8 @@ type Props = {
 export const CommentsSheet = ({ open, setOpen, post }: Props) => {
     const { reset, activeCommentThread, goBack } = useBlogCommentsSheet();
     const { data: activeComment } = trpc.blogPostComment.useQuery({ commentId: activeCommentThread! }, { enabled: Boolean(activeCommentThread) });
+
+    const [sorting, setSorting] = useState('featured');
 
     return (
         <Sheet
@@ -47,7 +53,20 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
                 ) : (
                     <>
                         <AddCommentForm blogPostId={post.id} />
-                        <CommentListCollapsible nestLevel={0} blogPostId={post.id} parentId={null} />
+
+                        <Select onValueChange={setSorting} value={sorting}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {['featured', 'latest'].map((elem) => (
+                                    <SelectItem key={elem} value={elem}>
+                                        {elem}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <CommentListCollapsibleInfiniteScroll sorting={sorting as any} nestLevel={0} blogPostId={post.id} parentId={null} />
                     </>
                 )}
             </SheetContent>

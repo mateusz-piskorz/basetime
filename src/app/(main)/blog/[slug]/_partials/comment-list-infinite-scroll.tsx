@@ -5,15 +5,15 @@ import { cn } from '@/lib/utils/common';
 import { useCallback, useRef } from 'react';
 
 type Props = {
-    blogPostId: string;
+    postId: string;
     parentId: null | string;
     nestLevel: number;
     sorting: TrpcRouterInput['blogPostComments']['sorting'];
 };
 
-export const CommentListInfiniteScroll = ({ blogPostId, parentId, nestLevel, sorting }: Props) => {
+export const CommentListInfiniteScroll = ({ postId, parentId, nestLevel, sorting }: Props) => {
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } = trpc.blogPostComments.useInfiniteQuery(
-        { blogPostId, limit: 30, parentId, sorting },
+        { postId, limit: 30, parentId, sorting },
         { getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined), initialCursor: 1 },
     );
     const results = data?.pages.flatMap((e) => e.data);

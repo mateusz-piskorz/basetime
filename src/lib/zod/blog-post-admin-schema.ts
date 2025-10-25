@@ -18,6 +18,6 @@ export const updateBlogPostSchema = z.object({
     status: z.nativeEnum(BLOG_POST_STATUS).optional(),
 });
 
-export const removeBlogPostSchema = z.object({ blogPostId: z.string() });
+export const removeBlogPostSchema = z.object({ postId: z.string() });
 
-export const seedBlogPostCommentsSchema = z.object({ blogPostId: z.string() });
+export const seedBlogPostCommentsSchema = z.object({ postId: z.string() });

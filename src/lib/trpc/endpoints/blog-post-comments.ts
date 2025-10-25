@@ -7,24 +7,24 @@ export const blogPostComments = publicProcedure
         z.object({
             cursor: z.number().nullish(), // we can treat is as a page in standard pagination
             limit: z.number().nullish(),
-            blogPostId: z.string(),
+            postId: z.string(),
             parentId: z.string().nullable(),
             sorting: z.union([z.literal('featured'), z.literal('latest'), z.literal('oldest')]),
         }),
     )
-    .query(async ({ input: { blogPostId, limit: limitInput, parentId, sorting, cursor } }) => {
+    .query(async ({ input: { postId, limit: limitInput, parentId, sorting, cursor } }) => {
         console.log(cursor);
         const limit = Number(limitInput) ?? 50;
         const page = Number(cursor) || 1;
         const skip = limit ? (page - 1) * limit : undefined;
 
         const total = await prisma.blogPostComment.count({
-            where: { blogPostId, parentId },
+            where: { postId, parentId },
         });
 
         const data = await prisma.blogPostComment.findMany({
-            where: { blogPostId, parentId },
-            include: { _count: true, User: { select: { name: true, avatarId: true } } },
+            where: { postId, parentId },
+            include: { _count: true, Author: { select: { name: true, avatarId: true } } },
             take: limit,
             skip,
             orderBy: sorting === 'latest' ? { updatedAt: 'desc' } : sorting === 'oldest' ? { updatedAt: 'asc' } : { Upvotes: { _count: 'desc' } },

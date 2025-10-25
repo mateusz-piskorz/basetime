@@ -1,8 +1,8 @@
 'use client';
 
 import { AddCommentForm } from '@/app/(main)/blog/[slug]/_partials/add-comment-form';
-import { BlogUpvoteButton } from '@/app/(main)/blog/[slug]/_partials/blog-upvote-button';
 import { CommentList } from '@/app/(main)/blog/[slug]/_partials/comment-list';
+// import { BlogUpvoteButton } from '@/app/(main)/blog/[slug]/_partials/post-upvote-button';
 import { dayjs } from '@/lib/dayjs';
 import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { TrpcRouterOutput } from '@/lib/trpc/client';
@@ -34,8 +34,8 @@ export const BlogPostComment = ({ comment, nestLevel, className, initialDisplayR
         <div className={cn('flex flex-col gap-6 rounded py-6', className)}>
             <div className="flex gap-2">
                 <UserInfo
-                    name={comment.User.name}
-                    avatarId={comment.User.avatarId}
+                    name={comment.Author.name}
+                    avatarId={comment.Author.avatarId}
                     textUnder={
                         <time className="text-muted-foreground" title="Commented at" dateTime={dayjs(comment.updatedAt).format('YYYY-MM-DD')}>
                             {dayjs(comment.updatedAt).format('MMMM D, YYYY')}
@@ -54,7 +54,7 @@ export const BlogPostComment = ({ comment, nestLevel, className, initialDisplayR
             </p>
 
             <div className="flex items-center">
-                <BlogUpvoteButton upvotes={comment._count.Upvotes} voteType="comment" entityId={comment.id} />
+                {/* <BlogUpvoteButton upvotes={comment._count.Upvotes} voteType="comment" entityId={comment.id} /> */}
 
                 <Button
                     variant="ghost"
@@ -77,8 +77,8 @@ export const BlogPostComment = ({ comment, nestLevel, className, initialDisplayR
                 </Button>
             </div>
 
-            {showReplyForm && <AddCommentForm blogPostId={comment.blogPostId} parentId={comment.id} />}
-            {displayResponses && <CommentList sorting="oldest" nestLevel={nestLevel + 1} blogPostId={comment.blogPostId} parentId={comment.id} />}
+            {showReplyForm && <AddCommentForm postId={comment.postId} parentId={comment.id} />}
+            {displayResponses && <CommentList sorting="oldest" nestLevel={nestLevel + 1} postId={comment.postId} parentId={comment.id} />}
         </div>
     );
 };

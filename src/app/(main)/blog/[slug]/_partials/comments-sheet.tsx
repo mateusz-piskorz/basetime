@@ -55,7 +55,7 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
                     <>{activeComment && <BlogPostComment initialDisplayResponses nestLevel={0} comment={activeComment} className="px-6" />}</>
                 ) : (
                     <>
-                        <AddCommentForm blogPostId={post.id} />
+                        <AddCommentForm postId={post.id} />
 
                         <Select onValueChange={(val) => setSorting(val as typeof sorting)} value={sorting}>
                             <SelectTrigger className="mx-6 border-none bg-transparent dark:bg-transparent">
@@ -70,7 +70,7 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
                             </SelectContent>
                         </Select>
 
-                        <CommentListInfiniteScroll sorting={sorting} nestLevel={0} blogPostId={post.id} parentId={null} />
+                        <CommentListInfiniteScroll sorting={sorting} nestLevel={0} postId={post.id} parentId={null} />
                     </>
                 )}
             </SheetContent>

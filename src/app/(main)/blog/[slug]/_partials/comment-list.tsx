@@ -5,15 +5,15 @@ import { trpc, TrpcRouterInput } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
 
 type Props = {
-    blogPostId: string;
+    postId: string;
     parentId: null | string;
     nestLevel: number;
     sorting: TrpcRouterInput['blogPostComments']['sorting'];
 };
 
-export const CommentList = ({ blogPostId, parentId, nestLevel, sorting }: Props) => {
+export const CommentList = ({ postId, parentId, nestLevel, sorting }: Props) => {
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } = trpc.blogPostComments.useInfiniteQuery(
-        { blogPostId, limit: 30, parentId, sorting },
+        { postId, limit: 30, parentId, sorting },
         { getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined), initialCursor: 1 },
     );
     const results = data?.pages.flatMap((e) => e.data);
@@ -21,7 +21,7 @@ export const CommentList = ({ blogPostId, parentId, nestLevel, sorting }: Props)
     return (
         <ul className={cn(nestLevel !== 0 && 'ml-2 border-l-2 pl-2')}>
             {results?.map((comment, index) => (
-                <li key={comment.id} className={cn('px-6', index !== 0 && 'border-t-[1px]')}>
+                <li key={comment.id} className={cn('px-6', index !== 0 && 'border-t')}>
                     <BlogPostComment nestLevel={nestLevel} comment={comment} />
                 </li>
             ))}

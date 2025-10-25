@@ -7,16 +7,16 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 type Props = {
-    blogPostId: string;
+    postId: string;
 };
 
-export const SeedBlogPostComments = ({ blogPostId }: Props) => {
+export const SeedBlogPostComments = ({ postId }: Props) => {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
     const seed = async () => {
         setLoading(true);
-        const res = await seedBlogPostComments({ blogPostId });
+        const res = await seedBlogPostComments({ postId });
         if (!res.success) {
             setLoading(false);
             toast.error(res.message || 'something went wrong - seedBlogPostComments');

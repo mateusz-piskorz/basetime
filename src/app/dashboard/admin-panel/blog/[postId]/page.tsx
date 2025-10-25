@@ -15,7 +15,7 @@ const PostPage = async ({ params }: Props) => {
 
     return (
         <div className="space-y-8 py-8">
-            {getAppEnv() !== 'production' && <SeedBlogPostComments blogPostId={post.id} />}
+            {getAppEnv() !== 'production' && <SeedBlogPostComments postId={post.id} />}
 
             <Editor post={post} />
         </div>

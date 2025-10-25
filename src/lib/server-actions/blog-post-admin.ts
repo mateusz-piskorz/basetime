@@ -46,11 +46,11 @@ export const updateBlogPost = action(
     },
 );
 
-export const removeBlogPost = action(removeBlogPostSchema, async ({ blogPostId }, { role }) => {
+export const removeBlogPost = action(removeBlogPostSchema, async ({ postId }, { role }) => {
     try {
         if (role !== 'ADMIN') return { success: false, message: 'Error permission invalid' };
 
-        const res = await prisma.blogPost.delete({ where: { id: blogPostId } });
+        const res = await prisma.blogPost.delete({ where: { id: postId } });
         revalidatePath('/');
         revalidatePath('/blog');
         revalidatePath(`/blog/${res.slug}`);
@@ -93,7 +93,7 @@ export const seedBlogPost = async () => {
     }
 };
 
-export const seedBlogPostComments = action(seedBlogPostCommentsSchema, async ({ blogPostId }, { role }) => {
+export const seedBlogPostComments = action(seedBlogPostCommentsSchema, async ({ postId }, { role }) => {
     try {
         if (getAppEnv() === 'production') return { success: false, message: `Can't be used in production` };
         if (role !== 'ADMIN') return { success: false, message: 'Error permission invalid' };
@@ -101,7 +101,7 @@ export const seedBlogPostComments = action(seedBlogPostCommentsSchema, async ({ 
         let blogPost;
         for (let i = 0; i < 20; i++) {
             try {
-                blogPost = await prisma.blogPost.findUnique({ where: { id: blogPostId } });
+                blogPost = await prisma.blogPost.findUnique({ where: { id: postId } });
                 const count = await prisma.blogPostComment.count();
 
                 const email = faker.internet.email();
@@ -122,7 +122,7 @@ export const seedBlogPostComments = action(seedBlogPostCommentsSchema, async ({ 
                                             skip: Math.floor(Math.random() * count),
                                         });
                                         const parentId = parentPost.length > 0 ? (faker.datatype.boolean() ? parentPost[0].id : null) : null;
-                                        return { blogPostId, content: faker.lorem.sentences({ min: 1, max: 13 }), parentId };
+                                        return { postId, content: faker.lorem.sentences({ min: 1, max: 13 }), parentId };
                                     }),
                                 ),
                             },
@@ -139,8 +139,7 @@ export const seedBlogPostComments = action(seedBlogPostCommentsSchema, async ({ 
         revalidatePath(`/blog/${blogPost?.slug}`);
 
         return { success: true };
-    } catch (e) {
-        // console.log(e);
+    } catch {
         return { success: false, message: 'Error - seedBlogPostComments' };
     }
 });

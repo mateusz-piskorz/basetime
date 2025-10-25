@@ -1,7 +1,7 @@
 import z from 'zod';
 
 export const blogPostCommentSchema = z.object({
-    blogPostId: z.string(),
+    postId: z.string(),
     content: z.string(),
     parentId: z.string().optional(),
 });
@@ -11,5 +11,5 @@ export const blogPostCommentUpvoteSchema = z.object({
 });
 
 export const blogPostUpvoteSchema = z.object({
-    blogPostId: z.string(),
+    postId: z.string(),
 });

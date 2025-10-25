@@ -5,15 +5,15 @@ import { action } from '.';
 import { prisma } from '../prisma';
 import { blogPostCommentSchema, blogPostCommentUpvoteSchema, blogPostUpvoteSchema } from '../zod/blog-post-schema';
 
-export const createBlogPostComment = action(blogPostCommentSchema, async ({ content, blogPostId, parentId }, session) => {
+export const createBlogPostComment = action(blogPostCommentSchema, async ({ content, postId, parentId }, session) => {
     try {
         const res = await prisma.blogPostComment.create({
-            data: { content, blogPostId, userId: session.userId, parentId },
-            select: { id: true, content: true, BlogPost: { select: { slug: true } } },
+            data: { content, postId, userId: session.userId, parentId },
+            select: { id: true, content: true, Post: { select: { slug: true } } },
         });
         revalidatePath('/');
         revalidatePath('/blog');
-        revalidatePath(`/blog/${res.BlogPost.slug}`);
+        revalidatePath(`/blog/${res.Post.slug}`);
 
         return { success: true, comment: res };
     } catch {
@@ -21,27 +21,27 @@ export const createBlogPostComment = action(blogPostCommentSchema, async ({ cont
     }
 });
 
-export const upvoteBlogPost = action(blogPostUpvoteSchema, async ({ blogPostId }, session) => {
+export const upvoteBlogPost = action(blogPostUpvoteSchema, async ({ postId }, { userId }) => {
     try {
         let upvote = await prisma.blogPostUpvote.findFirst({
-            where: { blogPostId, userId: session.userId },
-            select: { id: true, BlogPost: { select: { slug: true } } },
+            where: { postId, userId },
+            select: { Post: { select: { slug: true } } },
         });
 
         if (upvote) {
             await prisma.blogPostUpvote.delete({
-                where: { id: upvote.id },
+                where: { userId_postId: { postId, userId } },
             });
         } else {
             upvote = await prisma.blogPostUpvote.create({
-                data: { blogPostId, userId: session.userId },
-                select: { id: true, BlogPost: { select: { slug: true } } },
+                data: { postId, userId },
+                select: { Post: { select: { slug: true } } },
             });
         }
 
         revalidatePath('/');
         revalidatePath('/blog');
-        revalidatePath(`/blog/${upvote.BlogPost.slug}`);
+        revalidatePath(`/blog/${upvote.Post.slug}`);
 
         return { success: true };
     } catch {
@@ -49,19 +49,19 @@ export const upvoteBlogPost = action(blogPostUpvoteSchema, async ({ blogPostId }
     }
 });
 
-export const upvoteBlogPostComment = action(blogPostCommentUpvoteSchema, async ({ commentId }, session) => {
+export const upvoteBlogPostComment = action(blogPostCommentUpvoteSchema, async ({ commentId }, { userId }) => {
     try {
         const upvote = await prisma.blogPostCommentUpvote.findFirst({
-            where: { blogPostCommentId: commentId, userId: session.userId },
+            where: { commentId, userId },
         });
 
         if (upvote) {
             await prisma.blogPostCommentUpvote.delete({
-                where: { id: upvote.id },
+                where: { userId_commentId: { commentId, userId } },
             });
         } else {
             await prisma.blogPostCommentUpvote.create({
-                data: { blogPostCommentId: commentId, userId: session.userId },
+                data: { commentId, userId },
             });
         }
 

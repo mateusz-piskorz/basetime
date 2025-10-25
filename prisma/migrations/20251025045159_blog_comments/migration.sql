@@ -3,11 +3,10 @@ ALTER TABLE "User" ADD COLUMN     "avatarId" TEXT;
 
 -- CreateTable
 CREATE TABLE "BlogPostUpvote" (
-    "id" TEXT NOT NULL,
-    "blogPostId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "postId" TEXT NOT NULL,
 
-    CONSTRAINT "BlogPostUpvote_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "BlogPostUpvote_pkey" PRIMARY KEY ("userId","postId")
 );
 
 -- CreateTable
@@ -25,15 +24,14 @@ CREATE TABLE "BlogPostComment" (
 
 -- CreateTable
 CREATE TABLE "BlogPostCommentUpvote" (
-    "id" TEXT NOT NULL,
-    "blogPostCommentId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
+    "commentId" TEXT NOT NULL,
 
-    CONSTRAINT "BlogPostCommentUpvote_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "BlogPostCommentUpvote_pkey" PRIMARY KEY ("userId","commentId")
 );
 
 -- AddForeignKey
-ALTER TABLE "BlogPostUpvote" ADD CONSTRAINT "BlogPostUpvote_blogPostId_fkey" FOREIGN KEY ("blogPostId") REFERENCES "BlogPost"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "BlogPostUpvote" ADD CONSTRAINT "BlogPostUpvote_postId_fkey" FOREIGN KEY ("postId") REFERENCES "BlogPost"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "BlogPostUpvote" ADD CONSTRAINT "BlogPostUpvote_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -48,7 +46,7 @@ ALTER TABLE "BlogPostComment" ADD CONSTRAINT "BlogPostComment_userId_fkey" FOREI
 ALTER TABLE "BlogPostComment" ADD CONSTRAINT "BlogPostComment_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "BlogPostComment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "BlogPostCommentUpvote" ADD CONSTRAINT "BlogPostCommentUpvote_blogPostCommentId_fkey" FOREIGN KEY ("blogPostCommentId") REFERENCES "BlogPostComment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "BlogPostCommentUpvote" ADD CONSTRAINT "BlogPostCommentUpvote_commentId_fkey" FOREIGN KEY ("commentId") REFERENCES "BlogPostComment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "BlogPostCommentUpvote" ADD CONSTRAINT "BlogPostCommentUpvote_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

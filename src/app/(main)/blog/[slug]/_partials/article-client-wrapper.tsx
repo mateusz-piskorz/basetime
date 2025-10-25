@@ -6,8 +6,8 @@ import { BlogCommentsSheetProvider } from '@/lib/hooks/use-blog-comments-sheet';
 import { BlogPost } from '@prisma/client';
 import { MessageCircle } from 'lucide-react';
 import { useState } from 'react';
-import { BlogUpvoteButton } from './blog-upvote-button';
 import { CommentsSheet } from './comments-sheet';
+import { PostUpvoteButton } from './post-upvote-button';
 
 type Props = {
     post: {
@@ -28,7 +28,7 @@ export const ArticleClientWrapper = ({ post }: Props) => {
             </BlogCommentsSheetProvider>
 
             <div className="my-4 mb-8 border-y py-4">
-                <BlogUpvoteButton upvotes={post._count.Upvotes} voteType="post" entityId={post.id} />
+                <PostUpvoteButton postId={post.id} upvotes={post._count.Upvotes} />
 
                 <Button variant="ghost" onClick={() => setOpen(true)}>
                     <span className="sr-only">comments</span>

@@ -41,22 +41,22 @@ describe('updateBlogPost', () => {
 });
 
 describe('removeBlogPost', () => {
-    const blogPostId = 'removeBlogPostId';
+    const postId = 'removeBlogPostId';
     beforeAll(async () => {
         await prisma.blogPost.deleteMany({});
-        await prisma.blogPost.create({ data: { slug: '', content: '', title: '', id: blogPostId } });
+        await prisma.blogPost.create({ data: { slug: '', content: '', title: '', id: postId } });
     });
 
     test('regular user can not remove blog post', async () => {
         mockSession('', 'USER');
-        expect((await removeBlogPost({ blogPostId })).success).toBe(false);
-        expect(await prisma.blogPost.findUnique({ where: { id: blogPostId } })).not.toBe(null);
+        expect((await removeBlogPost({ postId })).success).toBe(false);
+        expect(await prisma.blogPost.findUnique({ where: { id: postId } })).not.toBe(null);
     });
 
     test('admin can remove blog post', async () => {
         mockSession('', 'ADMIN');
-        expect((await removeBlogPost({ blogPostId })).success).toBe(true);
-        expect(await prisma.blogPost.findUnique({ where: { id: blogPostId } })).toBe(null);
+        expect((await removeBlogPost({ postId })).success).toBe(true);
+        expect(await prisma.blogPost.findUnique({ where: { id: postId } })).toBe(null);
     });
 });
 

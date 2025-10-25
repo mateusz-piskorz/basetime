@@ -15,18 +15,18 @@ import z from 'zod';
 
 type Props = {
     parentId?: string;
-    blogPostId: string;
+    postId: string;
 };
 
-export const AddCommentForm = ({ parentId, blogPostId }: Props) => {
+export const AddCommentForm = ({ parentId, postId }: Props) => {
     const trpcUtils = trpc.useUtils();
     const form = useForm({
         resolver: zodResolver(blogPostCommentSchema),
     });
 
     useEffect(() => {
-        form.reset({ blogPostId, parentId, content: '' });
-    }, [form, form.formState.isSubmitSuccessful, blogPostId, parentId]);
+        form.reset({ postId, parentId, content: '' });
+    }, [form, form.formState.isSubmitSuccessful, postId, parentId]);
 
     const onSubmit = async (data: z.infer<typeof blogPostCommentSchema>) => {
         const res = await createBlogPostComment(data);
@@ -52,7 +52,7 @@ export const AddCommentForm = ({ parentId, blogPostId }: Props) => {
                     />
 
                     <div className="flex justify-end gap-2 p-4">
-                        <Button type="button" onClick={() => form.reset({ blogPostId, parentId, content: '' })} variant="link">
+                        <Button type="button" onClick={() => form.reset({ postId, parentId, content: '' })} variant="link">
                             Cancel
                         </Button>
                         <Button disabled={form.formState.isSubmitting} type="submit" variant="secondary">

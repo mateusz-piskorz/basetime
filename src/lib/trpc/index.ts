@@ -2,6 +2,7 @@ import { activeSessions } from './endpoints/active-sessions';
 import { activeTimeEntry } from './endpoints/active-time-entry';
 import { blogPostComment } from './endpoints/blog-post-comment';
 import { blogPostComments } from './endpoints/blog-post-comments';
+import { blogPostUpvote } from './endpoints/blog-post-upvote';
 import { currentUser } from './endpoints/current-user';
 import { invitations } from './endpoints/invitations';
 import { members } from './endpoints/members';
@@ -13,6 +14,7 @@ import { timeEntriesPaginated } from './endpoints/time-entries-paginated';
 import { createTRPCRouter } from './init';
 
 export const appRouter = createTRPCRouter({
+    blogPostUpvote,
     blogPostComment,
     blogPostComments,
     currentUser,

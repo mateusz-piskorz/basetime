@@ -23,7 +23,7 @@ export const BlogPostCard = ({ post }: Props) => {
                 open={open}
                 setOpen={setOpen}
                 onContinue={async () => {
-                    const res = await removeBlogPost({ blogPostId: post.id });
+                    const res = await removeBlogPost({ postId: post.id });
                     if (!res.success) toast.error('something went wrong - removeBlogPost');
                     else toast.success('removed blog post');
                     router.refresh();

@@ -65,12 +65,12 @@ model BlogPost {
 }
 
 model BlogPostUpvote {
-  id String @id @default(cuid())
+  userId String
+  postId String
+  Post   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  blogPostId String
-  userId     String
-  BlogPost   BlogPost @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
-  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([userId, postId])
 }
 
 model BlogPostComment {
@@ -79,23 +79,23 @@ model BlogPostComment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  blogPostId String
-  userId     String
-  parentId   String?
-  BlogPost   BlogPost                @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
-  User       User                    @relation(fields: [userId], references: [id])
-  Parent     BlogPostComment?        @relation("BPCParentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  Replies    BlogPostComment[]       @relation("BPCParentReplies")
-  Upvotes    BlogPostCommentUpvote[]
+  postId   String
+  userId   String
+  parentId String?
+  Post     BlogPost                @relation(fields: [postId], references: [id], onDelete: Cascade)
+  Author   User                    @relation(fields: [userId], references: [id])
+  Parent   BlogPostComment?        @relation("BPCParentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  Replies  BlogPostComment[]       @relation("BPCParentReplies")
+  Upvotes  BlogPostCommentUpvote[]
 }
 
 model BlogPostCommentUpvote {
-  id String @id @default(cuid())
+  userId    String
+  commentId String
+  Comment   BlogPostComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  User      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  blogPostCommentId String
-  userId            String
-  BlogPostComment   BlogPostComment @relation(fields: [blogPostCommentId], references: [id], onDelete: Cascade)
-  User              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([userId, commentId])
 }
 
 model Session {
@@ -143,7 +143,8 @@ model Organization {
 }
 
 model Member {
-  id        String      @id @default(cuid())
+  id String @id @default(cuid())
+
   role      MEMBER_ROLE
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -155,6 +156,8 @@ model Member {
   HourlyRates    HourlyRate[]
   Projects       Project[]
   TimeEntries    TimeEntry[]
+  // todo:
+  // @@id([userId, organizationId])
 }
 
 model Invitation {

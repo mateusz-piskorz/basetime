@@ -76,14 +76,15 @@ model BlogPostUpvote {
 model BlogPostComment {
   id        String   @id @default(cuid())
   content   String
+  deleted   Boolean?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   postId   String
-  userId   String
+  authorId String
   parentId String?
   Post     BlogPost                @relation(fields: [postId], references: [id], onDelete: Cascade)
-  Author   User                    @relation(fields: [userId], references: [id])
+  Author   User                    @relation(fields: [authorId], references: [id])
   Parent   BlogPostComment?        @relation("BPCParentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   Replies  BlogPostComment[]       @relation("BPCParentReplies")
   Upvotes  BlogPostCommentUpvote[]

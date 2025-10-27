@@ -10,6 +10,10 @@ export const blogPostCommentUpvoteSchema = z.object({
     commentId: z.string(),
 });
 
+export const blogPostCommentDeleteSchema = z.object({
+    commentId: z.string(),
+});
+
 export const blogPostUpvoteSchema = z.object({
     postId: z.string(),
 });

@@ -1,14 +1,15 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { action } from '.';
-import { prisma } from '../prisma';
-import { blogPostCommentSchema, blogPostCommentUpvoteSchema, blogPostUpvoteSchema } from '../zod/blog-post-schema';
+import { action } from '../';
+import { prisma } from '../../prisma';
+import { blogPostCommentDeleteSchema, blogPostCommentSchema, blogPostCommentUpvoteSchema, blogPostUpvoteSchema } from '../../zod/blog-post-schema';
+import { deleteCommentParentRecursively } from './_utils';
 
 export const createBlogPostComment = action(blogPostCommentSchema, async ({ content, postId, parentId }, session) => {
     try {
         const res = await prisma.blogPostComment.create({
-            data: { content, postId, userId: session.userId, parentId },
+            data: { content, postId, authorId: session.userId, parentId },
             include: {
                 _count: true,
                 Author: { select: { name: true, avatarId: true } },
@@ -75,5 +76,35 @@ export const upvoteBlogPostComment = action(blogPostCommentUpvoteSchema, async (
         return { success: true, upvoteType };
     } catch {
         return { success: false, message: 'Error - upvoteBlogPostComment' };
+    }
+});
+
+export const deleteBlogPostComment = action(blogPostCommentDeleteSchema, async ({ commentId }, { userId }) => {
+    try {
+        const comment = await prisma.blogPostComment.findUnique({
+            where: { id: commentId, Author: { id: userId } },
+            include: {
+                Replies: true,
+                Parent: true,
+                Post: { select: { slug: true } },
+            },
+        });
+
+        if (!comment) return { success: false, message: 'Error - deleteBlogPostComment' };
+
+        if (comment.Replies.length <= 0) {
+            await prisma.blogPostComment.delete({ where: { id: commentId } });
+            if (comment.parentId) await deleteCommentParentRecursively(comment.parentId);
+
+            revalidatePath('/');
+            revalidatePath('/blog');
+            revalidatePath(`/blog/${comment?.Post.slug}`);
+        } else {
+            await prisma.blogPostComment.update({ where: { id: commentId }, data: { deleted: true } });
+        }
+
+        return { success: true };
+    } catch {
+        return { success: false, message: 'Error - deleteBlogPostComment' };
     }
 });

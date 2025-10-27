@@ -5,20 +5,36 @@ import { mockSession } from '../utils/mock-session';
 describe('createBlogPostComment', () => {
     const userId = 'userId1';
     const postId = 'blogPostId1';
+    const comment = 'commentId1';
+    const deletedComment = 'deletedCommentId1';
     beforeAll(async () => {
         await prisma.user.create({ data: { email: '', password: '', name: '', id: userId } });
         await prisma.blogPost.create({ data: { content: '', slug: '', title: '', id: postId } });
+        await prisma.blogPostComment.create({ data: { content: '', id: deletedComment, authorId: userId, postId, deleted: true } });
+        await prisma.blogPostComment.create({ data: { content: '', id: comment, authorId: userId, postId } });
     });
 
     test('unAuthenticated user cannot create comment', async () => {
         expect((await createBlogPostComment({ postId, content: 'content' })).success).toBe(false);
-        expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(0);
+        expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(2);
     });
 
     test('authenticated user can create comment', async () => {
         mockSession(userId, 'USER');
         expect((await createBlogPostComment({ postId, content: 'content' })).success).toBe(true);
-        expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(1);
+        expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(3);
+    });
+
+    test('cannot create reply to deleted comment', async () => {
+        mockSession(userId, 'USER');
+        expect((await createBlogPostComment({ postId, content: 'content', parentId: deletedComment })).success).toBe(false);
+        expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(3);
+    });
+
+    test('can create reply to regular comment', async () => {
+        mockSession(userId, 'USER');
+        expect((await createBlogPostComment({ postId, content: 'content', parentId: comment })).success).toBe(true);
+        expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(4);
     });
 });
 

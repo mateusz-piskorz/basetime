@@ -19,7 +19,7 @@ export const PostUpvotesButton = ({ upvotes, postId }: Props) => {
         setLoading(true);
         const res = await upvoteBlogPost({ postId });
         if (!res.success) toast.error(res.message || 'something went wrong - PostUpvoteButton');
-        else toast.success('upvoted successfully!');
+        else toast.success('upvoted successfully!', { duration: 1500 });
         await refetch();
         setLoading(false);
     };

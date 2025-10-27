@@ -8,6 +8,13 @@ import { deleteCommentParentRecursively } from './_utils';
 
 export const createBlogPostComment = action(blogPostCommentSchema, async ({ content, postId, parentId }, session) => {
     try {
+        if (parentId) {
+            const parentComment = await prisma.blogPostComment.findUnique({ where: { id: parentId, deleted: null } });
+            if (!parentComment) {
+                return { success: false, message: "Error - can't add reply to deleted comment" };
+            }
+        }
+
         const res = await prisma.blogPostComment.create({
             data: { content, postId, authorId: session.userId, parentId },
             include: {

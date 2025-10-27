@@ -4,7 +4,7 @@ import { upvoteBlogPostComment } from '@/lib/server-actions/blog-post';
 import { trpc, TrpcRouterInput } from '@/lib/trpc/client';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { UpvotesButton } from '../../common/upvotes-button';
+import { UpvotesButton } from '../upvotes-button';
 
 type Props = {
     upvotes: number;
@@ -51,7 +51,7 @@ export const CommentUpvotesButton = ({ upvotes, commentId, upvoted, infiniteQuer
                     })),
                 };
             });
-            toast.success('upvoted successfully!');
+            toast.success('upvoted successfully!', { duration: 1500 });
         } else toast.error(res.message || 'something went wrong - BlogUpvoteButton');
 
         setLoading(false);

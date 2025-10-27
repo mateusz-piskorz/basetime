@@ -18,6 +18,7 @@ type Props<T extends FieldValues> = {
     placeholder?: string;
     disabled?: boolean;
     onBlur?: (val: string) => void;
+    autoFocus?: boolean;
 };
 
 export const TextareaField = <T extends FieldValues>({
@@ -31,6 +32,7 @@ export const TextareaField = <T extends FieldValues>({
     errorMessage = true,
     disabled,
     onBlur,
+    autoFocus,
 }: Props<T>) => {
     const name = propsName as string;
     const { control } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
@@ -44,6 +46,7 @@ export const TextareaField = <T extends FieldValues>({
                     {label && <FormLabel>{label}</FormLabel>}
                     <FormControl>
                         <Textarea
+                            autoFocus={autoFocus}
                             {...field}
                             disabled={disabled}
                             className={classNameInput}

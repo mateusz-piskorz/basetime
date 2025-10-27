@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
-import { trpc, TrpcRouterInput } from '@/lib/trpc/client';
+import { trpc } from '@/lib/trpc/client';
 import { BlogPost } from '@prisma/client';
 import { ChevronLeft } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { AddCommentForm } from '../common/add-comment-form';
 import { Comment } from '../common/comment';
-import { CommentListInfiniteScroll } from './comment-list-infinite-scroll';
+import { ListInfiniteScroll } from './_list-infinite-scroll';
 
 type Props = {
     open: boolean;
@@ -24,9 +24,8 @@ type Props = {
 };
 
 export const CommentsSheet = ({ open, setOpen, post }: Props) => {
-    const [sorting, setSorting] = useState<TrpcRouterInput['blogPostComments']['sorting']>('featured');
     const trpcUtils = trpc.useUtils();
-    const { reset, activeCommentThread, goBack, limitQuery } = useBlogCommentsSheet();
+    const { reset, activeCommentThread, goBack, limitQuery, sorting, setSorting } = useBlogCommentsSheet();
 
     const activeComment = useMemo(() => {
         if (!activeCommentThread) return null;
@@ -76,10 +75,7 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
                     />
                 ) : (
                     <>
-                        <AddCommentForm
-                            newCommentPosition={'first'}
-                            infiniteQueryArgs={{ postId: post.id, limit: limitQuery, parentId: null, sorting }}
-                        />
+                        <AddCommentForm infiniteQueryArgs={{ postId: post.id, limit: limitQuery, parentId: null, sorting }} />
 
                         <Select onValueChange={(val) => setSorting(val as typeof sorting)} value={sorting}>
                             <SelectTrigger className="mx-6 border-none bg-transparent dark:bg-transparent">
@@ -94,7 +90,7 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
                             </SelectContent>
                         </Select>
 
-                        <CommentListInfiniteScroll sorting={sorting} nestLevel={0} parentId={null} />
+                        <ListInfiniteScroll nestLevel={0} parentId={null} />
                     </>
                 )}
             </SheetContent>

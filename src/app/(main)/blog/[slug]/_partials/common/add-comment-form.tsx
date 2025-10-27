@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { createBlogPostComment } from '@/lib/server-actions/blog-post';
-import { trpc, TrpcRouterInput } from '@/lib/trpc/client';
+import { trpc, TrpcRouterInput, TrpcRouterOutput } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
 import { blogPostCommentSchema } from '@/lib/zod/blog-post-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,78 +15,86 @@ import { toast } from 'sonner';
 import z from 'zod';
 
 type Props = {
-    parentId?: string;
+    parentComment?: NonNullable<TrpcRouterOutput['blogPostComments']>['data'][number];
     infiniteQueryArgs: TrpcRouterInput['blogPostComments'];
     onCommentAdded?: () => void;
     onCancel?: () => void;
-    newCommentPosition: 'first' | 'last';
 };
 
-export const AddCommentForm = ({ parentId, infiniteQueryArgs, onCommentAdded, newCommentPosition, onCancel }: Props) => {
-    const { postId, limitQuery } = useBlogCommentsSheet();
+export const AddCommentForm = ({ parentComment, infiniteQueryArgs, onCommentAdded, onCancel }: Props) => {
+    const { postId, limitQuery, sorting } = useBlogCommentsSheet();
     const trpcUtils = trpc.useUtils();
     const form = useForm({
         resolver: zodResolver(blogPostCommentSchema),
     });
 
     useEffect(() => {
-        form.reset({ postId, parentId, content: '' });
-    }, [form, form.formState.isSubmitSuccessful, postId, parentId]);
+        form.reset({ postId, parentId: parentComment?.id, content: '' });
+    }, [form, form.formState.isSubmitSuccessful, postId, parentComment]);
 
     const onSubmit = async (formData: z.infer<typeof blogPostCommentSchema>) => {
         const res = await createBlogPostComment(formData);
 
         if (res.success && res.data) {
-            await trpcUtils.blogPostComments.cancel(infiniteQueryArgs);
-            trpcUtils.blogPostComments.setInfiniteData(infiniteQueryArgs, (data) => {
-                const commentData = {
-                    ...res.data,
-                    createdAt: String(res.data.createdAt),
-                    updatedAt: String(res.data.updatedAt),
-                    upvotedByUser: false,
-                    isOwner: true,
-                };
-                if (!data) {
-                    return {
-                        pageParams: [1],
-                        pages: [
-                            {
-                                totalPages: 1,
-                                hasMore: false,
-                                total: 1,
-                                limit: limitQuery,
-                                page: 1,
-                                data: [commentData],
-                            },
-                        ],
+            if (parentComment) {
+                trpcUtils.blogPostComments.refetch({
+                    ...infiniteQueryArgs,
+                    parentId: parentComment.parentId,
+                    sorting: parentComment.parentId ? 'oldest' : sorting,
+                });
+                trpcUtils.blogPostComments.refetch(infiniteQueryArgs);
+            } else {
+                trpcUtils.blogPostComments.cancel(infiniteQueryArgs);
+                trpcUtils.blogPostComments.setInfiniteData(infiniteQueryArgs, (data) => {
+                    const commentData = {
+                        ...res.data,
+                        createdAt: String(res.data.createdAt),
+                        updatedAt: String(res.data.updatedAt),
+                        upvotedByUser: false,
+                        isOwner: true,
                     };
-                }
+                    if (!data) {
+                        return {
+                            pageParams: [1],
+                            pages: [
+                                {
+                                    totalPages: 1,
+                                    hasMore: false,
+                                    total: 1,
+                                    limit: limitQuery,
+                                    page: 1,
+                                    data: [commentData],
+                                },
+                            ],
+                        };
+                    }
 
-                return {
-                    ...data,
+                    return {
+                        ...data,
+                        pages: data.pages.map((page, index) => {
+                            if (index === 0) {
+                                return { ...page, data: [commentData, ...page.data] };
+                            }
+                            return page;
+                        }),
+                    };
+                });
+            }
 
-                    pages: data.pages.map((page, index) => {
-                        if (index === (newCommentPosition === 'first' ? 0 : data.pages.length - 1)) {
-                            return {
-                                ...page,
-                                data: newCommentPosition === 'first' ? [commentData, ...page.data] : [...page.data, commentData],
-                            };
-                        }
-                        return page;
-                    }),
-                };
-            });
             toast.success('commented successfully!', { duration: 1500 });
 
             onCommentAdded?.();
-        } else toast.error(res.message || 'something went wrong - AddCommentForm');
+        } else {
+            toast.error(res.message || 'something went wrong - AddCommentForm');
+        }
     };
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className={cn('mb-6 space-y-8', !parentId && 'px-6')}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className={cn('mb-6 space-y-8', !parentComment && 'px-6')}>
                 <div className="dark:bg-input/30 border-input rounded-md">
                     <TextareaField
+                        autoFocus
                         form={form}
                         name="content"
                         placeholder="What are your thoughts?"
@@ -98,7 +106,7 @@ export const AddCommentForm = ({ parentId, infiniteQueryArgs, onCommentAdded, ne
                             type="button"
                             onClick={() => {
                                 onCancel?.();
-                                form.reset({ postId, parentId, content: '' });
+                                form.reset({ postId, parentId: parentComment?.id, content: '' });
                             }}
                             variant="link"
                         >

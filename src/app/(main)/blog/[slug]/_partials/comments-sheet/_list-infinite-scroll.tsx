@@ -1,6 +1,6 @@
 import { SpinLoader } from '@/components/common/spin-loader';
 import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
-import { trpc, TrpcRouterInput } from '@/lib/trpc/client';
+import { trpc } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
 import { useCallback, useRef } from 'react';
 import { Comment } from '../common/comment';
@@ -8,11 +8,10 @@ import { Comment } from '../common/comment';
 type Props = {
     parentId: null | string;
     nestLevel: number;
-    sorting: TrpcRouterInput['blogPostComments']['sorting'];
 };
 
-export const CommentListInfiniteScroll = ({ parentId, nestLevel, sorting }: Props) => {
-    const { limitQuery, postId } = useBlogCommentsSheet();
+export const ListInfiniteScroll = ({ parentId, nestLevel }: Props) => {
+    const { limitQuery, postId, sorting } = useBlogCommentsSheet();
 
     const infiniteQueryArgs = { postId, limit: limitQuery, parentId, sorting };
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } = trpc.blogPostComments.useInfiniteQuery(infiniteQueryArgs, {

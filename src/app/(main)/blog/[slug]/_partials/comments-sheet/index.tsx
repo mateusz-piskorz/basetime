@@ -1,6 +1,5 @@
 'use client';
 
-import { BlogPostComment } from '@/app/(main)/blog/[slug]/_partials/blog-post-comment';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -8,8 +7,9 @@ import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { trpc, TrpcRouterInput } from '@/lib/trpc/client';
 import { BlogPost } from '@prisma/client';
 import { ChevronLeft } from 'lucide-react';
-import { useState } from 'react';
-import { AddCommentForm } from './add-comment-form';
+import { useMemo, useState } from 'react';
+import { AddCommentForm } from '../common/add-comment-form';
+import { Comment } from '../common/comment';
 import { CommentListInfiniteScroll } from './comment-list-infinite-scroll';
 
 type Props = {
@@ -24,9 +24,24 @@ type Props = {
 };
 
 export const CommentsSheet = ({ open, setOpen, post }: Props) => {
-    const { reset, activeCommentThread, goBack } = useBlogCommentsSheet();
-    const { data: activeComment } = trpc.blogPostComment.useQuery({ commentId: activeCommentThread! }, { enabled: Boolean(activeCommentThread) });
     const [sorting, setSorting] = useState<TrpcRouterInput['blogPostComments']['sorting']>('featured');
+    const trpcUtils = trpc.useUtils();
+    const { reset, activeCommentThread, goBack, limitQuery } = useBlogCommentsSheet();
+
+    const activeComment = useMemo(() => {
+        if (!activeCommentThread) return null;
+
+        const infComments = trpcUtils.blogPostComments
+            .getInfiniteData({
+                parentId: activeCommentThread!.parentId ?? null,
+                postId: post.id,
+                sorting: 'oldest',
+                limit: limitQuery,
+            })
+            ?.pages.flatMap(({ data }) => data);
+
+        return infComments?.find((comment) => comment.id === activeCommentThread.id);
+    }, [trpcUtils, activeCommentThread, post, limitQuery]);
 
     return (
         <Sheet
@@ -51,18 +66,27 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
                     <SheetDescription className="sr-only">responses to this blog post, added by other users</SheetDescription>
                 </SheetHeader>
 
-                {activeCommentThread ? (
-                    <>{activeComment && <BlogPostComment initialDisplayResponses nestLevel={0} comment={activeComment} className="px-6" />}</>
+                {activeCommentThread && activeComment ? (
+                    <Comment
+                        infiniteQueryArgs={{ postId: post.id, limit: limitQuery, parentId: activeCommentThread.parentId, sorting }}
+                        initialDisplayResponses
+                        nestLevel={0}
+                        comment={activeComment}
+                        className="px-6"
+                    />
                 ) : (
                     <>
-                        <AddCommentForm postId={post.id} />
+                        <AddCommentForm
+                            newCommentPosition={'first'}
+                            infiniteQueryArgs={{ postId: post.id, limit: limitQuery, parentId: null, sorting }}
+                        />
 
                         <Select onValueChange={(val) => setSorting(val as typeof sorting)} value={sorting}>
                             <SelectTrigger className="mx-6 border-none bg-transparent dark:bg-transparent">
                                 <SelectValue className="bg-transparent" />
                             </SelectTrigger>
                             <SelectContent>
-                                {['featured', 'latest'].map((elem) => (
+                                {['featured', 'latest', 'oldest'].map((elem) => (
                                     <SelectItem key={elem} value={elem}>
                                         {elem}
                                     </SelectItem>
@@ -70,7 +94,7 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
                             </SelectContent>
                         </Select>
 
-                        <CommentListInfiniteScroll sorting={sorting} nestLevel={0} postId={post.id} parentId={null} />
+                        <CommentListInfiniteScroll sorting={sorting} nestLevel={0} parentId={null} />
                     </>
                 )}
             </SheetContent>

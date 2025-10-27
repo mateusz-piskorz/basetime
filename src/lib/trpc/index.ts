@@ -1,6 +1,5 @@
 import { activeSessions } from './endpoints/active-sessions';
 import { activeTimeEntry } from './endpoints/active-time-entry';
-import { blogPostComment } from './endpoints/blog-post-comment';
 import { blogPostComments } from './endpoints/blog-post-comments';
 import { blogPostUpvote } from './endpoints/blog-post-upvote';
 import { currentUser } from './endpoints/current-user';
@@ -15,7 +14,6 @@ import { createTRPCRouter } from './init';
 
 export const appRouter = createTRPCRouter({
     blogPostUpvote,
-    blogPostComment,
     blogPostComments,
     currentUser,
     activeSessions,

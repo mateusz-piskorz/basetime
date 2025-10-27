@@ -24,7 +24,7 @@ export function UserInfo({ name, avatarId, textUnder, currentUserIndicator }: Pr
             <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
                     {name}
-                    {currentUserIndicator && <span className="text-muted-foreground font-normal">(You)</span>}
+                    {currentUserIndicator && <span className="text-muted-foreground font-normal"> - you</span>}
                 </span>
                 <span className="text-muted-foreground truncate text-xs">{textUnder}</span>
             </div>

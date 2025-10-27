@@ -1,6 +1,6 @@
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/common';
 import { Sparkles } from 'lucide-react';
-import { Button } from '../ui/button';
 
 type Props = {
     onClick: () => void;

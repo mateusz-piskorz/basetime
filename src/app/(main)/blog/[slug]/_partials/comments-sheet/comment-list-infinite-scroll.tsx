@@ -1,25 +1,28 @@
-import { BlogPostComment } from '@/app/(main)/blog/[slug]/_partials/blog-post-comment';
 import { SpinLoader } from '@/components/common/spin-loader';
+import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { trpc, TrpcRouterInput } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
 import { useCallback, useRef } from 'react';
+import { Comment } from '../common/comment';
 
 type Props = {
-    postId: string;
     parentId: null | string;
     nestLevel: number;
     sorting: TrpcRouterInput['blogPostComments']['sorting'];
 };
 
-export const CommentListInfiniteScroll = ({ postId, parentId, nestLevel, sorting }: Props) => {
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } = trpc.blogPostComments.useInfiniteQuery(
-        { postId, limit: 30, parentId, sorting },
-        { getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined), initialCursor: 1 },
-    );
+export const CommentListInfiniteScroll = ({ parentId, nestLevel, sorting }: Props) => {
+    const { limitQuery, postId } = useBlogCommentsSheet();
+
+    const infiniteQueryArgs = { postId, limit: limitQuery, parentId, sorting };
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } = trpc.blogPostComments.useInfiniteQuery(infiniteQueryArgs, {
+        getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined),
+        initialCursor: 1,
+    });
+
     const results = data?.pages.flatMap((e) => e.data);
 
     const intObserver = useRef<IntersectionObserver>(null);
-
     const lastCommentRef = useCallback(
         (comment: HTMLLIElement | null) => {
             if (isFetchingNextPage) return;
@@ -28,7 +31,6 @@ export const CommentListInfiniteScroll = ({ postId, parentId, nestLevel, sorting
 
             intObserver.current = new IntersectionObserver((posts) => {
                 if (posts[0].isIntersecting && hasNextPage) {
-                    console.log('We are near the last post!');
                     fetchNextPage();
                 }
             });
@@ -43,14 +45,14 @@ export const CommentListInfiniteScroll = ({ postId, parentId, nestLevel, sorting
             {results?.map((comment, index) => {
                 if (results.length === index + 1) {
                     return (
-                        <li key={comment.id} ref={lastCommentRef} className={cn('px-6', index !== 0 && 'border-t-[1px]')}>
-                            <BlogPostComment nestLevel={nestLevel} comment={comment} />
+                        <li key={comment.id} ref={lastCommentRef} className={cn('px-6', index !== 0 && 'border-t')}>
+                            <Comment infiniteQueryArgs={infiniteQueryArgs} nestLevel={nestLevel} comment={comment} />
                         </li>
                     );
                 }
                 return (
-                    <li key={comment.id} className={cn('px-6', index !== 0 && 'border-t-[1px]')}>
-                        <BlogPostComment nestLevel={nestLevel} comment={comment} />
+                    <li key={comment.id} className={cn('px-6', index !== 0 && 'border-t')}>
+                        <Comment infiniteQueryArgs={infiniteQueryArgs} nestLevel={nestLevel} comment={comment} />
                     </li>
                 );
             })}

@@ -5,7 +5,7 @@ import { dayjs } from '@/lib/dayjs';
 import { prisma } from '@/lib/prisma';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ArticleClientWrapper } from './_partials/article-client-wrapper';
+import { ArticleClientWrapper } from './_partials';
 
 type Params = {
     params: Promise<{

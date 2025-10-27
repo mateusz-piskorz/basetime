@@ -3,23 +3,27 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
 
 type BlogCommentsSheetContextType = {
-    activeCommentThread: string | null;
-    setActiveCommentThread: (parentId: string) => void;
+    activeCommentThread: { parentId: string | null; id: string } | null;
+    limitQuery: number;
+    setActiveCommentThread: (val: { parentId: string | null; id: string }) => void;
     goBack: () => void;
     reset: () => void;
+    postId: string;
 } | null;
 
 const BlogCommentsSheetContext = createContext<BlogCommentsSheetContextType>(null);
 
-export const BlogCommentsSheetProvider = ({ children }: { children: ReactNode }) => {
-    const [activeCommentThreadPath, setActiveCommentThreadPath] = useState<string[]>([]);
+export const BlogCommentsSheetProvider = ({ children, postId }: { children: ReactNode; postId: string }) => {
+    const [activeCommentThreadPath, setActiveCommentThreadPath] = useState<{ parentId: string | null; id: string }[]>([]);
 
     return (
         <BlogCommentsSheetContext.Provider
             value={{
+                postId,
+                limitQuery: 30,
                 activeCommentThread: activeCommentThreadPath[activeCommentThreadPath.length - 1] || null,
                 goBack: () => setActiveCommentThreadPath((prevPath) => prevPath.slice(0, -1)),
-                setActiveCommentThread: (parentId: string) => setActiveCommentThreadPath((prev) => [...prev, parentId]),
+                setActiveCommentThread: (val: { parentId: string | null; id: string }) => setActiveCommentThreadPath((prev) => [...prev, val]),
                 reset: () => setActiveCommentThreadPath([]),
             }}
         >

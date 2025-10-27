@@ -9,13 +9,18 @@ export const createBlogPostComment = action(blogPostCommentSchema, async ({ cont
     try {
         const res = await prisma.blogPostComment.create({
             data: { content, postId, userId: session.userId, parentId },
-            select: { id: true, content: true, Post: { select: { slug: true } } },
+            include: {
+                _count: true,
+                Author: { select: { name: true, avatarId: true } },
+                Upvotes: { where: { userId: session?.userId } },
+                Post: { select: { slug: true } },
+            },
         });
         revalidatePath('/');
         revalidatePath('/blog');
         revalidatePath(`/blog/${res.Post.slug}`);
 
-        return { success: true, comment: res };
+        return { success: true, data: res };
     } catch {
         return { success: false, message: 'Error - createBlogPostComment' };
     }
@@ -55,7 +60,9 @@ export const upvoteBlogPostComment = action(blogPostCommentUpvoteSchema, async (
             where: { commentId, userId },
         });
 
+        let upvoteType: 'removed' | 'added' = 'added';
         if (upvote) {
+            upvoteType = 'removed' as const;
             await prisma.blogPostCommentUpvote.delete({
                 where: { userId_commentId: { commentId, userId } },
             });
@@ -65,7 +72,7 @@ export const upvoteBlogPostComment = action(blogPostCommentUpvoteSchema, async (
             });
         }
 
-        return { success: true };
+        return { success: true, upvoteType };
     } catch {
         return { success: false, message: 'Error - upvoteBlogPostComment' };
     }

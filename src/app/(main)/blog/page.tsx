@@ -2,9 +2,10 @@
 
 import { BlogPostCard } from '@/components/common/blog-post-card';
 import { NotFound } from '@/components/common/not-found';
-import { prisma } from '@/lib/prisma';
 
 const BlogPage = async () => {
+    if (process.env.SKIP_GENERATE_STATIC_PARAMS === 'true') return <h2>SKIP_GENERATE_STATIC_PARAMS</h2>;
+    const prisma = (await import('@/lib/prisma')).prisma;
     const posts = await prisma.blogPost.findMany();
     if (posts.length === 0) return <NotFound title="Nothing here yet" description="try visiting this page later" />;
     return (

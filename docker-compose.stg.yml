@@ -9,15 +9,10 @@ services:
   app:
     build:
       context: .
-      network: host
       dockerfile: Dockerfile
       args:
-        SKIP_GENERATE_STATIC_PARAMS: true
         MINIO_ENDPOINT: ${MINIO_ENDPOINT}
-        BUILDKIT_PROGRESS: ${BUILDKIT_PROGRESS}
-        DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5433/${POSTGRES_DB}?schema=public
     environment:
-      BUILDKIT_PROGRESS: ${BUILDKIT_PROGRESS}
       NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
       SESSION_SECRET: ${SESSION_SECRET}
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
@@ -70,8 +65,6 @@ services:
       - postgres_data_stg:/var/lib/postgresql/data
     networks:
       - btnetworkstg
-    ports:
-      - 5433:5432
 
   minio:
     image: quay.io/minio/minio:latest

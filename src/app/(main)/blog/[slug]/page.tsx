@@ -2,8 +2,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { dayjs } from '@/lib/dayjs';
-import { prisma } from '@/lib/prisma';
-import { Metadata } from 'next';
+// import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { ArticleClientWrapper } from './_partials';
 
@@ -14,7 +13,9 @@ type Params = {
 };
 
 export default async function BlogPage({ params }: Params) {
+    if (process.env.SKIP_GENERATE_STATIC_PARAMS === 'true') return <h2>SKIP_GENERATE_STATIC_PARAMS</h2>;
     const { slug } = await params;
+    const prisma = (await import('@/lib/prisma')).prisma;
     const post = await prisma.blogPost.findUnique({ where: { slug }, include: { _count: true } });
 
     if (!post) {
@@ -48,27 +49,32 @@ export default async function BlogPage({ params }: Params) {
     );
 }
 
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
-    const { slug } = await params;
-    const post = await prisma.blogPost.findUnique({ where: { slug } });
+// export async function generateMetadata({ params }: Params): Promise<Metadata> {
+//     const { slug } = await params;
 
-    if (!post) {
-        return notFound();
-    }
+//     const prisma = (await import('@/lib/prisma')).prisma;
+//     const post = await prisma.blogPost.findUnique({ where: { slug } });
 
-    const title = `${post.title} | BaseTime`;
+//     if (!post) {
+//         return notFound();
+//     }
 
-    return {
-        title,
-        openGraph: {
-            title,
-            ...(post.ogImageUrl && { images: [{ url: post.ogImageUrl }] }),
-        },
-    };
-}
+//     const title = `${post.title} | BaseTime`;
+
+//     return {
+//         title,
+//         openGraph: {
+//             title,
+//             ...(post.ogImageUrl && { images: [{ url: post.ogImageUrl }] }),
+//         },
+//     };
+// }
 
 export async function generateStaticParams() {
+    // early-return BEFORE importing or instantiating Prisma
     if (process.env.SKIP_GENERATE_STATIC_PARAMS === 'true') return [];
+
+    const prisma = (await import('@/lib/prisma')).prisma;
     const posts = await prisma.blogPost.findMany({ select: { slug: true } });
 
     return posts.map((post) => ({

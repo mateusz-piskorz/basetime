@@ -1,10 +1,17 @@
 'use server';
 
-import { prisma } from '@/lib/prisma';
 import { BlogSectionDesktop } from './blog-section-desktop';
 import { BlogSectionMobile } from './blog-section-mobile';
 
 export const BlogSection = async () => {
+    if (process.env.SKIP_GENERATE_STATIC_PARAMS === 'true')
+        return (
+            <section className="bg-background py-24 2xl:mx-auto 2xl:max-w-[1920px] 2xl:py-40" id="blog-section">
+                <h2>SKIP_GENERATE_STATIC_PARAMS</h2>
+            </section>
+        );
+
+    const prisma = (await import('@/lib/prisma')).prisma;
     const posts = await prisma.blogPost.findMany({ take: 5 });
     if (posts.length === 0) return <></>;
 

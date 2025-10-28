@@ -5,7 +5,7 @@ import { BlogSectionDesktop } from './blog-section-desktop';
 import { BlogSectionMobile } from './blog-section-mobile';
 
 export const BlogSection = async () => {
-    const posts = await prisma.blogPost.findMany({ take: 5 });
+    const posts = await prisma.blogPost.findMany({ take: 5, include: { _count: true } });
     if (posts.length === 0) return <></>;
 
     return (

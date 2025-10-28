@@ -28,7 +28,7 @@ export const Comment = ({ comment, nestLevel, className, initialDisplayResponses
     const trpcUtils = trpc.useUtils();
     const { setActiveCommentThread, activeCommentThread } = useBlogCommentsSheet();
     const [displayResponses, setDisplayResponses] = useState(initialDisplayResponses);
-    const [showReplyForm, setShowReplyForm] = useState(activeCommentThread?.id === comment.id);
+    const [showReplyForm, setShowReplyForm] = useState(!comment.deleted && activeCommentThread?.id === comment.id);
 
     const [confirmOpen, setConfirmOpen] = useState(false);
 

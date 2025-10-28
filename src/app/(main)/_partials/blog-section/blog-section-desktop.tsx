@@ -3,12 +3,11 @@
 import { BlogPostCard } from '@/components/common/blog-post-card';
 import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils/common';
-import { BlogPost } from '@prisma/client';
-import { useEffect, useState } from 'react';
+import { ComponentProps, useEffect, useState } from 'react';
 import { BlogSectionHeading } from './blog-section-heading';
 
 type Props = {
-    posts: BlogPost[];
+    posts: ComponentProps<typeof BlogPostCard>['post'][];
 };
 
 export const BlogSectionDesktop = ({ posts }: Props) => {

@@ -3,13 +3,18 @@ import { Card } from '@/components/ui/card';
 import { dayjs } from '@/lib/dayjs';
 import { cn } from '@/lib/utils/common';
 import { BlogPost } from '@prisma/client';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, MessageCircle, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 
 type Props = {
-    post: BlogPost;
+    post: {
+        _count: {
+            Comments: number;
+            Upvotes: number;
+        };
+    } & BlogPost;
     className?: string;
 };
 
@@ -27,7 +32,7 @@ export const BlogPostCard = ({ post, className }: Props) => {
                     width={1024}
                     height={450}
                     alt={post.title}
-                    className="h-[240px] object-cover grayscale-25 lg:h-full lg:w-[60%] dark:opacity-90"
+                    className="h-60 object-cover grayscale-25 lg:h-full lg:w-[60%] dark:opacity-90"
                 />
 
                 <div className="flex h-full flex-col items-start gap-4 px-6 py-8 lg:w-[40%] lg:py-6 2xl:p-10">
@@ -38,17 +43,34 @@ export const BlogPostCard = ({ post, className }: Props) => {
                             </Badge>
                         ))}
                     </div>
-                    <span className="text-muted-foreground text-sm 2xl:text-base">
+
+                    <time
+                        className="text-muted-foreground text-sm 2xl:text-base"
+                        title="Posted at"
+                        dateTime={dayjs(post.updatedAt).format('YYYY-MM-DD')}
+                    >
                         {dayjs(post.updatedAt).format('MMMM D, YYYY')}
                         {` - ${post.readTime}`}
-                    </span>
+                    </time>
+
                     <h1 className="text-xl xl:text-2xl 2xl:text-3xl">{post.title}</h1>
                     <p className="text-muted-foreground text-sm 2xl:text-base">{post.description}</p>
-                    <Button asChild variant="link" className="mt-auto pb-0 pl-0 text-base xl:text-xl">
-                        <Link href={`/blog/${post.slug}`}>
-                            Read More <ChevronRight />
-                        </Link>
-                    </Button>
+
+                    <div className="mt-auto flex items-center gap-4">
+                        <span className="flex items-center gap-2">
+                            <span className="sr-only">upvotes</span>
+                            <Sparkles className="size-3.5" /> {post._count.Upvotes}
+                        </span>
+                        <span className="flex items-center gap-2">
+                            <span className="sr-only">comments</span>
+                            <MessageCircle className="size-3.5" /> {post._count.Comments}
+                        </span>
+                        <Button asChild variant="link" className="pl-0 text-base xl:text-xl">
+                            <Link href={`/blog/${post.slug}`}>
+                                Read More <ChevronRight />
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
             </Card>
         </article>

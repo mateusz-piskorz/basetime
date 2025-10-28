@@ -7,7 +7,7 @@ import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { trpc } from '@/lib/trpc/client';
 import { BlogPost } from '@prisma/client';
 import { ChevronLeft } from 'lucide-react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { AddCommentForm } from '../common/add-comment-form';
 import { Comment } from '../common/comment';
 import { ListInfiniteScroll } from './_list-infinite-scroll';
@@ -24,23 +24,35 @@ type Props = {
 };
 
 export const CommentsSheet = ({ open, setOpen, post }: Props) => {
-    const trpcUtils = trpc.useUtils();
     const { reset, activeCommentThread, goBack, limitQuery, sorting, setSorting } = useBlogCommentsSheet();
+
+    const { data } = trpc.blogPostComments.useInfiniteQuery(
+        {
+            parentId: activeCommentThread?.parentId ?? null,
+            postId: post.id,
+            sorting: 'oldest',
+            limit: limitQuery,
+        },
+        {
+            enabled: Boolean(activeCommentThread),
+            getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined),
+            initialCursor: 1,
+        },
+    );
 
     const activeComment = useMemo(() => {
         if (!activeCommentThread) return null;
 
-        const infComments = trpcUtils.blogPostComments
-            .getInfiniteData({
-                parentId: activeCommentThread!.parentId ?? null,
-                postId: post.id,
-                sorting: 'oldest',
-                limit: limitQuery,
-            })
-            ?.pages.flatMap(({ data }) => data);
+        const infComments = data?.pages.flatMap(({ data }) => data);
 
         return infComments?.find((comment) => comment.id === activeCommentThread.id);
-    }, [trpcUtils, activeCommentThread, post, limitQuery]);
+    }, [data, activeCommentThread]);
+
+    useEffect(() => {
+        if (activeCommentThread && !activeComment) {
+            goBack();
+        }
+    }, [activeComment, activeCommentThread, goBack]);
 
     return (
         <Sheet
@@ -67,7 +79,7 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
 
                 {activeCommentThread && activeComment ? (
                     <Comment
-                        infiniteQueryArgs={{ postId: post.id, limit: limitQuery, parentId: activeCommentThread.parentId, sorting }}
+                        infiniteQueryArgs={{ postId: post.id, limit: limitQuery, parentId: activeCommentThread.parentId, sorting: 'oldest' }}
                         initialDisplayResponses
                         nestLevel={0}
                         comment={activeComment}

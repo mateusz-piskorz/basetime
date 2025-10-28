@@ -2,7 +2,7 @@ import z from 'zod';
 
 export const blogPostCommentSchema = z.object({
     postId: z.string(),
-    content: z.string(),
+    content: z.string().min(1),
     parentId: z.string().optional(),
 });
 

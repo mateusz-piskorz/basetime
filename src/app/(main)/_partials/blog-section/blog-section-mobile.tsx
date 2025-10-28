@@ -2,13 +2,12 @@
 
 import { BlogPostCard } from '@/components/common/blog-post-card';
 import { Button } from '@/components/ui/button';
-import { BlogPost } from '@prisma/client';
 import { MoveRight } from 'lucide-react';
-import { useRef } from 'react';
+import { ComponentProps, useRef } from 'react';
 import { BlogSectionHeading } from './blog-section-heading';
 
 type Props = {
-    posts: BlogPost[];
+    posts: ComponentProps<typeof BlogPostCard>['post'][];
 };
 
 export const BlogSectionMobile = ({ posts }: Props) => {

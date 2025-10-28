@@ -89,14 +89,6 @@ jobs:
         run: |
           docker images -f "dangling=true" -q | xargs -r docker rmi
 
-      - name: Debug docker permissions
-        run: |
-          id
-          groups
-          ls -l /var/run/docker.sock
-          docker ps
-          docker compose version
-
       - name: Build and run containers
         run: |
           docker compose -f docker-compose.stg.yml up -d --build db minio

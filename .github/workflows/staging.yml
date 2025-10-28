@@ -89,9 +89,13 @@ jobs:
         run: |
           docker images -f "dangling=true" -q | xargs -r docker rmi
 
-      - name: Debug docker environment
+      - name: Debug docker permissions
         run: |
-          echo "USER: $(id -un)" which docker || true command -v docker || true docker --version || true docker compose version || true docker-compose --version || true docker info || true
+          id
+          groups
+          ls -l /var/run/docker.sock
+          docker ps
+          docker compose version
 
       - name: Build and run containers
         run: |

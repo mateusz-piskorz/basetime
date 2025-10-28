@@ -68,6 +68,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
+    if (process.env.SKIP_GENERATE_STATIC_PARAMS === 'true') return [];
     const posts = await prisma.blogPost.findMany({ select: { slug: true } });
 
     return posts.map((post) => ({

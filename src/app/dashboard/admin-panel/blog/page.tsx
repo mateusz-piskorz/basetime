@@ -3,6 +3,7 @@ import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 import { BlogPostCard } from './_partials/blog-post-card';
 import { CreateNewPost } from './_partials/create-new-post';
+import { RevalidateBlogPosts } from './_partials/revalidate-blog-posts';
 import { SeedPosts } from './_partials/seed-blog-posts';
 
 export default async function BlogAdminPanelPage() {
@@ -15,6 +16,7 @@ export default async function BlogAdminPanelPage() {
     return (
         <div className="container mx-auto space-y-8 px-8 py-8">
             <div className="space-x-8">
+                <RevalidateBlogPosts />
                 <SeedPosts />
                 <CreateNewPost />
             </div>

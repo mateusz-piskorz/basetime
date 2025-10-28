@@ -12,6 +12,7 @@ services:
       network: host
       dockerfile: Dockerfile
       args:
+        SKIP_GENERATE_STATIC_PARAMS: true
         MINIO_ENDPOINT: ${MINIO_ENDPOINT}
         BUILDKIT_PROGRESS: ${BUILDKIT_PROGRESS}
         DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5433/${POSTGRES_DB}?schema=public

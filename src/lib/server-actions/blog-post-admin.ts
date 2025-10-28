@@ -2,12 +2,27 @@
 
 import { faker } from '@faker-js/faker';
 import { revalidatePath } from 'next/cache';
+import z from 'zod';
 import { action } from '.';
 import { initialBlogArticles } from '../constants/blog-initial-articles';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
 import { getAppEnv } from '../utils/common';
 import { createBlogPostSchema, removeBlogPostSchema, seedBlogPostCommentsSchema, updateBlogPostSchema } from '../zod/blog-post-admin-schema';
+
+export const revalidateBlogPosts = action(z.object({}), async ({}, session) => {
+    try {
+        if (session.role !== 'ADMIN') return { success: false, message: 'Error permission invalid' };
+
+        revalidatePath('/');
+        revalidatePath('/blog');
+        revalidatePath('/(main)/blog/[slug]', 'page');
+
+        return { success: true };
+    } catch {
+        return { success: false, message: 'Error - revalidateBlogPosts' };
+    }
+});
 
 export const createBlogPost = action(createBlogPostSchema, async ({ slug }, session) => {
     try {

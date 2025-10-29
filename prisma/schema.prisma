@@ -59,6 +59,44 @@ model BlogPost {
   status      BLOG_POST_STATUS @default(DRAFT)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+
+  Comments BlogPostComment[]
+  Upvotes  BlogPostUpvote[]
+}
+
+model BlogPostUpvote {
+  userId String
+  postId String
+  Post   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  User   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+}
+
+model BlogPostComment {
+  id        String   @id @default(cuid())
+  content   String
+  deleted   Boolean?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  postId   String
+  authorId String
+  parentId String?
+  Post     BlogPost                @relation(fields: [postId], references: [id], onDelete: Cascade)
+  Author   User                    @relation(fields: [authorId], references: [id])
+  Parent   BlogPostComment?        @relation("BPCParentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  Replies  BlogPostComment[]       @relation("BPCParentReplies")
+  Upvotes  BlogPostCommentUpvote[]
+}
+
+model BlogPostCommentUpvote {
+  userId    String
+  commentId String
+  Comment   BlogPostComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  User      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, commentId])
 }
 
 model Session {
@@ -78,12 +116,16 @@ model User {
   name      String
   password  String
   role      USER_ROLE @default(USER)
+  avatarId  String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  Session     Session[]
-  Members     Member[]
-  Invitations Invitation[]
+  Session                Session[]
+  Members                Member[]
+  Invitations            Invitation[]
+  BlogPostComments       BlogPostComment[]
+  BlogPostCommentUpvotes BlogPostCommentUpvote[]
+  BlogPostUpvotes        BlogPostUpvote[]
 }
 
 model Organization {
@@ -102,7 +144,8 @@ model Organization {
 }
 
 model Member {
-  id        String      @id @default(cuid())
+  id String @id @default(cuid())
+
   role      MEMBER_ROLE
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -114,6 +157,8 @@ model Member {
   HourlyRates    HourlyRate[]
   Projects       Project[]
   TimeEntries    TimeEntry[]
+  // todo:
+  // @@id([userId, organizationId])
 }
 
 model Invitation {

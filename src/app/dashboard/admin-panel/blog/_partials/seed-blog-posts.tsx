@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { seedBlogPost } from '@/lib/server-actions/blog-post';
+import { seedBlogPost } from '@/lib/server-actions/blog-post-admin';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';

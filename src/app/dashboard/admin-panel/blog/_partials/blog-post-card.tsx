@@ -3,7 +3,7 @@
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { removeBlogPost } from '@/lib/server-actions/blog-post';
+import { removeBlogPost } from '@/lib/server-actions/blog-post-admin';
 import { BlogPost } from '@prisma/client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -23,7 +23,7 @@ export const BlogPostCard = ({ post }: Props) => {
                 open={open}
                 setOpen={setOpen}
                 onContinue={async () => {
-                    const res = await removeBlogPost({ blogPostId: post.id });
+                    const res = await removeBlogPost({ postId: post.id });
                     if (!res.success) toast.error('something went wrong - removeBlogPost');
                     else toast.success('removed blog post');
                     router.refresh();

@@ -140,3 +140,7 @@ body {
 .dark body {
     background-color: #000;
 }
+
+p {
+    font-family: var(--font-geist-mono);
+}

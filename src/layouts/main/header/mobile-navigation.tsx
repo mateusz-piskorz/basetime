@@ -19,11 +19,12 @@ export const MobileNavigation = () => {
                     <Menu className="size-8" />
                 </Button>
             </SheetTrigger>
-            <SheetHeader className="sr-only lg:hidden">
-                <SheetTitle>Navigation</SheetTitle>
-                <SheetDescription>Displays the mobile navigation</SheetDescription>
-            </SheetHeader>
+
             <SheetContent side="left" className="max-w-sm px-8 py-12 lg:hidden">
+                <SheetHeader className="sr-only">
+                    <SheetTitle>Navigation</SheetTitle>
+                    <SheetDescription>Displays the mobile navigation</SheetDescription>
+                </SheetHeader>
                 <Navigation closeSidebar={() => setOpen(false)} />
             </SheetContent>
         </Sheet>

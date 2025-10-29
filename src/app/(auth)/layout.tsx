@@ -29,7 +29,7 @@ export default function AuthLayout({
 
                     <div className="relative z-20 mt-auto">
                         <blockquote className="space-y-2">
-                            <p className="font-mono text-lg">&ldquo;The bad news is time flies. The good news is you’re the pilot.&rdquo;</p>
+                            <p className="text-lg">&ldquo;The bad news is time flies. The good news is you’re the pilot.&rdquo;</p>
                             <footer className="font-mono text-sm text-neutral-300">Michael Altshuler</footer>
                         </blockquote>
                     </div>

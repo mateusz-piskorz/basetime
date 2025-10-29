@@ -1,6 +1,8 @@
 import { deleteFile, uploadFile } from '@/lib/minio'; // your existing upload function
+import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
 import { imgSchema } from '@/lib/zod/img-schema';
+import { createId } from '@paralleldrive/cuid2';
 import { NextRequest, NextResponse } from 'next/server';
 import sharp from 'sharp';
 
@@ -21,11 +23,13 @@ export async function POST(req: NextRequest) {
         }
         const buffer = await file.arrayBuffer();
 
-        const resizedBuffer = await sharp(buffer).resize(200, 200, { fit: 'cover', position: 'center' }).png({ quality: 100 }).toBuffer();
+        const resizedBuffer = await sharp(buffer).resize(200, 200, { fit: 'cover', position: 'center' }).jpeg({ quality: 100 }).toBuffer();
 
-        const fileName = `user/${session.userId}/avatar.png`;
+        const newAvatarId = createId();
 
-        await uploadFile({ bucket: 'main', file: resizedBuffer, fileName });
+        if (session.avatarId) await deleteFile({ bucket: 'public', fileName: `user-avatar/${session.avatarId}.jpeg` });
+        await uploadFile({ bucket: 'public', file: resizedBuffer, fileName: `user-avatar/${newAvatarId}.jpeg` });
+        await prisma.user.update({ where: { id: session.userId }, data: { avatarId: newAvatarId } });
 
         return NextResponse.json({ success: true, message: 'Avatar updated' });
     } catch {
@@ -40,9 +44,8 @@ export async function DELETE() {
             return NextResponse.json({ success: false, error: 'Error session invalid' });
         }
 
-        const fileName = `user/${session.userId}/avatar.png`;
-
-        await deleteFile({ bucket: 'main', fileName });
+        await deleteFile({ bucket: 'public', fileName: `user-avatar/${session.avatarId}.jpeg` });
+        await prisma.user.update({ where: { id: session.userId }, data: { avatarId: null } });
 
         return NextResponse.json({ success: true, message: 'Avatar deleted' });
     } catch {

@@ -12,7 +12,7 @@ export const DocText = ({ className }: Props) => {
                 <h1 className="text-3xl leading-snug font-semibold sm:text-4xl xl:text-3xl 2xl:text-5xl">
                     <span className="text-accent">Time tracker</span> - your team will actually use
                 </h1>
-                <p className="text-muted-foreground font-mono text-base 2xl:text-base">
+                <p className="text-muted-foreground text-base 2xl:text-base">
                     Modern, accurate, simple, and user-friendly. Spend less time logging hours — and more time getting work done.
                 </p>
                 <AuthButton text="Get Started" variant="default" size="lg" />

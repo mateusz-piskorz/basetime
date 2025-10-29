@@ -103,3 +103,16 @@ export const getInitials = (fullName: string) => {
 
     return `${firstInitial}${lastInitial}`.toUpperCase();
 };
+
+export const getAppEnv = () => {
+    const environments = { production: 'production', staging: 'staging', localhost: 'localhost' } as const;
+    const env = process.env.NEXT_PUBLIC_APP_ENV as keyof typeof environments;
+
+    return environments[env] || 'production';
+};
+
+export const getUserAvatarUrl = ({ avatarId }: { avatarId: string }) => {
+    return process.env.MINIO_ENDPOINT === 'localhost'
+        ? `http://localhost:9000/public/user-avatar/${avatarId}.jpeg`
+        : `https://${process.env.MINIO_ENDPOINT}/public/user-avatar/${avatarId}.jpeg`;
+};

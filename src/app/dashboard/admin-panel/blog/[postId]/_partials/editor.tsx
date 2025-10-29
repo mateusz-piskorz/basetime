@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { updateBlogPost } from '@/lib/server-actions/blog-post';
+import { updateBlogPost } from '@/lib/server-actions/blog-post-admin';
 import { BlogPost } from '@prisma/client';
 import MDEditor from '@uiw/react-md-editor';
 import { useState } from 'react';

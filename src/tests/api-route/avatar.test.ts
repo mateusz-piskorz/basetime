@@ -5,9 +5,8 @@ import { getStatObject, minioClient } from '../../lib/minio';
 import { API_BASE_URL } from '../utils/constants';
 import { getTestFileFormData, loadTestNonSharedBuffer } from '../utils/example-img';
 
-const userWithAvatarFileName = 'user/userWithAvatar/avatar.png';
+const userWithAvatarFileName = 'user-avatar/userWithAvatarAvatarId.jpeg';
 const userId = 'randId';
-const fileName = `user/${userId}/avatar.png`;
 const apiUrl = `${API_BASE_URL}/user-avatar`;
 let headers: HeadersInit;
 
@@ -27,7 +26,7 @@ describe('avatar', () => {
             },
         });
 
-        await minioClient.putObject('main', userWithAvatarFileName, loadTestNonSharedBuffer(), undefined, {
+        await minioClient.putObject('public', userWithAvatarFileName, loadTestNonSharedBuffer(), undefined, {
             'user-meta-test': 'userWithAvatar',
         });
     });
@@ -40,22 +39,27 @@ describe('avatar', () => {
         }).then((res) => res.json());
 
         expect(data.success).toBe(true);
-        expect(await getStatObject({ bucket: 'main', fileName })).not.toBe(undefined);
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+
+        expect(await getStatObject({ bucket: 'public', fileName: `user-avatar/${user?.avatarId}.jpeg` })).not.toBe(undefined);
     });
 
     test('userWithAvatar still has its own avatar', async () => {
-        const obj = await getStatObject({ bucket: 'main', fileName: userWithAvatarFileName });
+        const obj = await getStatObject({ bucket: 'public', fileName: userWithAvatarFileName });
 
         expect(obj?.metaData['user-meta-test']).toBe('userWithAvatar');
     });
 
     test('user can delete avatar', async () => {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        expect(await getStatObject({ bucket: 'public', fileName: `user-avatar/${user?.avatarId}.jpeg` })).not.toBe(undefined);
         const data = await fetch(apiUrl, {
             method: 'DELETE',
             headers,
         }).then((res) => res.json());
 
         expect(data.success).toBe(true);
-        expect(await getStatObject({ bucket: 'main', fileName })).toBe(undefined);
+        expect(await getStatObject({ bucket: 'public', fileName: `user-avatar/${user?.avatarId}.jpeg` })).toBe(undefined);
+        expect((await prisma.user.findUnique({ where: { id: userId } }))?.avatarId).toBe(null);
     });
 });

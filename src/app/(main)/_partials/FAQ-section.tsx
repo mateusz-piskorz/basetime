@@ -35,7 +35,7 @@ export default function FAQSection() {
             <div className="mx-auto">
                 <div className="mx-auto max-w-xl text-center 2xl:max-w-[900px]">
                     <h2 className="text-3xl font-semibold text-balance md:text-4xl lg:text-5xl 2xl:text-6xl">Frequently Asked Questions</h2>
-                    <p className="text-muted-foreground mt-4 font-mono text-balance 2xl:text-xl">
+                    <p className="text-muted-foreground mt-4 text-balance 2xl:text-xl">
                         Discover quick and comprehensive answers to common questions about our platform, services, and features.
                     </p>
                 </div>

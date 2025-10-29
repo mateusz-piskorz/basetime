@@ -91,7 +91,9 @@ jobs:
 
       - name: Build and run containers
         run: |
-          docker compose -f docker-compose.stg.yml up -d --build --force-recreate db minio setup-job
+          docker compose -f docker-compose.stg.yml up -d --build db minio
+          sleep 5
+          docker compose -f docker-compose.stg.yml up -d --build --force-recreate setup-job
           sleep 5
           docker compose -f docker-compose.stg.yml up -d --build --force-recreate app
 

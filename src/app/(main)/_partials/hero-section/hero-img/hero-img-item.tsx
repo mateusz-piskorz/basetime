@@ -24,7 +24,7 @@ export const HeroImgItem = ({ className, isActive, initialSeconds, title, type, 
     return (
         <div className={cn('flex flex-1 items-center justify-between px-8', className)}>
             <div>
-                <p className={cn('text-muted-foreground font-mono text-lg', isActive && 'text-primary')}>{title}</p>
+                <p className={cn('text-muted-foreground text-lg', isActive && 'text-primary')}>{title}</p>
                 <p style={{ color: heroImgItemType[type].color }}>{heroImgItemType[type].name}</p>
             </div>
             <div className="flex items-center gap-5">

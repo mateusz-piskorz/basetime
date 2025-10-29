@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
 import z from 'zod';

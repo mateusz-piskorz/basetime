@@ -53,7 +53,7 @@ jobs:
 
   deploy:
     needs: tests
-    timeout-minutes: 15
+    timeout-minutes: 10
     environment: stg
     runs-on: self-hosted
     env:

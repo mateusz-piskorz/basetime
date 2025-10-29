@@ -24,14 +24,14 @@ test('returns false for unauthenticated user', async () => {
     expect(res.userUpvoted).toBe(false);
 });
 
-test('returns false for user that does not upvoted post', async () => {
+test('returns false for user that has not upvoted post', async () => {
     mockSession(userId);
     const res = await queryClient.fetchQuery(trpc.blogPostUpvote.queryOptions({ postId: postId2 }));
 
     expect(res.userUpvoted).toBe(false);
 });
 
-test('returns true for user that does upvoted post', async () => {
+test('returns true for user that has upvoted post', async () => {
     mockSession(userId);
     const res = await queryClient.fetchQuery(trpc.blogPostUpvote.queryOptions({ postId: postId1 }));
 

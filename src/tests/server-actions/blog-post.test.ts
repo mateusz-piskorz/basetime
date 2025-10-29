@@ -14,7 +14,7 @@ describe('createBlogPostComment', () => {
         await prisma.blogPostComment.create({ data: { content: '', id: comment, authorId: userId, postId } });
     });
 
-    test('unAuthenticated user cannot create comment', async () => {
+    test('unauthenticated user cannot create comment', async () => {
         expect((await createBlogPostComment({ postId, content: 'content' })).success).toBe(false);
         expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(2);
     });
@@ -48,7 +48,7 @@ describe('upvoteBlogPost', () => {
         await prisma.blogPost.create({ data: { content: '', slug: '', title: '', id: postId } });
     });
 
-    test('unAuthenticated user cannot upvote blog post', async () => {
+    test('unauthenticated user cannot upvote blog post', async () => {
         expect((await upvoteBlogPost({ postId })).success).toBe(false);
         expect((await prisma.blogPostUpvote.findMany({ where: { postId } })).length).toBe(0);
     });
@@ -78,7 +78,7 @@ describe('upvoteBlogPostComment', () => {
         await prisma.blogPostComment.create({ data: { content: '', postId, id: commentId, authorId: userId } });
     });
 
-    test('unAuthenticated user cannot upvote blog post', async () => {
+    test('unauthenticated user cannot upvote blog post', async () => {
         expect((await upvoteBlogPostComment({ commentId })).success).toBe(false);
         expect((await prisma.blogPostCommentUpvote.findMany({ where: { commentId } })).length).toBe(0);
     });
@@ -146,7 +146,7 @@ describe('deleteBlogPostComment', () => {
         });
     });
 
-    test('unAuthenticated user cannot delete comment', async () => {
+    test('unauthenticated user cannot delete comment', async () => {
         expect((await deleteBlogPostComment({ commentId: rootComment2 })).success).toBe(false);
         expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(6);
     });

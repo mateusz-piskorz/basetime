@@ -52,7 +52,6 @@ export default async function BlogPage({ params }: Params) {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
     const { slug } = await params;
 
-    const prisma = (await import('@/lib/prisma')).prisma;
     const post = await prisma.blogPost.findUnique({ where: { slug } });
 
     if (!post) {

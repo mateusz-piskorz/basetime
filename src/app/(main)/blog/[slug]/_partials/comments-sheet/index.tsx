@@ -90,7 +90,7 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
                         <AddCommentForm infiniteQueryArgs={{ postId: post.id, limit: limitQuery, parentId: null, sorting }} />
 
                         <Select onValueChange={(val) => setSorting(val as typeof sorting)} value={sorting}>
-                            <SelectTrigger className="mx-6 border-none bg-transparent dark:bg-transparent">
+                            <SelectTrigger className="mx-6 border bg-transparent dark:bg-transparent">
                                 <SelectValue className="bg-transparent" />
                             </SelectTrigger>
                             <SelectContent>

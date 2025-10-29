@@ -46,7 +46,7 @@ export const SectionOrganizationLogo = () => {
                 title="Update logo"
                 description="Choose a clear, distinctive image to help others recognize your organization."
             />
-            <Card className="h-[280px] w-[350px] border-2 border-dashed p-0 shadow-none">
+            <Card variant="outline-light-theme" className="h-[280px] w-[350px] border-2 border-dashed p-0">
                 {imgSrc && (
                     <div>
                         <Image

@@ -20,7 +20,7 @@ export const ProjectCard = ({
         member: { role: currentUserRole },
     } = useMember();
     return (
-        <Card className="bg-bg dark:bg-card w-full border shadow-none md:max-w-[325px]">
+        <Card variant="outline-light-theme" className="w-full md:max-w-[325px]">
             <CardContent className={cn('min-h-[200px] space-y-6', currentUserRole === 'EMPLOYEE' && 'min-h-[150px]')}>
                 <div className="flex gap-2">{name}</div>
 

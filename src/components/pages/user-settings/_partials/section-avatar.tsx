@@ -42,7 +42,7 @@ export const SectionAvatar = () => {
     return (
         <div className="space-y-8 px-4 md:px-8">
             <DashboardHeading className="mb-8" title="Update avatar" description="Choose a clear, distinctive image to help others recognize you." />
-            <Card className="h-[280px] w-[350px] border-2 border-dashed p-0 shadow-none">
+            <Card variant="outline-light-theme" className="h-[280px] w-[350px] border-2 border-dashed p-0">
                 {imgSrc && (
                     <div>
                         <Image

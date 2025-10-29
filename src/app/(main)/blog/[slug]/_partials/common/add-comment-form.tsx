@@ -92,13 +92,13 @@ export const AddCommentForm = ({ parentComment, infiniteQueryArgs, onCommentAdde
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className={cn('mb-6 space-y-8', !parentComment && 'px-6')}>
-                <div className="dark:bg-input/30 border-input rounded-md">
+                <div className="dark:bg-input/30 rounded-md border">
                     <TextareaField
                         autoFocus
                         form={form}
                         name="content"
                         placeholder="What are your thoughts?"
-                        classNameInput="border-none  max-h-[150px] resize-none  dark:bg-transparent"
+                        classNameInput="border-none shadow-none max-h-[150px] resize-none  dark:bg-transparent"
                     />
 
                     <div className="flex justify-end gap-2 p-4">

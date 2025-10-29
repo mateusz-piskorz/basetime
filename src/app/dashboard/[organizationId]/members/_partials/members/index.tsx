@@ -88,7 +88,7 @@ export const MemberList = ({ openInvitationDialog }: Props) => {
                                 />
                             ))}
                             {role !== 'EMPLOYEE' && (
-                                <Card className="dark:bg-card bg-bg w-full border md:max-w-[325px]">
+                                <Card variant="outline-light-theme" className="w-full md:max-w-[325px]">
                                     <CardContent className="flex h-full min-h-[200px] items-center justify-center">
                                         <Button onClick={openInvitationDialog} className="h-14 w-14">
                                             <Plus className="size-8" />

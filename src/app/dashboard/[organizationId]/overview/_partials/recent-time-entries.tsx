@@ -34,11 +34,11 @@ export const RecentTimeEntries = ({ scope }: Props) => {
                 <CircleCheckBig className="text-muted-foreground size-5" />
                 <h2>Recent Time Entries</h2>
             </div>
-            <Card className="dark:bg-card h-[300px] border bg-transparent py-0 shadow-none">
+            <Card variant="outline-light-theme" className="h-[300px] py-0">
                 <CardContent className="flex h-full flex-col p-0">
                     {paddedEntries.map((entry, idx) => (
                         <div
-                            className={cn('flex h-full items-center justify-between px-4', idx !== paddedEntries.length - 1 && 'border-b-1')}
+                            className={cn('flex h-full items-center justify-between px-4', idx !== paddedEntries.length - 1 && 'border-b')}
                             key={entry?.id ?? `empty-${idx}`}
                         >
                             {entry ? (

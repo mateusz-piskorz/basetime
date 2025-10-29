@@ -46,9 +46,9 @@ export const ActivityGraph = ({ scope }: Props) => {
                 <h2>Activity Graph</h2>
             </div>
 
-            <Card className="dark:bg-card h-[300px] border bg-transparent py-0 pt-4 shadow-none">
+            <Card variant="outline-light-theme" className="h-[300px] py-0 pt-4">
                 <CardContent className="space-y-3 px-4 sm:px-6">
-                    <div className="flex justify-around sm:ml-[36px]">
+                    <div className="flex justify-around sm:ml-9">
                         {monthSegments.map((month) => (
                             <span className="text-sm" key={month}>
                                 {month}
@@ -59,7 +59,7 @@ export const ActivityGraph = ({ scope }: Props) => {
                     <div className="flex h-full space-x-2">
                         <div className="hidden h-full flex-col justify-between sm:flex">
                             {weekSegments.map((weekDay) => (
-                                <span className="h-[24px] text-sm" key={weekDay}>
+                                <span className="h-6 text-sm" key={weekDay}>
                                     {weekDay}
                                 </span>
                             ))}

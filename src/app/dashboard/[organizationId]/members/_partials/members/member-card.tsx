@@ -19,10 +19,8 @@ export const MemberCard = ({ member: { id, User, _count, loggedTime, role, hourl
 
     return (
         <Card
-            className={cn(
-                'dark:bg-card bg-bg relative w-full overflow-hidden border shadow-none md:max-w-[325px]',
-                currentMemberId === id && 'border-green-500/70',
-            )}
+            variant="outline-light-theme"
+            className={cn('relative w-full overflow-hidden md:max-w-[325px]', currentMemberId === id && 'border-green-500/70')}
         >
             <CardContent className={cn('min-h-[200px] space-y-6', currentUserRole === 'EMPLOYEE' && 'min-h-[150px]')}>
                 <div className="flex gap-2">

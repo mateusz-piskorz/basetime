@@ -1,8 +1,8 @@
 'use server';
 
-import { action } from '.';
 import { prisma } from '../prisma';
 import { removeMemberSchemaS, updateMemberSchemaS } from '../zod/member-schema';
+import { action } from './_utils';
 
 export const updateMember = action(updateMemberSchemaS, async ({ memberId, hourlyRate, projectIds, role }, { userId }) => {
     try {

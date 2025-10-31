@@ -8,9 +8,10 @@ type Props = {
 
 export function DashboardHeading({ title, description, className }: Props) {
     return (
-        <div className={cn('mb-5 space-y-0.5', className)}>
-            <h1 className={cn('text-xl font-semibold')}>{title}</h1>
-            {description && (typeof description === 'string' ? <p className={cn('text-muted-foreground text-sm')}>{description}</p> : description)}
+        <div className={cn('mb-12 space-y-0.5', className)}>
+            <h1 className={cn('text-xl font-semibold sm:text-2xl')}>{title}</h1>
+            {description &&
+                (typeof description === 'string' ? <p className={cn('text-muted-foreground text-xs sm:text-base')}>{description}</p> : description)}
         </div>
     );
 }

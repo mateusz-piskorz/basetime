@@ -13,4 +13,6 @@ export const updatePasswordSchema = z
         path: ['password_confirmation'],
     });
 
+export const updateProfileAvatarSchema = z.object({ avatarBase64: z.string().nonempty().nullable() });
+
 export const deleteUserAccountSchema = z.object({ password: z.string().nonempty("Password can't be empty") });

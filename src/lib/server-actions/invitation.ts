@@ -1,12 +1,12 @@
 'use server';
 
-import { action } from '.';
 import { prisma } from '../prisma';
 import { createInvSchemaS, updateInvSchemaS } from '../zod/invitation-schema';
+import { action } from './_utils';
 
-export const createInv = action(createInvSchemaS, async ({ email, organizationId }, { userId }) => {
+export const createInv = action(createInvSchemaS, async ({ email, orgId }, { userId }) => {
     try {
-        const userMember = await prisma.member.findFirst({ where: { userId, organizationId, role: { in: ['OWNER'] } } });
+        const userMember = await prisma.member.findFirst({ where: { userId, organizationId: orgId, role: { in: ['OWNER'] } } });
         if (!userMember) return { success: false, message: 'Error permission' };
 
         const user = await prisma.user.findUnique({
@@ -15,14 +15,14 @@ export const createInv = action(createInvSchemaS, async ({ email, organizationId
         });
 
         if (!user) return { success: false, message: `Error couldn't find user with email ${email}` };
-        if (user.Members.some((e) => e.organizationId === organizationId)) {
+        if (user.Members.some((e) => e.organizationId === orgId)) {
             return { success: false, message: `Error ${email} is already a member of this organization` };
         }
-        if (user.Invitations.find((e) => e.organizationId === organizationId && e.status === 'SENT')) {
+        if (user.Invitations.find((e) => e.organizationId === orgId && e.status === 'SENT')) {
             return { success: false, message: `Error invitation was already sent to ${email}` };
         }
 
-        const res = await prisma.invitation.create({ data: { status: 'SENT', organizationId, userId: user.id } });
+        const res = await prisma.invitation.create({ data: { status: 'SENT', organizationId: orgId, userId: user.id } });
 
         return { success: true, data: res };
     } catch {

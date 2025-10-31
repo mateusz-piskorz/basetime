@@ -1,10 +1,10 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { action } from '../';
 import { prisma } from '../../prisma';
 import { blogPostCommentDeleteSchema, blogPostCommentSchema, blogPostCommentUpvoteSchema, blogPostUpvoteSchema } from '../../zod/blog-post-schema';
-import { deleteCommentParentRecursively } from './_utils';
+import { action } from '../_utils';
+import { deleteCommentParentRecursively } from './_delete-comment-parent-recursively';
 
 export const createBlogPostComment = action(blogPostCommentSchema, async ({ content, postId, parentId }, session) => {
     try {

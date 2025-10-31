@@ -7,7 +7,7 @@ const owner = 'idOwner';
 const manager = 'idManager';
 const employee = 'idEmployee';
 const employeeEmail = 'employee@onet.pl';
-const organizationId = 'organizationId123';
+const orgId = 'organizationId123';
 const testUser = 'johnId';
 const testUserEmail = 'johnDoe@onet.pl';
 
@@ -18,7 +18,7 @@ beforeAll(async () => {
     await prisma.user.create({ data: { email: testUserEmail, name: '', password: '', id: testUser } });
     await prisma.organization.create({
         data: {
-            id: organizationId,
+            id: orgId,
             name: 'o',
             currency: 'EUR',
             Members: {
@@ -35,7 +35,7 @@ beforeAll(async () => {
 });
 
 describe('createInv', () => {
-    const createInv = async (email: string) => await createInvAction({ email, organizationId });
+    const createInv = async (email: string) => await createInvAction({ email, orgId });
 
     test('error permission', async () => {
         for (const userId of [testUser, employee, manager]) {
@@ -67,7 +67,7 @@ describe('createInv', () => {
         const invs = await prisma.invitation.findMany();
         expect(invs.length).toBe(1);
         expect(invs[0].status).toBe('SENT');
-        expect(invs[0].organizationId).toBe(organizationId);
+        expect(invs[0].organizationId).toBe(orgId);
         expect(invs[0].userId).toBe(testUser);
     });
 
@@ -88,7 +88,7 @@ describe('updateInvStatus', () => {
 
     beforeAll(async () => {
         await prisma.invitation.deleteMany();
-        await prisma.invitation.create({ data: { organizationId, status: 'SENT', userId: testUser, id: invId } });
+        await prisma.invitation.create({ data: { organizationId: orgId, status: 'SENT', userId: testUser, id: invId } });
     });
 
     test('cancel - Error permission', async () => {

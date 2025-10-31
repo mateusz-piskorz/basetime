@@ -20,7 +20,7 @@ const emp2 = {
     memberId: 'idEmp2Member',
 };
 
-const organizationId = 'organizationId123';
+const orgId = 'organizationId123';
 
 jest.mock('@/lib/session', () => {
     const mockGetSession = jest.fn();
@@ -38,7 +38,7 @@ test('project setup', async () => {
     await prisma.user.create({ data: { email: '4', name: '', password: pwHash, id: emp2.id } });
     await prisma.organization.create({
         data: {
-            id: organizationId,
+            id: orgId,
             name: 'o',
             currency: 'EUR',
             Members: {
@@ -61,7 +61,7 @@ const mockedGetSession = getSession as jest.Mock;
 
 test('employee can start and stop timer', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res = await startTimer({ memberId: emp1.memberId, organizationId });
+    const res = await startTimer({ memberId: emp1.memberId, orgId });
     expect(res.success).toBe(true);
     const stopRes = await stopTimer({ timeEntryId: res.data!.id });
     expect(stopRes.success).toBe(true);
@@ -69,7 +69,7 @@ test('employee can start and stop timer', async () => {
 
 test('manager can start and stop timer', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res = await startTimer({ memberId: manager.memberId, organizationId });
+    const res = await startTimer({ memberId: manager.memberId, orgId });
     expect(res.success).toBe(true);
     const stopRes = await stopTimer({ timeEntryId: res.data!.id });
     expect(stopRes.success).toBe(true);
@@ -77,7 +77,7 @@ test('manager can start and stop timer', async () => {
 
 test('owner can start and stop timer', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await startTimer({ memberId: owner.memberId, organizationId });
+    const res = await startTimer({ memberId: owner.memberId, orgId });
     expect(res.success).toBe(true);
     const stopRes = await stopTimer({ timeEntryId: res.data!.id });
     expect(stopRes.success).toBe(true);
@@ -87,7 +87,7 @@ test('owner can start and stop timer', async () => {
 
 test('employee can create manual time entry and remove it', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res = await manualTimeEntry({ organizationId, start: new Date(), end: new Date() });
+    const res = await manualTimeEntry({ orgId, start: new Date(), end: new Date() });
     expect(res.success).toBe(true);
     const removeRes = await removeTimeEntries({ timeEntryIds: [res.data!.id] });
     expect(removeRes.success).toBe(true);
@@ -95,11 +95,11 @@ test('employee can create manual time entry and remove it', async () => {
 
 test('employee cannot edit other time entries', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: emp2.id });
-    const res = await manualTimeEntry({ organizationId, start: new Date(), end: new Date() });
+    const res = await manualTimeEntry({ orgId, start: new Date(), end: new Date() });
     expect(res.success).toBe(true);
 
     mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res2 = await manualTimeEntry({ timeEntryId: res.data!.id, organizationId, start: new Date(), end: new Date() });
+    const res2 = await manualTimeEntry({ timeEntryId: res.data!.id, orgId, start: new Date(), end: new Date() });
     expect(res2.success).toBe(false);
     mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
     const removeRes = await removeTimeEntries({ timeEntryIds: [res.data!.id] });
@@ -108,7 +108,7 @@ test('employee cannot edit other time entries', async () => {
 
 test('manager can create manual time entry and remove it', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res = await manualTimeEntry({ organizationId, start: new Date(), end: new Date() });
+    const res = await manualTimeEntry({ orgId, start: new Date(), end: new Date() });
     expect(res.success).toBe(true);
     const removeRes = await removeTimeEntries({ timeEntryIds: [res.data!.id] });
     expect(removeRes.success).toBe(true);
@@ -116,11 +116,11 @@ test('manager can create manual time entry and remove it', async () => {
 
 test('manager can edit other time entries', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: emp2.id });
-    const res = await manualTimeEntry({ organizationId, start: new Date(), end: new Date() });
+    const res = await manualTimeEntry({ orgId, start: new Date(), end: new Date() });
     expect(res.success).toBe(true);
 
     mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res2 = await manualTimeEntry({ timeEntryId: res.data!.id, organizationId, start: new Date(), end: new Date() });
+    const res2 = await manualTimeEntry({ timeEntryId: res.data!.id, orgId, start: new Date(), end: new Date() });
     expect(res2.success).toBe(true);
     mockedGetSession.mockReturnValueOnce({ userId: manager.id });
     const removeRes = await removeTimeEntries({ timeEntryIds: [res.data!.id] });
@@ -129,7 +129,7 @@ test('manager can edit other time entries', async () => {
 
 test('owner can create manual time entry and remove it', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await manualTimeEntry({ organizationId, start: new Date(), end: new Date() });
+    const res = await manualTimeEntry({ orgId, start: new Date(), end: new Date() });
     expect(res.success).toBe(true);
     const removeRes = await removeTimeEntries({ timeEntryIds: [res.data!.id] });
     expect(removeRes.success).toBe(true);
@@ -137,11 +137,11 @@ test('owner can create manual time entry and remove it', async () => {
 
 test('owner can edit other time entries', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: emp2.id });
-    const res = await manualTimeEntry({ organizationId, start: new Date(), end: new Date() });
+    const res = await manualTimeEntry({ orgId, start: new Date(), end: new Date() });
     expect(res.success).toBe(true);
 
     mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res2 = await manualTimeEntry({ timeEntryId: res.data!.id, organizationId, start: new Date(), end: new Date() });
+    const res2 = await manualTimeEntry({ timeEntryId: res.data!.id, orgId, start: new Date(), end: new Date() });
     expect(res2.success).toBe(true);
     mockedGetSession.mockReturnValueOnce({ userId: owner.id });
     const removeRes = await removeTimeEntries({ timeEntryIds: [res.data!.id] });

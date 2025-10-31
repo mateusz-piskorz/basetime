@@ -5,15 +5,25 @@ import 'server-only';
 type Bucket = 'main' | 'public';
 
 export const minioClient = new Minio.Client({
-    endPoint: process.env.MINIO_ENDPOINT!,
+    endPoint: process.env.NEXT_PUBLIC_MINIO_ENDPOINT!,
     port: process.env.MINIO_PORT ? Number(process.env.MINIO_PORT) : undefined,
     accessKey: process.env.MINIO_USER,
     secretKey: process.env.MINIO_PASSWORD,
     useSSL: process.env.MINIO_SSL === 'true',
 });
 
-export const uploadFile = async ({ bucket, file, fileName }: { bucket: Bucket; fileName: string; file: Buffer }) => {
-    await minioClient.putObject(bucket, fileName, file);
+export const uploadFile = async ({
+    bucket,
+    file,
+    fileName,
+    contentType,
+}: {
+    bucket: Bucket;
+    fileName: string;
+    file: Buffer;
+    contentType?: string;
+}) => {
+    await minioClient.putObject(bucket, fileName, file, undefined, contentType ? { 'Content-Type': contentType } : undefined);
 };
 
 export const deleteFile = async ({ bucket, fileName }: { bucket: Bucket; fileName: string }) => {

@@ -7,14 +7,14 @@ import z from 'zod';
 import { publicProcedure } from '../init';
 
 export const organizations = publicProcedure
-    .input(z.object({ organizationId: z.string().nullish(), limit: z.number().optional() }))
-    .query(async ({ input: { organizationId, limit } }) => {
+    .input(z.object({ orgId: z.string().nullish(), limit: z.number().optional() }))
+    .query(async ({ input: { orgId, limit } }) => {
         const session = await getSession();
         if (!session) return [];
 
         const res = await prisma.organization.findMany({
             where: {
-                ...(organizationId && { id: organizationId }),
+                ...(orgId && { id: orgId }),
                 Members: { some: { userId: session.userId } },
             },
             include: {

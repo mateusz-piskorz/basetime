@@ -1,18 +1,18 @@
 'use server';
 
 import { MEMBER_ROLE } from '@prisma/client';
-import { action } from '.';
 import { prisma } from '../prisma';
 import { createProjectSchemaS, deleteProjectSchemaS } from '../zod/project-schema';
+import { action } from './_utils';
 
 export const upsertProject = action(createProjectSchemaS, async (validated, session) => {
     try {
-        const { memberIds, name, estimatedMinutes, color, organizationId, projectId } = validated;
+        const { memberIds, name, estimatedMinutes, color, orgId, projectId } = validated;
 
         const data = {
             Organization: {
                 connect: {
-                    id: organizationId,
+                    id: orgId,
                     Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] as MEMBER_ROLE[] } } },
                 },
             },

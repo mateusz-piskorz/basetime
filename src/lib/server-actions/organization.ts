@@ -1,10 +1,10 @@
 'use server';
 
 import bcrypt from 'bcrypt';
-import { action } from '.';
-import { deleteFile } from '../minio';
+import { deleteFile, uploadFile } from '../minio';
 import { prisma } from '../prisma';
-import { deleteOrgSchemaS, upsertOrgSchemaS } from '../zod/organization-schema';
+import { deleteOrgSchemaS, updateOrgLogoSchema, upsertOrgSchemaS } from '../zod/organization-schema';
+import { action, validateBase64 } from './_utils';
 
 export const upsertOrg = action(upsertOrgSchemaS, async (validated, session) => {
     const { name, currency, organizationId, roundUpMinutesThreshold, weekStart } = validated;
@@ -34,16 +34,39 @@ export const upsertOrg = action(upsertOrgSchemaS, async (validated, session) => 
     }
 });
 
-export const deleteOrg = action(deleteOrgSchemaS, async ({ organizationId, password }, { userId }) => {
+export const updateOrgLogo = action(updateOrgLogoSchema, async ({ logoBase64, orgId }, { userId }) => {
+    const fileName = `organization/${orgId}/logo.png`;
+    try {
+        const organization = await prisma.organization.findUnique({
+            where: { id: orgId, Members: { some: { userId: userId, role: 'OWNER' } } },
+        });
+        if (!organization) return { success: false, message: 'Error permissions' };
+
+        if (logoBase64) {
+            const buffer = await validateBase64({ base64: logoBase64, type: 'png', height: 276, width: 276 });
+            if (!buffer) return { success: false, message: 'Error validating fields' };
+
+            await uploadFile({ bucket: 'main', file: buffer, fileName, contentType: 'image/png' });
+        } else {
+            await deleteFile({ bucket: 'main', fileName });
+        }
+
+        return { success: true };
+    } catch {
+        return { success: false, message: 'Error - updateOrgLogo' };
+    }
+});
+
+export const deleteOrg = action(deleteOrgSchemaS, async ({ orgId, password }, { userId }) => {
     try {
         const user = await prisma.user.findUnique({ where: { id: userId }, select: { password: true } });
 
         if (!user) return { success: false, message: 'Error user not found' };
         if (!(await bcrypt.compare(password, user?.password))) return { success: false, message: 'Error password incorrect' };
 
-        await prisma.organization.delete({ where: { id: organizationId, Members: { some: { userId, role: 'OWNER' } } } });
+        await prisma.organization.delete({ where: { id: orgId, Members: { some: { userId, role: 'OWNER' } } } });
 
-        const fileName = `organization/${organizationId}/logo.png`;
+        const fileName = `organization/${orgId}/logo.png`;
         await deleteFile({ bucket: 'main', fileName });
 
         return { success: true };

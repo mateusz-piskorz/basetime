@@ -20,7 +20,7 @@ const emp2 = {
     memberId: 'idEmp2Member',
 };
 
-const organizationId = 'organizationId123';
+const orgId = 'organizationId123';
 const projectId = 'projectId123';
 const project2Id = 'projectId1234';
 
@@ -40,7 +40,7 @@ test('project setup', async () => {
     await prisma.user.create({ data: { email: '4', name: '', password: pwHash, id: emp2.id } });
     await prisma.organization.create({
         data: {
-            id: organizationId,
+            id: orgId,
             name: 'o',
             currency: 'EUR',
             Projects: {
@@ -70,20 +70,20 @@ const mockedGetSession = getSession as jest.Mock;
 // updateProject
 test('employee cannot update project', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res = await upsertProject({ organizationId, projectId, color: 'ORANGE' });
+    const res = await upsertProject({ orgId, projectId, color: 'ORANGE' });
     expect(res.success).toBe(false);
 });
 
 test('manager can update project', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res = await upsertProject({ organizationId, projectId, color: 'ORANGE' });
+    const res = await upsertProject({ orgId, projectId, color: 'ORANGE' });
     expect(res.success).toBe(true);
     expect(res.data?.color).toBe('ORANGE');
 });
 
 test('owner can update project', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await upsertProject({ organizationId, projectId, color: 'BLUE' });
+    const res = await upsertProject({ orgId, projectId, color: 'BLUE' });
     expect(res.success).toBe(true);
     expect(res.data?.color).toBe('BLUE');
 });
@@ -92,7 +92,7 @@ test('owner can update project', async () => {
 test('owner can create project', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: owner.id });
     const projectName = 'new project';
-    const res = await upsertProject({ organizationId, color: 'GRAY', name: projectName });
+    const res = await upsertProject({ orgId, color: 'GRAY', name: projectName });
     expect(res.success).toBe(true);
     expect(res.data?.name).toBe(projectName);
 });
@@ -100,7 +100,7 @@ test('owner can create project', async () => {
 test('manager can create project', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: manager.id });
     const projectName = 'new project2';
-    const res = await upsertProject({ organizationId, color: 'BLUE', name: projectName });
+    const res = await upsertProject({ orgId, color: 'BLUE', name: projectName });
     expect(res.success).toBe(true);
     expect(res.data?.name).toBe(projectName);
 });

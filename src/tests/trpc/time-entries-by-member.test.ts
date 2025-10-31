@@ -42,7 +42,7 @@ const owner = {
     projectId: 'u3pId',
 };
 
-const organizationId = 'oid';
+const orgId = 'oid';
 
 const mockedGetSession = getSession as jest.Mock;
 const queryClient = getQueryClient();
@@ -52,7 +52,7 @@ afterEach(() => {
 });
 
 test('time-entries-by-member setup', async () => {
-    await prisma.organization.create({ data: { currency: 'EUR', name: '', id: organizationId } });
+    await prisma.organization.create({ data: { currency: 'EUR', name: '', id: orgId } });
     const users = [employee, manager, owner];
 
     for (const index in users) {
@@ -67,9 +67,9 @@ test('time-entries-by-member setup', async () => {
                 Members: {
                     create: {
                         id: user.memberId,
-                        organizationId: organizationId,
+                        organizationId: orgId,
                         role: user.role,
-                        Projects: { create: { color: 'BLUE', name: '', id: user.projectId, organizationId } },
+                        Projects: { create: { color: 'BLUE', name: '', id: user.projectId, organizationId: orgId } },
                         TimeEntries: {
                             create: [
                                 {
@@ -77,7 +77,7 @@ test('time-entries-by-member setup', async () => {
                                     start: user.timeEntry.start,
                                     end: user.timeEntry.end,
                                     id: user.timeEntry.id,
-                                    organizationId,
+                                    organizationId: orgId,
                                     projectId: user.projectId,
                                 },
                             ],
@@ -90,14 +90,14 @@ test('time-entries-by-member setup', async () => {
 });
 
 test('returns null for unauthenticated users', async () => {
-    expect(await queryClient.fetchQuery(trpc.timeEntriesByMember.queryOptions({ organizationId }))).toEqual([]);
+    expect(await queryClient.fetchQuery(trpc.timeEntriesByMember.queryOptions({ orgId }))).toEqual([]);
 });
 
 test('employee can get his timeEntries', async () => {
     const { id, memberId } = employee;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesByMember.queryOptions({ organizationId, members: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesByMember.queryOptions({ orgId, members: [manager.memberId, employee.memberId, owner.memberId] }),
     );
 
     expect(res.length).toBe(1);
@@ -108,7 +108,7 @@ test('manager can get others timeEntries', async () => {
     const { id } = manager;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesByMember.queryOptions({ organizationId, members: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesByMember.queryOptions({ orgId, members: [manager.memberId, employee.memberId, owner.memberId] }),
     );
 
     expect(res.length).toBe(3);
@@ -118,7 +118,7 @@ test('owner can get others timeEntries', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesByMember.queryOptions({ organizationId, members: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesByMember.queryOptions({ orgId, members: [manager.memberId, employee.memberId, owner.memberId] }),
     );
 
     expect(res.length).toBe(3);
@@ -127,7 +127,7 @@ test('owner can get others timeEntries', async () => {
 test('members arg works - timeEntries', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
-    const res = await queryClient.fetchQuery(trpc.timeEntriesByMember.queryOptions({ organizationId, members: [employee.memberId, owner.memberId] }));
+    const res = await queryClient.fetchQuery(trpc.timeEntriesByMember.queryOptions({ orgId, members: [employee.memberId, owner.memberId] }));
 
     expect(res.length).toBe(2);
     res.forEach((member) => {
@@ -138,11 +138,11 @@ test('members arg works - timeEntries', async () => {
 test('members all arg works - timeEntries', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
-    const res1 = await queryClient.fetchQuery(trpc.timeEntriesByMember.queryOptions({ organizationId }));
+    const res1 = await queryClient.fetchQuery(trpc.timeEntriesByMember.queryOptions({ orgId }));
     expect(res1.length).toBe(1);
 
     mockedGetSession.mockReturnValueOnce({ userId: id });
-    const res2 = await queryClient.fetchQuery(trpc.timeEntriesByMember.queryOptions({ organizationId, members: 'all' }));
+    const res2 = await queryClient.fetchQuery(trpc.timeEntriesByMember.queryOptions({ orgId, members: 'all' }));
     expect(res2.length).toBe(3);
 });
 
@@ -151,7 +151,7 @@ test('projects arg works - timeEntries', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesByMember.queryOptions({
-            organizationId,
+            orgId,
             members: [employee.memberId, owner.memberId, manager.memberId],
             projectIds: [employee.projectId, manager.projectId],
         }),
@@ -169,7 +169,7 @@ test('projects arg employee permission - timeEntries', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesByMember.queryOptions({
-            organizationId,
+            orgId,
             members: [employee.memberId, owner.memberId, manager.memberId],
             projectIds: [employee.projectId, manager.projectId],
         }),
@@ -184,7 +184,7 @@ test('startDate, endDate arg works - timeEntries', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesByMember.queryOptions({
-            organizationId,
+            orgId,
             members: [employee.memberId, owner.memberId, manager.memberId],
             startDate: dayjs().subtract(6, 'h').subtract(30, 'minutes').toDate().toString(),
             endDate: dayjs().subtract(3, 'h').subtract(30, 'minutes').toDate().toString(),

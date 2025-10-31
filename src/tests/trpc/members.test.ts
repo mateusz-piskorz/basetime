@@ -5,7 +5,7 @@ import { getQueryClient, trpc } from '@/lib/trpc/server-client';
 const employee = { id: 'u1', role: 'EMPLOYEE', memberId: 'u1m' } as const;
 const manager = { id: 'u2', role: 'MANAGER', memberId: 'u2m' } as const;
 const owner = { id: 'u3', role: 'OWNER', memberId: 'u3m' } as const;
-const organizationId = 'oid';
+const orgId = 'oid';
 const salary = 25;
 
 const mockedGetSession = getSession as jest.Mock;
@@ -17,7 +17,7 @@ afterEach(() => {
 
 test('members setup', async () => {
     const users = [employee, manager, owner];
-    const organization = await prisma.organization.create({ data: { name: '', currency: 'EUR', id: organizationId } });
+    const organization = await prisma.organization.create({ data: { name: '', currency: 'EUR', id: orgId } });
 
     for (const index in users) {
         const user = users[index];
@@ -37,13 +37,13 @@ test('members setup', async () => {
 });
 
 test('returns empty array for unauthenticated users', async () => {
-    expect(await queryClient.fetchQuery(trpc.members.queryOptions({ organizationId }))).toEqual([]);
+    expect(await queryClient.fetchQuery(trpc.members.queryOptions({ orgId }))).toEqual([]);
 });
 
 test('employee can get members', async () => {
     const { id } = employee;
     mockedGetSession.mockReturnValueOnce({ userId: id });
-    const res = await queryClient.fetchQuery(trpc.members.queryOptions({ organizationId }));
+    const res = await queryClient.fetchQuery(trpc.members.queryOptions({ orgId }));
 
     expect(res.length).toBe(3);
     // employee sees only his salary
@@ -59,7 +59,7 @@ test('employee can get members', async () => {
 test('manager can get members', async () => {
     const { id } = manager;
     mockedGetSession.mockReturnValueOnce({ userId: id });
-    const res = await queryClient.fetchQuery(trpc.members.queryOptions({ organizationId }));
+    const res = await queryClient.fetchQuery(trpc.members.queryOptions({ orgId }));
 
     expect(res.length).toBe(3);
     res.forEach((member) => {
@@ -70,7 +70,7 @@ test('manager can get members', async () => {
 test('owner can get members', async () => {
     const { id } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
-    const res = await queryClient.fetchQuery(trpc.members.queryOptions({ organizationId }));
+    const res = await queryClient.fetchQuery(trpc.members.queryOptions({ orgId }));
 
     expect(res.length).toBe(3);
     res.forEach((member) => {
@@ -84,7 +84,7 @@ test('hourlyRate returns latest salary', async () => {
     await prisma.member.update({ where: { id: memberId }, data: { HourlyRates: { create: { value: newestSalary } } } });
 
     mockedGetSession.mockReturnValueOnce({ userId: id });
-    const res = await queryClient.fetchQuery(trpc.members.queryOptions({ organizationId }));
+    const res = await queryClient.fetchQuery(trpc.members.queryOptions({ orgId }));
 
     expect(res.length).toBe(3);
     const employeeMember = res.find((e) => e.id === memberId);

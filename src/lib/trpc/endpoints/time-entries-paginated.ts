@@ -9,7 +9,7 @@ import { publicProcedure } from '../init';
 export const timeEntriesPaginated = publicProcedure
     .input(
         z.object({
-            organizationId: z.string(),
+            orgId: z.string(),
             projects: z.array(z.string()).nullish(),
             members: z.union([z.array(z.string()), z.literal('all')]).nullish(),
             page: z.number().nullish(),
@@ -24,19 +24,7 @@ export const timeEntriesPaginated = publicProcedure
     )
     .query(
         async ({
-            input: {
-                organizationId,
-                members,
-                projects,
-                limit: limitInput,
-                order_column,
-                order_direction,
-                page: pageInput,
-                q,
-                takeAll,
-                startDate,
-                endDate,
-            },
+            input: { orgId, members, projects, limit: limitInput, order_column, order_direction, page: pageInput, q, takeAll, startDate, endDate },
         }) => {
             const session = await getSession();
             if (!session) return { totalPages: 1, total: 0, page: 1, limit: 25, data: [] };
@@ -49,7 +37,7 @@ export const timeEntriesPaginated = publicProcedure
             const skip = limit ? (page - 1) * limit : undefined;
 
             const where = {
-                organizationId,
+                organizationId: orgId,
                 ...(q && { name: { contains: q } }),
                 ...(members === 'all'
                     ? {

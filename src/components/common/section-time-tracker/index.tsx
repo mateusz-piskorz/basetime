@@ -27,7 +27,7 @@ export const SectionTimeTracker = ({ className }: Props) => {
     const trpcUtils = trpc.useUtils();
     const {
         member: { id: memberId },
-        organizationId,
+        orgId,
     } = useMember();
 
     const { data: activeTimeEntry, isPending, refetch } = trpc.activeTimeEntry.useQuery({ memberId });
@@ -47,7 +47,7 @@ export const SectionTimeTracker = ({ className }: Props) => {
             form.reset({ name: '', projectId: 'no-project' });
         } else {
             const projectId = data.projectId === 'no-project' ? undefined : data.projectId;
-            res = await startTimer({ ...data, projectId, organizationId, memberId });
+            res = await startTimer({ ...data, projectId, orgId, memberId });
         }
 
         if (!res.success) {
@@ -55,8 +55,8 @@ export const SectionTimeTracker = ({ className }: Props) => {
             return;
         }
         refetch();
-        trpcUtils.timeEntriesByMember.refetch({ organizationId });
-        trpcUtils.timeEntriesPaginated.refetch({ organizationId });
+        trpcUtils.timeEntriesByMember.refetch({ orgId });
+        trpcUtils.timeEntriesPaginated.refetch({ orgId });
     };
     return (
         <div className={cn('space-y-8 px-4 md:px-6 lg:px-8', className)}>

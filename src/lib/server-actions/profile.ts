@@ -1,10 +1,11 @@
 'use server';
 
+import { createId } from '@paralleldrive/cuid2';
 import bcrypt from 'bcrypt';
-import { action } from '.';
-import { deleteFile } from '../minio';
+import { deleteFile, uploadFile } from '../minio';
 import { prisma } from '../prisma';
-import { deleteUserAccountSchema, updatePasswordSchema, updateProfileSchema } from '../zod/profile-schema';
+import { deleteUserAccountSchema, updatePasswordSchema, updateProfileAvatarSchema, updateProfileSchema } from '../zod/profile-schema';
+import { action, validateBase64 } from './_utils';
 
 export const updateProfile = action(updateProfileSchema, async ({ name }, { userId }) => {
     try {
@@ -32,6 +33,30 @@ export const updatePassword = action(updatePasswordSchema, async ({ current_pass
         return { success: true, data: res };
     } catch {
         return { success: false, message: 'Error - updatePassword' };
+    }
+});
+
+export const updateProfileAvatar = action(updateProfileAvatarSchema, async ({ avatarBase64 }, { userId, avatarId }) => {
+    try {
+        if (avatarBase64) {
+            const buffer = await validateBase64({ base64: avatarBase64, type: 'jpeg', height: 276, width: 276 });
+            if (!buffer) return { success: false, message: 'Error validating fields' };
+
+            const newAvatarId = createId();
+
+            if (avatarId) await deleteFile({ bucket: 'public', fileName: `user-avatar/${avatarId}.jpeg` });
+
+            await uploadFile({ bucket: 'public', file: buffer, fileName: `user-avatar/${newAvatarId}.jpeg`, contentType: 'image/jpeg' });
+            await prisma.user.update({ where: { id: userId }, data: { avatarId: newAvatarId } });
+        } else {
+            if (avatarId) await deleteFile({ bucket: 'public', fileName: `user-avatar/${avatarId}.jpeg` });
+            await prisma.user.update({ where: { id: userId }, data: { avatarId: null } });
+        }
+
+        return { success: true };
+    } catch (e) {
+        console.log({ e });
+        return { success: false, message: 'Error - updateProfileAvatar' };
     }
 });
 

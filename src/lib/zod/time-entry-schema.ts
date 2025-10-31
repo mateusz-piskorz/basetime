@@ -8,7 +8,7 @@ export const startTimerSchema = z.object({
 export const startTimerSchemaS = z.object({
     name: z.string().optional(),
     projectId: z.string().nullish(),
-    organizationId: z.string(),
+    orgId: z.string(),
     memberId: z.string(),
 });
 
@@ -18,7 +18,7 @@ export const manualTimeEntrySchemaS = z.object({
     start: z.date(),
     end: z.date(),
     projectId: z.string().optional(),
-    organizationId: z.string(),
+    orgId: z.string(),
 });
 
 export const manualTimeEntrySchema = z.object({

@@ -20,19 +20,19 @@ describe('createBlogPostComment', () => {
     });
 
     test('authenticated user can create comment', async () => {
-        mockSession(userId, 'USER');
+        mockSession(userId, { role: 'USER' });
         expect((await createBlogPostComment({ postId, content: 'content' })).success).toBe(true);
         expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(3);
     });
 
     test('cannot create reply to deleted comment', async () => {
-        mockSession(userId, 'USER');
+        mockSession(userId, { role: 'USER' });
         expect((await createBlogPostComment({ postId, content: 'content', parentId: deletedComment })).success).toBe(false);
         expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(3);
     });
 
     test('can create reply to regular comment', async () => {
-        mockSession(userId, 'USER');
+        mockSession(userId, { role: 'USER' });
         expect((await createBlogPostComment({ postId, content: 'content', parentId: comment })).success).toBe(true);
         expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(4);
     });
@@ -54,13 +54,13 @@ describe('upvoteBlogPost', () => {
     });
 
     test('authenticated user can upvote blog post', async () => {
-        mockSession(userId, 'USER');
+        mockSession(userId, { role: 'USER' });
         expect((await upvoteBlogPost({ postId })).success).toBe(true);
         expect((await prisma.blogPostUpvote.findMany({ where: { postId } })).length).toBe(1);
     });
 
     test('authenticated user can remove upvote blog post', async () => {
-        mockSession(userId, 'USER');
+        mockSession(userId, { role: 'USER' });
         expect((await upvoteBlogPost({ postId })).success).toBe(true);
         expect((await prisma.blogPostUpvote.findMany({ where: { postId } })).length).toBe(0);
     });
@@ -84,13 +84,13 @@ describe('upvoteBlogPostComment', () => {
     });
 
     test('authenticated user can upvote blog post', async () => {
-        mockSession(userId, 'USER');
+        mockSession(userId, { role: 'USER' });
         expect((await upvoteBlogPostComment({ commentId })).success).toBe(true);
         expect((await prisma.blogPostCommentUpvote.findMany({ where: { commentId } })).length).toBe(1);
     });
 
     test('authenticated user can remove upvote blog post', async () => {
-        mockSession(userId, 'USER');
+        mockSession(userId, { role: 'USER' });
         expect((await upvoteBlogPostComment({ commentId })).success).toBe(true);
         expect((await prisma.blogPostCommentUpvote.findMany({ where: { commentId } })).length).toBe(0);
     });
@@ -152,26 +152,26 @@ describe('deleteBlogPostComment', () => {
     });
 
     test(`authenticated user cannot delete someone's comment`, async () => {
-        mockSession(userId1, 'USER');
+        mockSession(userId1, { role: 'USER' });
         expect((await deleteBlogPostComment({ commentId: rootComment2 })).success).toBe(false);
         expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(6);
     });
 
     test('authenticated user can delete comment without replies', async () => {
-        mockSession(userId2, 'USER');
+        mockSession(userId2, { role: 'USER' });
         expect((await deleteBlogPostComment({ commentId: rootComment2 })).success).toBe(true);
         expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(5);
     });
 
     test('comment with replies should be soft deleted', async () => {
-        mockSession(userId1, 'USER');
+        mockSession(userId1, { role: 'USER' });
         expect((await deleteBlogPostComment({ commentId: rootComment1.reply1.replyNestedLv1.id })).success).toBe(true);
         expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(5);
         expect((await prisma.blogPostComment.findUnique({ where: { id: rootComment1.reply1.replyNestedLv1.id } }))?.deleted).toBe(true);
     });
 
     test('removing reply should also remove all parents marked with delete flag', async () => {
-        mockSession(userId1, 'USER');
+        mockSession(userId1, { role: 'USER' });
         expect((await deleteBlogPostComment({ commentId: rootComment1.reply1.replyNestedLv1.replyNestedLv2 })).success).toBe(true);
         expect((await prisma.blogPostComment.findMany({ where: { postId } })).length).toBe(2);
         expect(await prisma.blogPostComment.findUnique({ where: { id: rootComment1.reply1.replyNestedLv1.replyNestedLv2 } })).toBe(null);

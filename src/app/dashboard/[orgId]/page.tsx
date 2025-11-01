@@ -1,9 +1,9 @@
 import { permanentRedirect } from 'next/navigation';
 
-type Props = { params: Awaited<{ organizationId: string }> };
+type Props = { params: Promise<{ orgId: string }> };
 
 export default async function OrganizationPage({ params }: Props) {
-    const { organizationId } = await params;
+    const { orgId } = await params;
 
-    permanentRedirect(`/dashboard/${organizationId}/overview`);
+    permanentRedirect(`/dashboard/${orgId}/overview`);
 }

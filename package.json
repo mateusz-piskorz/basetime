@@ -95,5 +95,8 @@
         "ts-jest": "^29.4.1",
         "tw-animate-css": "^1.3.7",
         "typescript": "^5"
+    },
+    "overrides": {
+        "test-exclude": "^7.0.1"
     }
 }

@@ -56,7 +56,7 @@ export const BlogPostCard = ({ post, className }: Props) => {
                     <h1 className="text-xl xl:text-2xl 2xl:text-3xl">{post.title}</h1>
                     <p className="text-muted-foreground text-sm 2xl:text-base">{post.description}</p>
 
-                    <div className="mt-auto flex items-center gap-4">
+                    <div className="relative mt-auto flex items-center gap-4">
                         <span className="flex items-center gap-2">
                             <span className="sr-only">upvotes</span>
                             <Sparkles className="size-3.5" /> {post._count.Upvotes}

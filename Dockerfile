@@ -8,14 +8,13 @@ FROM base AS deps
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+COPY package.json package-lock.json* ./
 RUN npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 
-ENV NODE_OPTIONS="--max-old-space-size=2048"
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .

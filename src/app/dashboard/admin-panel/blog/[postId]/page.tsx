@@ -4,7 +4,7 @@ import { getAppEnv } from '@/lib/utils/common';
 import { Editor } from './_partials/editor';
 import { SeedBlogPostComments } from './_partials/seed-blog-post-comments';
 
-type Props = { params: Awaited<{ postId: string }> };
+type Props = { params: Promise<{ postId: string }> };
 
 const PostPage = async ({ params }: Props) => {
     const { postId } = await params;

@@ -13,24 +13,24 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export const SidebarContent = () => {
-    const { organizationId, member } = useMember();
+    const { orgId, member } = useMember();
     const pathname = usePathname();
     const { setOpenMobile } = useSidebar();
 
     const items = [
         {
             title: 'Overview',
-            href: `/dashboard/${organizationId}/overview`,
+            href: `/dashboard/${orgId}/overview`,
             icon: LayoutGrid,
         },
         {
             title: 'Time',
-            href: `/dashboard/${organizationId}/time`,
+            href: `/dashboard/${orgId}/time`,
             icon: Clock,
         },
         {
             title: 'Reports',
-            href: `/dashboard/${organizationId}/reports`,
+            href: `/dashboard/${orgId}/reports`,
             icon: ChartNoAxesColumnIncreasing,
         },
     ];
@@ -38,19 +38,19 @@ export const SidebarContent = () => {
     const manageItems = [
         {
             title: 'Projects',
-            href: `/dashboard/${organizationId}/projects`,
+            href: `/dashboard/${orgId}/projects`,
             icon: FolderClosed,
         },
         {
             title: 'Members',
-            href: `/dashboard/${organizationId}/members`,
+            href: `/dashboard/${orgId}/members`,
             icon: Users2,
         },
         ...(member.role == 'OWNER'
             ? [
                   {
                       title: 'Settings',
-                      href: `/dashboard/${organizationId}/settings`,
+                      href: `/dashboard/${orgId}/settings`,
                       icon: Settings,
                   },
               ]

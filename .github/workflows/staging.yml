@@ -68,7 +68,7 @@ jobs:
       MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
       MINIO_USER: ${{ vars.MINIO_USER }}
       MINIO_PASSWORD: ${{ secrets.MINIO_PASSWORD }}
-      MINIO_ENDPOINT: ${{ vars.MINIO_ENDPOINT }}
+      NEXT_PUBLIC_MINIO_ENDPOINT: ${{ vars.NEXT_PUBLIC_MINIO_ENDPOINT }}
       MINIO_SSL: ${{ vars.MINIO_SSL }}
 
     defaults:

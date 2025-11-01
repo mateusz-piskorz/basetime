@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-
 import { CreateOrganizationDialog } from '@/components/common/create-organization-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -14,7 +12,7 @@ import { useState } from 'react';
 
 export const SidebarHeader = () => {
     const [open, setOpen] = useState(false);
-    const { logo, organizationName } = useMember();
+    const { orgLogo, orgName } = useMember();
     const { setOpenMobile } = useSidebar();
     const { data } = trpc.organizations.useQuery({});
 
@@ -27,7 +25,7 @@ export const SidebarHeader = () => {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <SidebarMenuButton size="lg" className="text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent group">
-                                    <OrgInfo name={organizationName} logo={logo} />
+                                    <OrgInfo name={orgName} logo={orgLogo} />
                                     <ChevronsUpDown className="ml-auto size-4" />
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>

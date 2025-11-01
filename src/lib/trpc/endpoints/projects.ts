@@ -5,13 +5,13 @@ import { formatMinutes, sumTimeEntries } from '@/lib/utils/common';
 import z from 'zod';
 import { publicProcedure } from '../init';
 
-export const projects = publicProcedure.input(z.object({ organizationId: z.string() })).query(async ({ input: { organizationId } }) => {
+export const projects = publicProcedure.input(z.object({ orgId: z.string() })).query(async ({ input: { orgId } }) => {
     const session = await getSession();
     if (!session) return [];
 
     const res = await prisma.project.findMany({
         where: {
-            organizationId,
+            organizationId: orgId,
             OR: [
                 { Members: { some: { userId: session.userId } } },
                 { Organization: { Members: { some: { userId: session.userId, role: { in: ['OWNER', 'MANAGER'] } } } } },

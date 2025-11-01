@@ -8,7 +8,7 @@ import { SectionProfileInfo } from './_partials/section-profile-info';
 
 export const UserSettings = () => {
     return (
-        <div className="space-y-8 py-8">
+        <div className="space-y-12 py-12">
             <SectionAppearance />
             <Separator />
             <SectionProfileInfo />

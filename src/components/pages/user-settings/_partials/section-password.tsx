@@ -34,11 +34,7 @@ export const SectionPassword = () => {
 
     return (
         <div className="space-y-8 px-4 md:px-8">
-            <DashboardHeading
-                className="mb-8"
-                title="Update password"
-                description="Ensure your account is using a long, random password to stay secure"
-            />
+            <DashboardHeading title="Update password" description="Ensure your account is using a long, random password to stay secure" />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" style={{ marginBottom: '16px' }}>
                     <InputField form={form} type="password" name="current_password" label="Current Password" />

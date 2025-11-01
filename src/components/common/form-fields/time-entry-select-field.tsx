@@ -31,11 +31,11 @@ type Props<T extends FieldValues> = {
 export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, name, disabled, className, classNameInput, placeholder }: Props<T>) => {
     const [open, setOpen] = useState(false);
     const { control } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
-    const { organizationId, member } = useMember();
+    const { orgId, member } = useMember();
     const [q, setQ] = useState('');
 
     const { data } = trpc.timeEntriesPaginated.useQuery({
-        organizationId,
+        orgId,
         members: [member.id],
         limit: 7,
         q,

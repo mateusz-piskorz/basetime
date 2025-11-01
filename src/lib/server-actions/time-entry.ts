@@ -1,14 +1,14 @@
 'use server';
 
-import { action } from '.';
 import { prisma } from '../prisma';
 import { manualTimeEntrySchemaS, removeTimeEntriesSchemaS, startTimerSchemaS, stopTimerSchemaS } from '../zod/time-entry-schema';
+import { action } from './_utils';
 
 // todo: check permission
-export const startTimer = action(startTimerSchemaS, async ({ memberId, organizationId, name, projectId }) => {
+export const startTimer = action(startTimerSchemaS, async ({ memberId, orgId, name, projectId }) => {
     try {
         const res = await prisma.timeEntry.create({
-            data: { start: new Date(), memberId, name: name || 'unnamed time entry', organizationId, projectId },
+            data: { start: new Date(), memberId, name: name || 'unnamed time entry', organizationId: orgId, projectId },
         });
 
         return { success: true, data: res };
@@ -45,15 +45,15 @@ export const removeTimeEntries = action(removeTimeEntriesSchemaS, async ({ timeE
 
 export const manualTimeEntry = action(manualTimeEntrySchemaS, async (validated, { userId }) => {
     try {
-        const { name, projectId, organizationId, end, start, timeEntryId } = validated;
-        const member = await prisma.member.findFirst({ where: { userId, organizationId } });
+        const { name, projectId, orgId, end, start, timeEntryId } = validated;
+        const member = await prisma.member.findFirst({ where: { userId, organizationId: orgId } });
 
         if (!member) return { success: false, message: 'Error member not found' };
 
         let res;
         if (timeEntryId) {
             res = await prisma.timeEntry.update({
-                data: { start, end, name: name || 'unnamed time entry', organizationId, projectId },
+                data: { start, end, name: name || 'unnamed time entry', organizationId: orgId, projectId },
                 where: {
                     id: timeEntryId,
                     OR: [{ Member: { userId } }, { Organization: { Members: { some: { userId, role: { in: ['OWNER', 'MANAGER'] } } } } }],
@@ -61,7 +61,7 @@ export const manualTimeEntry = action(manualTimeEntrySchemaS, async (validated, 
             });
         } else {
             res = await prisma.timeEntry.create({
-                data: { start, end, memberId: member.id, name: name || 'unnamed time entry', organizationId, projectId },
+                data: { start, end, memberId: member.id, name: name || 'unnamed time entry', organizationId: orgId, projectId },
             });
         }
 

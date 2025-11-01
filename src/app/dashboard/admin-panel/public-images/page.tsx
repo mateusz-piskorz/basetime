@@ -17,9 +17,9 @@ const PublicImagesPage = async () => {
 
             {objects?.map((obj) => {
                 const url =
-                    process.env.MINIO_ENDPOINT === 'localhost'
+                    process.env.NEXT_PUBLIC_MINIO_ENDPOINT === 'localhost'
                         ? `http://localhost:9000/public/${obj.name}`
-                        : `https://${process.env.MINIO_ENDPOINT}/public/${obj.name}`;
+                        : `https://${process.env.NEXT_PUBLIC_MINIO_ENDPOINT}/public/${obj.name}`;
                 return <ImgCard imgPath={`${obj.name}`} alt={obj.name || ''} url={url} key={obj.etag} />;
             })}
         </div>

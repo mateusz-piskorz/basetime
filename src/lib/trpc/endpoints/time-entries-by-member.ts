@@ -6,14 +6,14 @@ import { publicProcedure } from '../init';
 export const timeEntriesByMember = publicProcedure
     .input(
         z.object({
-            organizationId: z.string(),
+            orgId: z.string(),
             projectIds: z.array(z.string()).nullish(),
             members: z.union([z.array(z.string()), z.literal('all')]).nullish(),
             startDate: z.string().nullish(),
             endDate: z.string().nullish(),
         }),
     )
-    .query(async ({ input: { organizationId, members, projectIds, startDate, endDate } }) => {
+    .query(async ({ input: { orgId, members, projectIds, startDate, endDate } }) => {
         const session = await getSession();
         if (!session) return [];
 
@@ -22,7 +22,7 @@ export const timeEntriesByMember = publicProcedure
 
         const res = await prisma.member.findMany({
             where: {
-                organizationId,
+                organizationId: orgId,
                 ...(members === 'all'
                     ? { Organization: { Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] } } } } }
                     : members?.length

@@ -1,9 +1,9 @@
 import { prisma } from '@/lib/prisma';
-import { deleteOrg as deleteOrgAction, upsertOrg } from '@/lib/server-actions/organization';
+import { deleteOrg as deleteOrgAction, updateOrgLogo, upsertOrg } from '@/lib/server-actions/organization';
 import { CURRENCY } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import { getStatObject, uploadFile } from '../../lib/minio';
-import { loadTestNonSharedBuffer } from '../utils/example-img';
+import { getStatObject, minioClient, uploadFile } from '../../lib/minio';
+import { getTestBase64String, loadTestNonSharedBuffer } from '../utils/example-img';
 import { mockSession } from '../utils/mock-session';
 
 const owner = {
@@ -23,8 +23,8 @@ const emp2 = {
     memberId: 'idEmp2Member',
 };
 
-const organizationId = 'orgId123';
-const getOrgPrisma = async () => await prisma.organization.findUnique({ where: { id: organizationId } });
+const orgId = 'orgId123';
+const getOrgPrisma = async () => await prisma.organization.findUnique({ where: { id: orgId } });
 
 beforeAll(async () => {
     const pwHash = await bcrypt.hash('admin1234', 9);
@@ -34,7 +34,7 @@ beforeAll(async () => {
     await prisma.user.create({ data: { email: '4', name: '', password: pwHash, id: emp2.id } });
     await prisma.organization.create({
         data: {
-            id: organizationId,
+            id: orgId,
             name: 'original',
             currency: 'EUR',
             Members: {
@@ -52,7 +52,7 @@ beforeAll(async () => {
 });
 
 describe('update org', () => {
-    const updateOrg = async (name?: string, currency?: CURRENCY) => await upsertOrg({ organizationId, name, currency });
+    const updateOrg = async (name?: string, currency?: CURRENCY) => await upsertOrg({ organizationId: orgId, name, currency });
 
     test('employee cannot update organization', async () => {
         mockSession(emp1.id);
@@ -97,7 +97,7 @@ describe('create org', () => {
 
 describe('delete org', () => {
     const getOrgsPrisma = async () => await prisma.organization.findMany();
-    const deleteOrg = async () => await deleteOrgAction({ organizationId, password: 'admin1234' });
+    const deleteOrg = async () => await deleteOrgAction({ orgId, password: 'admin1234' });
 
     test('employee cannot delete organization', async () => {
         mockSession(emp1.id);
@@ -113,7 +113,7 @@ describe('delete org', () => {
 
     test('error password incorrect', async () => {
         mockSession(owner.id);
-        const res = await deleteOrgAction({ organizationId, password: 'incorrectPassword' });
+        const res = await deleteOrgAction({ orgId, password: 'incorrectPassword' });
         expect(res.success).toBe(false);
         expect(res.message).toBe('Error password incorrect');
         expect((await getOrgsPrisma()).length).toBe(2);
@@ -129,7 +129,7 @@ describe('delete org', () => {
     test('deleteOrganization also deletes logo', async () => {
         await prisma.organization.create({
             data: {
-                id: organizationId,
+                id: orgId,
                 name: 'o',
                 currency: 'EUR',
                 Members: {
@@ -140,11 +140,106 @@ describe('delete org', () => {
             },
         });
         mockSession(owner.id);
-        const fileName = `organization/${organizationId}/logo.png`;
+        const fileName = `organization/${orgId}/logo.png`;
         await uploadFile({ bucket: 'main', file: loadTestNonSharedBuffer(), fileName });
         expect(await getStatObject({ bucket: 'main', fileName })).not.toBe(undefined);
 
         expect((await deleteOrg()).success).toBe(true);
         expect(await getStatObject({ bucket: 'main', fileName })).toBe(undefined);
+    });
+});
+
+describe('updateOrgLogo', () => {
+    const orgId1 = 'orgId1';
+    const orgId2 = 'orgId2';
+    const userOwner = 'userId1';
+    const userEmployee = 'userId2';
+
+    beforeAll(async () => {
+        await prisma.user.deleteMany({});
+        await prisma.organization.deleteMany({});
+        await prisma.user.create({ data: { email: '1', name: '', password: '', id: userOwner } });
+        await prisma.user.create({ data: { email: '2', name: '', password: '', id: userEmployee } });
+        await prisma.organization.create({
+            data: {
+                id: orgId1,
+                currency: 'EUR',
+                name: '',
+                Members: {
+                    createMany: {
+                        data: [
+                            { role: 'OWNER', userId: userOwner },
+                            { role: 'EMPLOYEE', userId: userEmployee },
+                        ],
+                    },
+                },
+            },
+        });
+        await prisma.organization.create({
+            data: { id: orgId2, currency: 'EUR', name: '' },
+        });
+
+        await minioClient.removeObject('main', `organization/${orgId1}/logo.png`);
+        await minioClient.removeObject('main', `organization/${orgId2}/logo.png`);
+
+        await minioClient.putObject('main', `organization/${orgId2}/logo.png`, loadTestNonSharedBuffer(), undefined, {
+            'org2-meta-test': 'orgWithLogo',
+        });
+    });
+
+    test('employee cant update logo', async () => {
+        mockSession(userEmployee);
+
+        const res = await updateOrgLogo({ logoBase64: getTestBase64String(), orgId: orgId1 });
+
+        expect(res.success).toBe(false);
+
+        expect(await getStatObject({ bucket: 'main', fileName: `organization/${orgId1}/logo.png` })).toBe(undefined);
+
+        // org2 logo not changed
+        const obj = await getStatObject({ bucket: 'main', fileName: `organization/${orgId2}/logo.png` });
+        expect(obj?.metaData['org2-meta-test']).toBe('orgWithLogo');
+    });
+
+    test('owner can update logo', async () => {
+        mockSession(userOwner);
+
+        const res = await updateOrgLogo({ logoBase64: getTestBase64String(), orgId: orgId1 });
+
+        expect(res.success).toBe(true);
+
+        expect(await getStatObject({ bucket: 'main', fileName: `organization/${orgId1}/logo.png` })).not.toBe(undefined);
+
+        // org2 logo not changed
+        const obj = await getStatObject({ bucket: 'main', fileName: `organization/${orgId2}/logo.png` });
+        expect(obj?.metaData['org2-meta-test']).toBe('orgWithLogo');
+    });
+
+    test('employee cant remove logo', async () => {
+        mockSession(userEmployee);
+
+        const res = await updateOrgLogo({ logoBase64: null, orgId: orgId1 });
+
+        expect(res.success).toBe(false);
+
+        expect(await getStatObject({ bucket: 'main', fileName: `organization/${orgId1}/logo.png` })).not.toBe(undefined);
+
+        // org2 logo not changed
+        const obj = await getStatObject({ bucket: 'main', fileName: `organization/${orgId2}/logo.png` });
+        expect(obj?.metaData['org2-meta-test']).toBe('orgWithLogo');
+    });
+
+    test('owner can remove logo', async () => {
+        mockSession(userOwner);
+
+        const res = await updateOrgLogo({ logoBase64: null, orgId: orgId1 });
+
+        expect(res.success).toBe(true);
+
+        expect(await getStatObject({ bucket: 'main', fileName: `organization/${orgId1}/logo.png` })).toBe(undefined);
+
+        // org2 logo not changed
+        const obj = await getStatObject({ bucket: 'main', fileName: `organization/${orgId2}/logo.png` });
+        expect(obj?.metaData['org2-meta-test']).toBe('orgWithLogo');
     });
 });

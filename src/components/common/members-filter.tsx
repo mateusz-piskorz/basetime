@@ -11,9 +11,9 @@ type Props = {
 };
 
 export const MembersFilter = ({ members, setMembers }: Props) => {
-    const { organizationId, member } = useMember();
+    const { orgId, member } = useMember();
 
-    const { data } = trpc.members.useQuery({ organizationId });
+    const { data } = trpc.members.useQuery({ orgId });
     return (
         <MultiSelect
             options={(data || []).map(({ User, id }) => ({

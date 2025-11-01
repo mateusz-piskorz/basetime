@@ -1,70 +1,80 @@
 'use client';
 
+import ConfirmDialog from '@/components/common/confirm-dialog';
+import { CropDialog } from '@/components/common/crop-dialog';
 import { DashboardHeading } from '@/components/common/dashboard-heading';
 import { ImgInput } from '@/components/common/img-input';
+import { UserInfo } from '@/components/common/user-info';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { removeAvatar, updateAvatar } from '@/lib/avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { updateProfileAvatar } from '@/lib/server-actions/profile';
 import { getUserAvatarUrl } from '@/lib/utils/common';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 export const SectionAvatar = () => {
-    const router = useRouter();
+    const [confirm, setConfirm] = useState(false);
     const { user } = useAuth();
-    const [loading, setLoading] = useState(false);
-    const [img, setImg] = useState<File | undefined | null>(undefined);
-
-    const imgSrc = useMemo(() => {
-        return img ? URL.createObjectURL(img) : img === null ? null : user?.avatarId ? getUserAvatarUrl({ avatarId: user.avatarId }) : null;
-    }, [img, user]);
-
-    const handleSubmit = async () => {
-        if (img === undefined) return;
-        setLoading(true);
-        const res = img ? await updateAvatar(img) : await removeAvatar();
-
-        if (!res.success) {
-            toast.error('something went wrong');
-            setLoading(false);
-            return;
-        }
-
-        setImg(undefined);
-        setLoading(false);
-        router.refresh();
-        toast.success('Avatar updated successfully');
-    };
+    const userAvatar = user.avatarId ? getUserAvatarUrl({ avatarId: user.avatarId }) : null;
+    const router = useRouter();
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     return (
-        <div className="space-y-8 px-4 md:px-8">
-            <DashboardHeading className="mb-8" title="Update avatar" description="Choose a clear, distinctive image to help others recognize you." />
-            <Card variant="outline-light-theme" className="h-[280px] w-[350px] border-2 border-dashed p-0">
-                {imgSrc && (
-                    <div>
-                        <Image
-                            src={imgSrc}
-                            className="mx-auto mt-4 h-[180px] w-[200px] bg-center object-cover"
-                            alt="uploaded image"
-                            height={180}
-                            width={200}
-                        />
-                    </div>
-                )}
-
-                <ImgInput imgSrc={imgSrc} setImg={setImg} />
-            </Card>
-            <Button
-                disabled={loading}
-                onClick={async () => {
-                    await handleSubmit();
+        <>
+            <ConfirmDialog
+                onContinue={async () => {
+                    const res = await updateProfileAvatar({ avatarBase64: null });
+                    if (res.success) toast.success('Avatar updated successfully');
+                    else toast.error('something went wrong - updateProfileAvatar');
+                    router.refresh();
+                    setConfirm(false);
                 }}
-            >
-                Save
-            </Button>
-        </div>
+                open={confirm}
+                setOpen={setConfirm}
+                title="Do you really want to remove Your avatar"
+                description='"This action cannot be undone. Avatar will be removed permanently"'
+            />
+
+            {selectedFile && (
+                <CropDialog
+                    selectedFile={selectedFile}
+                    onCrop={async (croppedImg) => {
+                        const res = await updateProfileAvatar({ avatarBase64: croppedImg });
+                        if (res.success) toast.success('Avatar updated successfully');
+                        else toast.error('something went wrong - updateProfileAvatar');
+                        router.refresh();
+                        setSelectedFile(null);
+                    }}
+                    onCancel={() => {
+                        setSelectedFile(null);
+                    }}
+                />
+            )}
+
+            <div className="space-y-12 px-4 md:px-8">
+                <DashboardHeading title="Update avatar" description="Choose a clear, distinctive image to help others recognize you." />
+
+                {userAvatar && (
+                    <Card variant="outline-light-theme" className="flex max-w-[400px] items-center justify-center gap-8 text-center">
+                        <UserInfo size="lg" avatarSrc={userAvatar} name={user.name} textUnder={user.email} />
+                    </Card>
+                )}
+                <div className="flex gap-4">
+                    {userAvatar && (
+                        <Button onClick={() => setConfirm(true)} variant="destructive">
+                            Remove
+                        </Button>
+                    )}
+                    <ImgInput
+                        setImg={(file) => {
+                            setSelectedFile(file);
+                        }}
+                        btnState={Boolean(userAvatar)}
+                    />
+                </div>
+            </div>
+        </>
     );
 };

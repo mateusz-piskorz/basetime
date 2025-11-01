@@ -2,7 +2,7 @@ import { AuthProvider } from '@/lib/hooks/use-auth';
 import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 
-export default async function RootLayout({
+export default async function DashboardLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;

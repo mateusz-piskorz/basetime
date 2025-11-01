@@ -2,9 +2,9 @@ import { prisma } from '@/lib/prisma';
 import { getSession } from '@/lib/session';
 import { getQueryClient, trpc } from '@/lib/trpc/server-client';
 
-const employee = { id: 'u1', role: 'EMPLOYEE', organizationId: 'u1o' } as const;
-const manager = { id: 'u2', role: 'MANAGER', organizationId: 'u2o' } as const;
-const owner = { id: 'u3', role: 'OWNER', organizationId: 'u3o' } as const;
+const employee = { id: 'u1', role: 'EMPLOYEE', orgId: 'u1o' } as const;
+const manager = { id: 'u2', role: 'MANAGER', orgId: 'u2o' } as const;
+const owner = { id: 'u3', role: 'OWNER', orgId: 'u3o' } as const;
 const commonOrganizationId = 'coid';
 
 const mockedGetSession = getSession as jest.Mock;
@@ -35,7 +35,7 @@ test('organizations setup', async () => {
             data: {
                 name: '',
                 currency: 'EUR',
-                id: user.organizationId,
+                id: user.orgId,
                 Members: { create: { userId: user.id, role: 'OWNER' } },
             },
         });
@@ -47,12 +47,12 @@ test('returns empty array for unauthenticated users', async () => {
 });
 
 test('employee can get organization by id', async () => {
-    const { id, organizationId } = employee;
+    const { id, orgId } = employee;
     mockedGetSession.mockReturnValueOnce({ userId: id });
-    const res = await queryClient.fetchQuery(trpc.organizations.queryOptions({ organizationId }));
+    const res = await queryClient.fetchQuery(trpc.organizations.queryOptions({ orgId }));
 
     expect(res.length).toBe(1);
-    expect(res[0].id).toBe(organizationId);
+    expect(res[0].id).toBe(orgId);
     expect(res[0].Members[0].userId).toBe(id);
     expect(res[0]?.ownership).toBe(true);
 });
@@ -69,7 +69,7 @@ test('limit arg works', async () => {
 });
 
 test('employee can get his organizations', async () => {
-    const { id, organizationId, role } = employee;
+    const { id, orgId, role } = employee;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(trpc.organizations.queryOptions({}));
 
@@ -80,14 +80,14 @@ test('employee can get his organizations', async () => {
     expect(commonOrganizationMember?.role).toBe(role);
     expect(commonOrganization?.ownership).toBe(false);
 
-    const userOrganization = res.find(({ id }) => id === organizationId);
+    const userOrganization = res.find(({ id }) => id === orgId);
     const userOrganizationMember = userOrganization?.Members[0];
     expect(userOrganizationMember?.userId).toBe(id);
     expect(userOrganization?.ownership).toBe(true);
 });
 
 test('manager can get his organizations', async () => {
-    const { id, organizationId, role } = manager;
+    const { id, orgId, role } = manager;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(trpc.organizations.queryOptions({}));
 
@@ -98,14 +98,14 @@ test('manager can get his organizations', async () => {
     expect(commonOrganizationMember?.role).toBe(role);
     expect(commonOrganization?.ownership).toBe(false);
 
-    const userOrganization = res.find(({ id }) => id === organizationId);
+    const userOrganization = res.find(({ id }) => id === orgId);
     const userOrganizationMember = userOrganization?.Members[0];
     expect(userOrganizationMember?.userId).toBe(id);
     expect(userOrganization?.ownership).toBe(true);
 });
 
 test('owner can get his organizations', async () => {
-    const { id, organizationId, role } = owner;
+    const { id, orgId, role } = owner;
     mockedGetSession.mockReturnValueOnce({ userId: id });
     const res = await queryClient.fetchQuery(trpc.organizations.queryOptions({}));
 
@@ -116,7 +116,7 @@ test('owner can get his organizations', async () => {
     expect(commonOrganizationMember?.role).toBe(role);
     expect(commonOrganization?.ownership).toBe(true);
 
-    const userOrganization = res.find(({ id }) => id === organizationId);
+    const userOrganization = res.find(({ id }) => id === orgId);
     const userOrganizationMember = userOrganization?.Members[0];
     expect(userOrganizationMember?.userId).toBe(id);
     expect(userOrganization?.ownership).toBe(true);

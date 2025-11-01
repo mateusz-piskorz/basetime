@@ -66,7 +66,7 @@ export const NewImgDialog = ({ open, setOpen }: Props) => {
                             </div>
                         )}
 
-                        <ImgInput imgSrc={imgSrc} setImg={setImg} />
+                        <ImgInput btnState={Boolean(imgSrc)} setImg={setImg} />
                     </Card>
                     <Button
                         disabled={loading}

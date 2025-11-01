@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 
 export const SidebarFooter = () => {
     const { user } = useAuth();
-    const { organizationId } = useMember();
+    const { orgId } = useMember();
     const { state, setOpenMobile } = useSidebar();
     const isMobile = useIsMobile();
 
@@ -70,7 +70,7 @@ export const SidebarFooter = () => {
                             <DropdownMenuItem asChild>
                                 <Link
                                     className="block w-full py-2.5"
-                                    href={`/dashboard/${organizationId}/user-invitations`}
+                                    href={`/dashboard/${orgId}/user-invitations`}
                                     prefetch
                                     onClick={() => setOpenMobile(false)}
                                 >
@@ -82,7 +82,7 @@ export const SidebarFooter = () => {
                             <DropdownMenuItem asChild>
                                 <Link
                                     className="block w-full py-2.5"
-                                    href={`/dashboard/${organizationId}/user-settings`}
+                                    href={`/dashboard/${orgId}/user-settings`}
                                     prefetch
                                     onClick={() => setOpenMobile(false)}
                                 >

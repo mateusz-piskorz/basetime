@@ -10,7 +10,7 @@ export const upsertProjectSchema = z.object({
 
 export const createProjectSchemaS = z.object({
     projectId: z.string().optional(),
-    organizationId: z.string(),
+    orgId: z.string(),
     name: z.string().nonempty().optional(),
     color: z.nativeEnum(PROJECT_COLOR).optional(),
     memberIds: z.array(z.string()).optional(),

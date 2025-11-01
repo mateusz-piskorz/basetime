@@ -1,6 +1,6 @@
 'use client';
 
-import { TimerSeconds } from '@/components/common/TimerSeconds';
+import { TimerSeconds } from '@/components/common/timer-seconds';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/common';
 import { Clock } from 'lucide-react';

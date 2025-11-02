@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -18,7 +16,7 @@ export const MarkdownRenderer = ({ content }: Props) => {
                         <h2 className="font-heading mt-12 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight first:mt-0">{children}</h2>
                     ),
                     h3: ({ children }) => <h3 className="font-heading mt-8 scroll-m-20 text-xl font-semibold tracking-tight">{children}</h3>,
-                    p: ({ children }) => <p className="font-mono leading-7 [&:not(:first-child)]:mt-6">{children}</p>,
+                    p: ({ children }) => <p className="font-mono leading-7 not-first:mt-6">{children}</p>,
                     ul: ({ children }) => <ul className="my-6 ml-6 list-disc space-y-2">{children}</ul>,
                     ol: ({ children }) => <ol className="my-6 ml-6 list-decimal space-y-2">{children}</ol>,
                     blockquote: ({ children }) => <blockquote className="mb-4 border-l-4 border-gray-300 pl-4 italic">{children}</blockquote>,

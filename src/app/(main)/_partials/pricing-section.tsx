@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-
 import { AuthButton } from '@/components/common/auth-button';
 import { Check } from 'lucide-react';
 

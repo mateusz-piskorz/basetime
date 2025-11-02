@@ -5,7 +5,7 @@ export const initialBlogArticles = [
         readTime: '15min read',
         title: 'The Truth About Modern UI in SaaS: Why Your Users Care More Than You Think',
         description: 'Learn about the unexpected advantages of time tracking, from better work-life balance to improved project estimates.',
-        ogImageUrl: '/blog/ux-ui-img-1.jpeg',
+        ogImageUrl: '/blog/chalk-img-1.jpeg',
         content: `You’re staring at your SaaS dashboard, and something feels off. The functionality works perfectly, but users aren’t engaging the way you hoped. Sound familiar?
 
 Here’s the reality: your users judge your software within 50 milliseconds of seeing it. That’s faster than you can blink. In those crucial moments, they’re not analysing your robust backend or evaluating your security protocols. They’re making gut decisions about whether your product feels trustworthy, professional, and worth their time.

@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-
 'use client';
 
 import { AppLogo } from '@/components/common/app-logo';
@@ -148,7 +146,7 @@ export const Footer = () => {
                                 {contactInfo.map(({ icon: Icon, text, isAddress }) => (
                                     <li key={text}>
                                         <a className="flex items-center justify-center gap-1.5 sm:justify-start" href="#">
-                                            <Icon className="text-primary size-5 shrink-0 shadow-sm" />
+                                            <Icon className="text-primary size-5 shrink-0" />
                                             {isAddress ? (
                                                 <address className="text-secondary-foreground/70 -mt-0.5 flex-1 not-italic transition">
                                                     {text}

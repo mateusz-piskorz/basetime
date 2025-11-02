@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 export const TeamImgContent = () => {
@@ -10,14 +9,9 @@ export const TeamImgContent = () => {
             id="team-img-content-section"
         >
             <div className="mx-auto space-y-8 md:space-y-12">
-                <Image
-                    className="bg-card rounded-(--radius) grayscale dark:opacity-90"
-                    src="/team-img-content-photo.avif"
-                    alt="team image"
-                    height={1080}
-                    width={1760}
-                    loading="lazy"
-                />
+                <div className="bg-card aspect-video w-full">
+                    <img className="rounded dark:opacity-90" src="/team-img-content-photo.jpeg" alt="team image" loading="lazy" />
+                </div>
 
                 <div className="grid gap-6 md:grid-cols-2 md:gap-12">
                     <h2 className="text-3xl font-semibold 2xl:text-6xl">The Lyra ecosystem brings together our models, products and platforms.</h2>

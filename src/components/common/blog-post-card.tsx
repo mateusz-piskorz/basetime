@@ -4,7 +4,6 @@ import { dayjs } from '@/lib/dayjs';
 import { cn } from '@/lib/utils/common';
 import { BlogPost } from '@prisma/client';
 import { ChevronRight, MessageCircle, Sparkles } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '../ui/button';
 
@@ -27,13 +26,13 @@ export const BlogPostCard = ({ post, className }: Props) => {
                     className,
                 )}
             >
-                <Image
-                    src={post.ogImageUrl || '/placeholder.png'}
-                    width={1024}
-                    height={450}
-                    alt={post.title}
-                    className="h-60 object-cover grayscale-25 lg:h-full lg:w-[60%] dark:opacity-90"
-                />
+                <div className="bg-sidebar flex justify-center lg:w-[60%] lg:justify-start">
+                    <img
+                        src={post.ogImageUrl || '/placeholder.png'}
+                        alt={post.title}
+                        className="h-60 object-cover sm:h-72 lg:h-full dark:opacity-90"
+                    />
+                </div>
 
                 <div className="flex h-full flex-col items-start gap-4 px-6 py-8 lg:w-[40%] lg:py-6 2xl:p-10">
                     <div className="mb-4 flex flex-wrap gap-4 lg:hidden">

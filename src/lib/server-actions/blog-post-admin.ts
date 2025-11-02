@@ -1,12 +1,12 @@
 'use server';
 
-import { faker } from '@faker-js/faker';
+import { createId } from '@paralleldrive/cuid2';
 import { revalidatePath } from 'next/cache';
 import z from 'zod';
 import { initialBlogArticles } from '../constants/blog-initial-articles';
 import { prisma } from '../prisma';
 import { getSession } from '../session';
-import { getAppEnv } from '../utils/common';
+import { generateRandomSentence, getAppEnv } from '../utils/common';
 import { createBlogPostSchema, removeBlogPostSchema, seedBlogPostCommentsSchema, updateBlogPostSchema } from '../zod/blog-post-admin-schema';
 import { action } from './_utils';
 
@@ -119,9 +119,9 @@ export const seedBlogPostComments = action(seedBlogPostCommentsSchema, async ({ 
                 blogPost = await prisma.blogPost.findUnique({ where: { id: postId } });
                 const count = await prisma.blogPostComment.count();
 
-                const email = faker.internet.email();
-                const name = faker.person.fullName();
-                const password = faker.internet.password();
+                const email = `${createId}@onet.pl`;
+                const name = `${createId}-name`;
+                const password = `${createId}-password`;
 
                 await prisma.user.create({
                     data: {
@@ -136,8 +136,8 @@ export const seedBlogPostComments = action(seedBlogPostCommentsSchema, async ({ 
                                             take: 1,
                                             skip: Math.floor(Math.random() * count),
                                         });
-                                        const parentId = parentPost.length > 0 ? (faker.datatype.boolean() ? parentPost[0].id : null) : null;
-                                        return { postId, content: faker.lorem.sentences({ min: 1, max: 13 }), parentId };
+                                        const parentId = parentPost.length > 0 ? (Boolean(Math.random() > 0.5) ? parentPost[0].id : null) : null;
+                                        return { postId, content: generateRandomSentence(Boolean(Math.random() > 0.5) ? 4 : 25), parentId };
                                     }),
                                 ),
                             },

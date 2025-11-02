@@ -116,3 +116,12 @@ export const getUserAvatarUrl = ({ avatarId }: { avatarId: string }) => {
         ? `http://localhost:9000/public/user-avatar/${avatarId}.jpeg`
         : `https://${process.env.NEXT_PUBLIC_MINIO_ENDPOINT}/public/user-avatar/${avatarId}.jpeg`;
 };
+
+const generateRandomString = (length = 6) => Math.random().toString(20).slice(2, length);
+export const generateRandomSentence = (length = 6) => {
+    let sentence = '';
+    for (let i = 0; i < length; i++) {
+        sentence += generateRandomString(Boolean(Math.random() > 0.5) ? 6 : 15) + ' ';
+    }
+    return sentence.trim();
+};

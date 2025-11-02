@@ -7,6 +7,7 @@ FROM base AS deps
 
 WORKDIR /app
 
+ENV NODE_ENV=production
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
 RUN npm ci
@@ -23,7 +24,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_URL
 ARG NEXT_PUBLIC_MINIO_ENDPOINT
 ARG DATABASE_URL
-
+ENV NODE_ENV=production
 
 RUN npx prisma generate
 

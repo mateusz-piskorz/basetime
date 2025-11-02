@@ -10,7 +10,7 @@ export const TeamImgContent = () => {
         >
             <div className="mx-auto space-y-8 md:space-y-12">
                 <div className="bg-card aspect-video w-full">
-                    <img className="rounded-(--radius) dark:opacity-90" src="/team-img-content-photo.jpeg" alt="team image" loading="lazy" />
+                    <img className="rounded dark:opacity-90" src="/team-img-content-photo.jpeg" alt="team image" loading="lazy" />
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 md:gap-12">

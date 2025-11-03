@@ -14,7 +14,7 @@ export const OrganizationDashboard = () => {
 
     return (
         <div className="space-y-16 py-8">
-            <SectionTimeTracker key="SectionTimeTracker" />
+            <SectionTimeTracker />
 
             <div className="px-4 md:px-6 lg:px-8">
                 <div className="flex flex-col flex-wrap gap-x-6 gap-y-10 md:flex-row">

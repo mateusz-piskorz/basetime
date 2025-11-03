@@ -91,19 +91,18 @@ jobs:
 
       - name: db and minio
         run: |
-          docker compose -f docker-compose.stg.yml up -d --build db minio
-          sleep 3
+          docker compose -f docker-compose.stg.yml up -d db minio
 
       - name: setup-job
         run: |
-          docker compose -f docker-compose.stg.yml up -d --build --force-recreate setup-job
+          docker compose -f docker-compose.stg.yml up -d setup-job
           sleep 5
 
       - name: app
         run: docker compose -f docker-compose.stg.yml up -d --build --force-recreate app
 
       - name: Wait for containers
-        run: sleep 10
+        run: sleep 5
 
       - name: Prune Docker
         run: docker system prune -f

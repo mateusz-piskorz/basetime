@@ -119,9 +119,9 @@ export const seedBlogPostComments = action(seedBlogPostCommentsSchema, async ({ 
                 blogPost = await prisma.blogPost.findUnique({ where: { id: postId } });
                 const count = await prisma.blogPostComment.count();
 
-                const email = `${createId}@onet.pl`;
-                const name = `${createId}-name`;
-                const password = `${createId}-password`;
+                const email = `${createId()}@onet.pl`;
+                const name = `${createId()}-name`;
+                const password = `${createId()}-password`;
 
                 await prisma.user.create({
                     data: {

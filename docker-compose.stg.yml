@@ -24,10 +24,6 @@ services:
       MINIO_USER: ${MINIO_USER}
       MINIO_PASSWORD: ${MINIO_PASSWORD}
     restart: unless-stopped
-    depends_on:
-      - db
-      - minio
-      - setup-job
     ports:
       - 3001:3000
     networks:
@@ -50,11 +46,6 @@ services:
       ADMIN_USER_PASSWORD: ${ADMIN_USER_PASSWORD}
     networks:
       - btnetworkstg
-    depends_on:
-      minio:
-        condition: service_healthy
-      db:
-        condition: service_started
     entrypoint: /app/scripts/setup/index.sh
 
   db:

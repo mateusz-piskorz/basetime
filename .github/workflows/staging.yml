@@ -89,13 +89,18 @@ jobs:
         run: |
           docker images -f "dangling=true" -q | xargs -r docker rmi
 
-      - name: Build and run containers
+      - name: db and minio
         run: |
           docker compose -f docker-compose.stg.yml up -d --build db minio
-          sleep 5
+          sleep 3
+
+      - name: setup-job
+        run: |
           docker compose -f docker-compose.stg.yml up -d --build --force-recreate setup-job
           sleep 5
-          docker compose -f docker-compose.stg.yml up -d --build --force-recreate app
+
+      - name: app
+        run: docker compose -f docker-compose.stg.yml up -d --build --force-recreate app
 
       - name: Wait for containers
         run: sleep 10

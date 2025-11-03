@@ -9,6 +9,7 @@ import { trpc } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
 import { startTimerSchema } from '@/lib/zod/time-entry-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import dayjs from 'dayjs';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -30,13 +31,15 @@ export const SectionTimeTracker = ({ className }: Props) => {
         orgId,
     } = useMember();
 
-    const { data: activeTimeEntry, isPending, refetch } = trpc.activeTimeEntry.useQuery({ memberId });
+    const { data: activeTimeEntry, refetch, isFetching } = trpc.activeTimeEntry.useQuery({ memberId });
 
     useEffect(() => {
-        if (activeTimeEntry) {
-            form.reset(activeTimeEntry);
-        }
-    }, [isPending]);
+        if (activeTimeEntry) form.reset(activeTimeEntry);
+    }, [isFetching]);
+
+    useEffect(() => {
+        if (activeTimeEntry) refetch();
+    }, []);
 
     const form = useForm({ resolver: zodResolver(startTimerSchema), defaultValues: { projectId: 'no-project' } });
 
@@ -58,6 +61,7 @@ export const SectionTimeTracker = ({ className }: Props) => {
         trpcUtils.timeEntriesByMember.refetch({ orgId });
         trpcUtils.timeEntriesPaginated.refetch({ orgId });
     };
+
     return (
         <div className={cn('space-y-8 px-4 md:px-6 lg:px-8', className)}>
             <DashboardHeading className="mb-4" title="Time Tracker" />
@@ -80,7 +84,7 @@ export const SectionTimeTracker = ({ className }: Props) => {
                                 if (timeEntry.projectId) form.setValue('projectId', timeEntry.projectId);
                                 form.handleSubmit(onSubmit)();
                             }}
-                            disabled={Boolean(activeTimeEntry) || isPending || form.formState.isSubmitting}
+                            disabled={Boolean(activeTimeEntry) || isFetching || form.formState.isSubmitting}
                             classNameInput={cn(
                                 'h-full border-none bg-transparent md:text-base dark:bg-transparent',
                                 'selection:bg-transparent focus-visible:ring-[0px]',
@@ -93,13 +97,17 @@ export const SectionTimeTracker = ({ className }: Props) => {
                             <SelectProjectField
                                 form={form}
                                 name="projectId"
-                                disabled={Boolean(activeTimeEntry) || isPending || form.formState.isSubmitting}
+                                disabled={Boolean(activeTimeEntry) || isFetching || form.formState.isSubmitting}
                                 size="sm"
                                 className="hidden md:block"
                             />
 
                             <Separator orientation="vertical" />
-                            <Timer startDate={activeTimeEntry ? new Date(activeTimeEntry.start) : new Date()} isActive={Boolean(activeTimeEntry)} />
+                            <Timer
+                                key={activeTimeEntry ? activeTimeEntry.id : 'timer-0'}
+                                startDate={activeTimeEntry ? dayjs().subtract(activeTimeEntry.startNowDiffMs, 'ms').toDate() : new Date()}
+                                isActive={Boolean(activeTimeEntry)}
+                            />
                         </div>
                     </div>
 
@@ -107,12 +115,16 @@ export const SectionTimeTracker = ({ className }: Props) => {
                         <SelectProjectField
                             form={form}
                             name="projectId"
-                            disabled={Boolean(activeTimeEntry) || isPending || form.formState.isSubmitting}
+                            disabled={Boolean(activeTimeEntry) || isFetching || form.formState.isSubmitting}
                             size="lg"
                             className="w-[150px] md:hidden"
                         />
 
-                        <StartButton disabled={form.formState.isSubmitting} type="submit" actionState={activeTimeEntry ? 'stop' : 'start'} />
+                        <StartButton
+                            disabled={form.formState.isSubmitting || isFetching}
+                            type="submit"
+                            actionState={activeTimeEntry ? 'stop' : 'start'}
+                        />
                     </div>
                 </form>
             </Form>

@@ -14,7 +14,7 @@ export const OrganizationDashboard = () => {
 
     return (
         <div className="space-y-16 py-8">
-            <SectionTimeTracker />
+            <SectionTimeTracker key="SectionTimeTracker" />
 
             <div className="px-4 md:px-6 lg:px-8">
                 <div className="flex flex-col flex-wrap gap-x-6 gap-y-10 md:flex-row">
@@ -24,7 +24,7 @@ export const OrganizationDashboard = () => {
                 </div>
             </div>
 
-            <div className="mt-[80px] flex flex-col gap-8 px-4 md:flex-row md:px-6 lg:px-8">
+            <div className="mt-20 flex flex-col gap-8 px-4 md:flex-row md:px-6 lg:px-8">
                 <ThisWeekChart scope={scope} />
                 <MetricCards scope={scope} setScope={setScope} />
             </div>

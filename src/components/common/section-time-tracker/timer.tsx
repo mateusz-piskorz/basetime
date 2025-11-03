@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils/common';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 
 type Props = {
@@ -23,30 +24,21 @@ export const Timer = ({ startDate, isActive, className }: Props) => {
 
     useEffect(() => {
         if (isActive) {
-            const updateElapsed = () => {
-                setElapsedSeconds(Math.floor((Date.now() - startDate.getTime()) / 1000));
-            };
-
-            updateElapsed();
-            const interval = setInterval(updateElapsed, 1000);
-
-            return () => {
-                clearInterval(interval);
-            };
-        } else {
-            setElapsedSeconds(0);
-        }
-    }, [startDate, isActive]);
+            setTimeout(() => {
+                setElapsedSeconds(dayjs().diff(startDate, 's'));
+            }, 1000);
+        } else setElapsedSeconds(0);
+    }, [isActive, elapsedSeconds, startDate]);
 
     const { h, m, s } = returnTime(elapsedSeconds);
 
     return (
-        <div className={cn('flex min-w-[70px] items-center text-center text-sm sm:gap-[1px] sm:text-base sm:font-bold', className)}>
-            <span className="inline-block w-[22px] sm:w-[24px]">{h}</span>
+        <div className={cn('flex min-w-[70px] items-center text-center text-sm sm:gap-px sm:text-base sm:font-bold', className)}>
+            <span className="inline-block w-[22px] sm:w-6">{h}</span>
             <span className="mb-0.5">:</span>
-            <span className="inline-block w-[22px] text-right sm:w-[24px]">{m}</span>
+            <span className="inline-block w-[22px] text-right sm:w-6">{m}</span>
             <span className="mb-0.5">:</span>
-            <span className="inline-block w-[22px] sm:w-[24px]">{s}</span>
+            <span className="inline-block w-[22px] sm:w-6">{s}</span>
         </div>
     );
 };

@@ -23,12 +23,19 @@ export const Timer = ({ startDate, isActive, className }: Props) => {
     const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
 
     useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
+
         if (isActive) {
-            setTimeout(() => {
+            const updateElapsed = () => {
                 setElapsedSeconds(dayjs().diff(startDate, 's'));
-            }, 1000);
+                timeoutId = setTimeout(updateElapsed, 1000);
+            };
+
+            updateElapsed();
         } else setElapsedSeconds(0);
-    }, [isActive, elapsedSeconds, startDate]);
+
+        return () => clearTimeout(timeoutId);
+    }, [isActive, startDate]);
 
     const { h, m, s } = returnTime(elapsedSeconds);
 

@@ -1,4 +1,10 @@
 node_modules
+.vscode
 .next
 .dockerignore
 .git
+.github
+.gitignore
+.env.example
+npm-debug.log
+jest.config.ts

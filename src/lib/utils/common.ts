@@ -107,6 +107,7 @@ export const getInitials = (fullName: string) => {
 export const getAppEnv = () => {
     const environments = { production: 'production', staging: 'staging', localhost: 'localhost' } as const;
     const env = process.env.NEXT_PUBLIC_APP_ENV as keyof typeof environments;
+    1;
 
     return environments[env] || 'production';
 };
@@ -115,4 +116,16 @@ export const getUserAvatarUrl = ({ avatarId }: { avatarId: string }) => {
     return process.env.NEXT_PUBLIC_MINIO_ENDPOINT === 'localhost'
         ? `http://localhost:9000/public/user-avatar/${avatarId}.jpeg`
         : `https://${process.env.NEXT_PUBLIC_MINIO_ENDPOINT}/public/user-avatar/${avatarId}.jpeg`;
+};
+
+const generateRandomString = (length = 6) =>
+    Math.random()
+        .toString(20)
+        .slice(2, length + 2);
+export const generateRandomSentence = (length = 6) => {
+    let sentence = '';
+    for (let i = 0; i < length; i++) {
+        sentence += generateRandomString(Boolean(Math.random() > 0.5) ? 6 : 15) + ' ';
+    }
+    return sentence.trim();
 };

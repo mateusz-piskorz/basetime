@@ -5,10 +5,7 @@ import { redirect } from 'next/navigation';
 import { TableTimeEntry } from './_partials/table-time-entry';
 
 export default async function TimePage() {
-    const user = await getSession();
-    if (!user) {
-        return redirect('/');
-    }
+    if (!(await getSession())) return redirect('/');
 
     return (
         <div className="space-y-12 pt-8">

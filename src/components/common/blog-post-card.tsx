@@ -28,6 +28,7 @@ export const BlogPostCard = ({ post, className }: Props) => {
             >
                 <div className="bg-sidebar flex justify-center lg:w-[60%] lg:justify-start">
                     <img
+                        loading="lazy"
                         src={post.ogImageUrl || '/placeholder.png'}
                         alt={post.title}
                         className="h-60 object-cover sm:h-72 lg:h-full dark:opacity-90"

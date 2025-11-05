@@ -1,6 +1,19 @@
+import { useId } from 'react';
+
 export const ReportsIllustration = ({ className }: { className?: string }) => {
+    const titleId = useId();
     return (
-        <svg className={className} width="514" height="430" viewBox="0 0 514 430" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+            className={className}
+            width="514"
+            height="430"
+            viewBox="0 0 514 430"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-labelledby={titleId}
+        >
+            <title id={titleId}>Reports illustration</title>
             <path d="M439.355 193.979H453.095V210.336H439.355V193.979Z" fill="#ED9DA0" />
             <path d="M476.639 421.373H468.618L464.801 390.435H476.641L476.639 421.373Z" fill="#ED9DA0" />
             <path d="M445.889 421.373H437.868L434.051 390.435H445.891L445.889 421.373Z" fill="#ED9DA0" />

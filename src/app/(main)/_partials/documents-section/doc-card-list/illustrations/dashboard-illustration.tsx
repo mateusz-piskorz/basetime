@@ -1,6 +1,19 @@
+import { useId } from 'react';
+
 export const DashboardIllustration = ({ className }: { className?: string }) => {
+    const titleId = useId();
     return (
-        <svg className={className} width="800" height="430" viewBox="0 0 800 430" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+            className={className}
+            width="800"
+            height="430"
+            viewBox="0 0 800 430"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-labelledby={titleId}
+        >
+            <title id={titleId}>Dashboard illustration</title>
             <path
                 d="M173.188 0H259.186C260.453 0 261.669 0.503362 262.565 1.39935C263.461 2.29534 263.964 3.51057 263.964 4.77769V14.3331C263.964 15.6002 263.461 16.8154 262.565 17.7114C261.669 18.6074 260.453 19.1108 259.186 19.1108H173.188C171.921 19.1108 170.706 18.6074 169.81 17.7114C168.914 16.8154 168.41 15.6002 168.41 14.3331V4.77769C168.41 3.51057 168.914 2.29534 169.81 1.39935C170.706 0.503362 171.921 0 173.188 0Z"
                 fill="#F2F2F2"

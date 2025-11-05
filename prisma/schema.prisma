@@ -48,7 +48,7 @@ enum WEEK_START {
 }
 
 model BlogPost {
-  id          String           @id @default(cuid())
+  id          String           @id @default(cuid(2))
   content     String
   slug        String           @unique
   title       String
@@ -74,7 +74,7 @@ model BlogPostUpvote {
 }
 
 model BlogPostComment {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid(2))
   content   String
   deleted   Boolean?
   createdAt DateTime @default(now())
@@ -100,7 +100,7 @@ model BlogPostCommentUpvote {
 }
 
 model Session {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid(2))
   expiresAt DateTime
   userAgent String
   createdAt DateTime @default(now())
@@ -111,7 +111,7 @@ model Session {
 }
 
 model User {
-  id        String    @id @default(cuid())
+  id        String    @id @default(cuid(2))
   email     String    @unique
   name      String
   password  String
@@ -129,7 +129,7 @@ model User {
 }
 
 model Organization {
-  id                      String     @id @default(cuid())
+  id                      String     @id @default(cuid(2))
   name                    String
   currency                CURRENCY
   roundUpMinutesThreshold Int        @default(1)
@@ -144,7 +144,7 @@ model Organization {
 }
 
 model Member {
-  id String @id @default(cuid())
+  id String @id @default(cuid(2))
 
   role      MEMBER_ROLE
   createdAt DateTime    @default(now())
@@ -162,7 +162,7 @@ model Member {
 }
 
 model Invitation {
-  id        String            @id @default(cuid())
+  id        String            @id @default(cuid(2))
   status    INVITATION_STATUS
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
@@ -174,7 +174,7 @@ model Invitation {
 }
 
 model HourlyRate {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid(2))
   value     Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -184,7 +184,7 @@ model HourlyRate {
 }
 
 model TimeEntry {
-  id        String    @id @default(cuid())
+  id        String    @id @default(cuid(2))
   name      String
   start     DateTime
   end       DateTime?
@@ -200,7 +200,7 @@ model TimeEntry {
 }
 
 model Project {
-  id               String        @id @default(cuid())
+  id               String        @id @default(cuid(2))
   name             String
   estimatedMinutes Int?
   color            PROJECT_COLOR

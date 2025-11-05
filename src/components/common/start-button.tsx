@@ -16,8 +16,8 @@ export const StartButton = ({ className, onClick, type, actionState, disabled, s
         <Button
             disabled={disabled}
             className={cn(
-                'bg-accent/80 hover:bg-accent/100 size-14 rounded-full border-8 hover:scale-110',
-                actionState === 'stop' && 'bg-[#FF0000] hover:bg-[#FF0000] dark:border-[#810000]',
+                'bg-accent-secondary/90 hover:bg-accent-secondary size-14 rounded-full border-8 hover:scale-110',
+                actionState === 'stop' && 'bg-destructive hover:bg-destructive-foreground dark:border-destructive-foreground',
                 size === 'sm' && 'size-12 border-6',
                 className,
             )}

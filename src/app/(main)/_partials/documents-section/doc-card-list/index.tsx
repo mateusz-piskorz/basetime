@@ -1,14 +1,18 @@
 import { cn } from '@/lib/utils/common';
 import { CheckCircle, Crosshair, UserCheck2, Zap } from 'lucide-react';
 import { DocCard } from './doc-card';
+import { DashboardIllustration } from './illustrations/dashboard-illustration';
+import { ProjectsManagementIllustration } from './illustrations/projects-management-illustration';
+import { ReportsIllustration } from './illustrations/reports-illustration';
+import { UserFriendlyIllustration } from './illustrations/user-friendly-illustration';
 
 const arr = [
     {
-        imgDarkSrc: '/docs/dashboard-dark.png',
-        imgLightSrc: '/docs/dashboard-light.png',
+        Illustration: DashboardIllustration,
         heading: 'Modern Dashboard',
         Icon: Zap,
-        description: 'Simple, modern, accurate, and user-friendly.Spend less time logging hours — and more time getting work done.',
+        description:
+            'Get real-time insights and a comprehensive overview of your key metrics with our sleek and intuitive dashboard. Easily monitor performance and make informed decisions with up-to-date data at your fingertips.',
         badges: [
             'Live Time Tracker',
             'Recent Time Entries',
@@ -21,28 +25,46 @@ const arr = [
         ],
     },
     {
-        imgDarkSrc: '/docs/reports-dark.png',
-        imgLightSrc: '/docs/reports-light.png',
+        Illustration: ReportsIllustration,
         heading: 'Accurate Reports',
         Icon: Crosshair,
-        description: 'Simple, modern, accurate, and user-friendly.Spend less time logging hours — and more time getting work done.',
-        badges: ['Projects Filter', 'Members Filter', 'Period Filter', 'Billable Amount', 'Total Time'],
+        description:
+            'Generate precise and detailed reports in just seconds. Our advanced reporting tools ensure you always have reliable information, enabling you to track progress and share results with confidence.',
+        badges: ['Projects Filter', 'Members Filter', 'Period Filter', '2 Years History', 'Billable Amount', 'Total Time'],
     },
     {
-        imgDarkSrc: '/docs/projects-dark.png',
-        imgLightSrc: '/docs/projects-light.png',
+        Illustration: ProjectsManagementIllustration,
         heading: 'Simple Projects Management',
         Icon: CheckCircle,
-        description: 'Simple, modern, accurate, and user-friendly.Spend less time logging hours — and more time getting work done.',
-        badges: ['Projects Filter', 'Members Filter', 'Period Filter', 'Billable Amount', 'Total Time'],
+        description:
+            'Streamline your workflows with easy-to-use project management features. Organize tasks, set priorities, and collaborate seamlessly to keep your team on track and deliver successful outcomes.',
+        badges: [
+            'Task Lists',
+            'Kanban Boards',
+            'Milestone Tracking',
+            'Due Dates',
+            'Priority Labels',
+            'Team Collaboration',
+            'Progress Overview',
+            'Easy Assignments',
+        ],
     },
     {
-        imgDarkSrc: '/docs/create-time-entry-dark.png',
-        imgLightSrc: '/docs/create-time-entry-light.png',
+        Illustration: UserFriendlyIllustration,
         heading: 'User Friendly UI',
         Icon: UserCheck2,
-        description: 'Simple, modern, accurate, and user-friendly.Spend less time logging hours — and more time getting work done.',
-        badges: ['Projects Filter', 'Members Filter', 'Period Filter', 'Billable Amount', 'Total Time'],
+        description:
+            'Enjoy a clean, intuitive interface designed for efficiency and ease of use. Navigate effortlessly and accomplish more with a layout that puts what you need right where you expect it.',
+        badges: [
+            'One-Click Actions',
+            'Responsive Design',
+            'Dark Mode',
+            'Keyboard Shortcuts',
+            'Quick Navigation',
+            'Human Readable Time Input',
+            'Tooltips & Hints',
+            'Customizable Views',
+        ],
     },
 ];
 
@@ -52,7 +74,7 @@ type Props = {
 
 export const DocCardList = ({ className }: Props) => {
     return (
-        <div className={cn('flex flex-col gap-10 sm:px-5 lg:px-0', className)}>
+        <div className={cn('flex flex-col gap-24 sm:px-5 lg:px-0', className)}>
             {arr.map((args, index) => {
                 const first = index === 0;
                 const last = index === arr.length - 1;

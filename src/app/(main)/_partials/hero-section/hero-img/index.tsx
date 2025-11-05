@@ -29,7 +29,7 @@ export const HeroImg = () => {
     const [active, setActive] = useState('Backend API Refactor');
     return (
         <div className="relative hidden h-[472px] w-[600px] lg:block">
-            <div className="absolute flex h-[472px] w-[600px] flex-col rounded-md border">
+            <div className="border-accent dark:border-border absolute flex h-[472px] w-[600px] flex-col rounded-md border">
                 {arr.map((args, index) => {
                     const last = index === arr.length - 1;
                     const isActive = args.title === active;
@@ -43,7 +43,7 @@ export const HeroImg = () => {
                                     setActive(title);
                                 }
                             }}
-                            className={last ? '' : 'border-b'}
+                            className={last ? '' : 'border-accent dark:border-border border-b'}
                             key={args.title}
                             {...args}
                         />

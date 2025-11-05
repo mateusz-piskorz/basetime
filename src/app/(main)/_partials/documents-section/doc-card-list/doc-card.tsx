@@ -24,7 +24,7 @@ export const DocCard = ({ className, badges, description, heading, Icon, Illustr
                     'md:h-96 md:py-10',
                     'lg:h-60 lg:bg-transparent lg:px-0 lg:py-0',
                     'xl:bg-card xl:h-96 xl:px-10 xl:py-10',
-                    '2xl:h-[480px] 2xl:py-16',
+                    '2xl:h-[440px] 2xl:py-10',
                 )}
             >
                 <Illustration className="w-full min-w-[400px]" />

@@ -11,7 +11,8 @@ const arr = [
         Illustration: DashboardIllustration,
         heading: 'Modern Dashboard',
         Icon: Zap,
-        description: 'Simple, modern, accurate, and user-friendly.Spend less time logging hours — and more time getting work done.',
+        description:
+            'Get real-time insights and a comprehensive overview of your key metrics with our sleek and intuitive dashboard. Easily monitor performance and make informed decisions with up-to-date data at your fingertips.',
         badges: [
             'Live Time Tracker',
             'Recent Time Entries',
@@ -27,22 +28,43 @@ const arr = [
         Illustration: ReportsIllustration,
         heading: 'Accurate Reports',
         Icon: Crosshair,
-        description: 'Simple, modern, accurate, and user-friendly.Spend less time logging hours — and more time getting work done.',
-        badges: ['Projects Filter', 'Members Filter', 'Period Filter', 'Billable Amount', 'Total Time'],
+        description:
+            'Generate precise and detailed reports in just seconds. Our advanced reporting tools ensure you always have reliable information, enabling you to track progress and share results with confidence.',
+        badges: ['Projects Filter', 'Members Filter', 'Period Filter', '2 Years History', 'Billable Amount', 'Total Time'],
     },
     {
         Illustration: ProjectsManagementIllustration,
         heading: 'Simple Projects Management',
         Icon: CheckCircle,
-        description: 'Simple, modern, accurate, and user-friendly.Spend less time logging hours — and more time getting work done.',
-        badges: ['Projects Filter', 'Members Filter', 'Period Filter', 'Billable Amount', 'Total Time'],
+        description:
+            'Streamline your workflows with easy-to-use project management features. Organize tasks, set priorities, and collaborate seamlessly to keep your team on track and deliver successful outcomes.',
+        badges: [
+            'Task Lists',
+            'Kanban Boards',
+            'Milestone Tracking',
+            'Due Dates',
+            'Priority Labels',
+            'Team Collaboration',
+            'Progress Overview',
+            'Easy Assignments',
+        ],
     },
     {
         Illustration: UserFriendlyIllustration,
         heading: 'User Friendly UI',
         Icon: UserCheck2,
-        description: 'Simple, modern, accurate, and user-friendly.Spend less time logging hours — and more time getting work done.',
-        badges: ['Projects Filter', 'Members Filter', 'Period Filter', 'Billable Amount', 'Total Time'],
+        description:
+            'Enjoy a clean, intuitive interface designed for efficiency and ease of use. Navigate effortlessly and accomplish more with a layout that puts what you need right where you expect it.',
+        badges: [
+            'One-Click Actions',
+            'Responsive Design',
+            'Dark Mode',
+            'Keyboard Shortcuts',
+            'Quick Navigation',
+            'Human Readable Time Input',
+            'Tooltips & Hints',
+            'Customizable Views',
+        ],
     },
 ];
 

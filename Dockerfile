@@ -16,7 +16,10 @@ RUN npm ci
 
 COPY . .
 
+RUN npx prisma migrate deploy
 RUN npx prisma generate
+RUN npx ts-node --transpile-only ./scripts/basetime-org-setup.ts
+RUN npx ts-node --transpile-only ./scripts/admin-user-setup.ts
 RUN npm run build
 
 # runner

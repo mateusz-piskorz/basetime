@@ -93,9 +93,9 @@ jobs:
         run: |
           docker compose -f docker-compose.stg.yml up -d db minio
 
-      - name: setup-job
+      - name: setup-minio-buckets
         run: |
-          docker compose -f docker-compose.stg.yml up -d setup-job
+          docker compose -f docker-compose.stg.yml up -d --build --force-recreate setup-minio-buckets
           sleep 5
 
       - name: app

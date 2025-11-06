@@ -52,6 +52,17 @@ export const formatMinutes = (value: number) => {
     return `${hours}h ${min}min`;
 };
 
+/**
+ * formatSeconds(70) = 00:01:10
+ */
+export const formatSeconds = (seconds: number) => {
+    const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+    const s = String(seconds % 60).padStart(2, '0');
+
+    return `${h}:${m}:${s}`;
+};
+
 export const getDurationInMinutes = ({
     start,
     end,
@@ -107,7 +118,6 @@ export const getInitials = (fullName: string) => {
 export const getAppEnv = () => {
     const environments = { production: 'production', staging: 'staging', localhost: 'localhost' } as const;
     const env = process.env.NEXT_PUBLIC_APP_ENV as keyof typeof environments;
-    1;
 
     return environments[env] || 'production';
 };

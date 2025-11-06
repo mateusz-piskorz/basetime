@@ -84,7 +84,7 @@ model BlogPostComment {
   authorId String
   parentId String?
   Post     BlogPost                @relation(fields: [postId], references: [id], onDelete: Cascade)
-  Author   User                    @relation(fields: [authorId], references: [id])
+  Author   User                    @relation(fields: [authorId], references: [id], onDelete: Cascade)
   Parent   BlogPostComment?        @relation("BPCParentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   Replies  BlogPostComment[]       @relation("BPCParentReplies")
   Upvotes  BlogPostCommentUpvote[]

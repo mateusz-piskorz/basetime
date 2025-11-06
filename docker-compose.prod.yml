@@ -37,7 +37,6 @@ services:
       context: .
       dockerfile: Dockerfile-setup-minio-buckets
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
       NEXT_PUBLIC_MINIO_ENDPOINT: ${NEXT_PUBLIC_MINIO_ENDPOINT}
       MINIO_SSL: ${MINIO_SSL}
       MINIO_USER: ${MINIO_USER}

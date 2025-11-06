@@ -58,6 +58,4 @@ services:
     depends_on:
       minio:
         condition: service_healthy
-      db:
-        condition: service_started
     entrypoint: /app/scripts/minio/index.sh

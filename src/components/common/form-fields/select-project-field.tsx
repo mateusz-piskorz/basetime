@@ -48,7 +48,7 @@ export const SelectProjectField = <T extends FieldValues>({
             render={({ field }) => (
                 <FormItem className={className}>
                     {label && <FormLabel>{label}</FormLabel>}
-                    <Select onValueChange={field.onChange} value={field.value || ''} disabled={disabled}>
+                    <Select onValueChange={field.onChange} value={field.value || 'no-project'} disabled={disabled}>
                         <FormControl>
                             <SelectTrigger size={size} className="w-full">
                                 <SelectValue placeholder={placeholder} />

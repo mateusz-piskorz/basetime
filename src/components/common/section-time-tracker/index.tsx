@@ -18,7 +18,7 @@ import { DashboardHeading } from '../dashboard-heading';
 import { SelectProjectField } from '../form-fields/select-project-field';
 import { TimeEntrySelectField } from '../form-fields/time-entry-select-field';
 import { StartButton } from '../start-button';
-import { Timer } from './timer';
+import { Timer } from './_timer';
 
 type Props = {
     className?: string;

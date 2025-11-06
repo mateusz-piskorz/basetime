@@ -31,7 +31,7 @@ type Props = {
 export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSuccess }: Props) => {
     const { dayjs } = useDayjs();
     const trpcUtils = trpc.useUtils();
-    const { orgId } = useMember();
+    const { orgId, roundUpSecondsThreshold } = useMember();
     const form = useForm<z.infer<typeof manualTimeEntrySchema>>({
         resolver: zodResolver(manualTimeEntrySchema),
         defaultValues: {
@@ -57,7 +57,12 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
                       endDate: ste.end ? new Date(ste.end) : new Date(),
                       endTime: dayjs(ste.end || new Date()).format('HH:mm'),
                       duration: formatMinutes(
-                          getDurationInMinutes({ dayjs, start: new Date(ste.start), end: ste.end ? new Date(ste.end) : new Date() }),
+                          getDurationInMinutes({
+                              dayjs,
+                              start: new Date(ste.start),
+                              end: ste.end ? new Date(ste.end) : new Date(),
+                              roundUpSecondsThreshold,
+                          }),
                       ),
                   }
                 : undefined,

@@ -16,7 +16,7 @@ type Props = {
 
 export const ThisWeekChart = ({ scope }: Props) => {
     const { dayjs } = useDayjs();
-    const { orgId } = useMember();
+    const { orgId, roundUpSecondsThreshold } = useMember();
     const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         orgId,
         ...(scope === 'organization' && { members: 'all' }),
@@ -33,8 +33,9 @@ export const ThisWeekChart = ({ scope }: Props) => {
                 granularity: 'day',
                 nameFormatter: ({ date }) => dayjs(date).format('dddd'),
                 dayjs,
+                roundUpSecondsThreshold,
             }),
-        [timeEntries, dayjs],
+        [timeEntries, dayjs, roundUpSecondsThreshold],
     );
 
     return (

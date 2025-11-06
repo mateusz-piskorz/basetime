@@ -9,6 +9,10 @@ export const upsertOrgSchema = z.object({
         .number()
         .optional()
         .refine((val) => val === undefined || (val >= 0 && val <= 60), { message: 'Value must be between 0 and 60' }),
+    roundUpSecondsThreshold: z.coerce
+        .number()
+        .optional()
+        .refine((val) => val === undefined || (val >= 0 && val <= 60), { message: 'Value must be between 0 and 60' }),
 });
 
 export const upsertOrgSchemaS = z.object({
@@ -17,6 +21,10 @@ export const upsertOrgSchemaS = z.object({
     currency: z.nativeEnum(CURRENCY).optional(),
     weekStart: z.nativeEnum(WEEK_START).optional(),
     roundUpMinutesThreshold: z
+        .number()
+        .optional()
+        .refine((val) => val === undefined || (val >= 0 && val <= 60), { message: 'Value must be between 0 and 60' }),
+    roundUpSecondsThreshold: z.coerce
         .number()
         .optional()
         .refine((val) => val === undefined || (val >= 0 && val <= 60), { message: 'Value must be between 0 and 60' }),

@@ -18,7 +18,7 @@ type Props = {
 export const Last7Days = ({ scope }: Props) => {
     const { dayjs } = useDayjs();
 
-    const { orgId } = useMember();
+    const { orgId, roundUpSecondsThreshold } = useMember();
     const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         orgId,
         ...(scope === 'organization' && { members: 'all' }),
@@ -34,8 +34,9 @@ export const Last7Days = ({ scope }: Props) => {
                 granularity: 'day',
                 nameFormatter: ({ index }) => (index === 0 ? 'Today' : index === 1 ? 'Yesterday' : `${index + 1} days ago`),
                 dayjs,
+                roundUpSecondsThreshold,
             }),
-        [timeEntries, dayjs],
+        [timeEntries, dayjs, roundUpSecondsThreshold],
     );
 
     return (
@@ -49,7 +50,7 @@ export const Last7Days = ({ scope }: Props) => {
                     {segments.map((segment, idx) => (
                         <div
                             key={`${idx}-segment`}
-                            className={cn('flex h-full items-center justify-between px-4 text-sm', idx !== segments.length - 1 && 'border-b-1')}
+                            className={cn('flex h-full items-center justify-between px-4 text-sm', idx !== segments.length - 1 && 'border-b')}
                         >
                             <span className="w-[70px]">{segment.name}</span>
                             <span className="text-muted-foreground hidden tracking-widest sm:inline-block">-------</span>

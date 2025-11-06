@@ -38,6 +38,7 @@ type Props = {
 };
 
 const FormComponent = ({ organizationId, defaultValues }: Props) => {
+    console.log(defaultValues);
     const trpcUtils = trpc.useUtils();
     const onSubmit = async (data: z.infer<typeof upsertOrgSchema>) => {
         const res = await upsertOrg({ ...data, organizationId });
@@ -48,7 +49,10 @@ const FormComponent = ({ organizationId, defaultValues }: Props) => {
         }
 
         toast.success('Organization updated successfully');
-        // todo: refresh all dependant queries
+
+        trpcUtils.projects.refetch();
+        trpcUtils.members.refetch();
+        trpcUtils.timeEntriesPaginated.refetch();
         trpcUtils.organizations.refetch();
     };
 
@@ -59,7 +63,27 @@ const FormComponent = ({ organizationId, defaultValues }: Props) => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" style={{ marginBottom: '16px' }}>
                 <InputField form={form} type="text" name="name" label="Name" className="max-w-[300px]" />
 
-                <InputField form={form} type="number" name="roundUpMinutesThreshold" label="round Up Minutes Threshold" className="max-w-[300px]" />
+                <div>
+                    <InputField
+                        form={form}
+                        type="number"
+                        name="roundUpMinutesThreshold"
+                        label="round Up Minutes Threshold"
+                        className="max-w-[300px]"
+                    />
+                    <span className="text-muted-foreground text-sm">0-60, amount of minutes rounded up to full hour (0=everything rounded up)</span>
+                </div>
+
+                <div>
+                    <InputField
+                        form={form}
+                        type="number"
+                        name="roundUpSecondsThreshold"
+                        label="round Up Seconds Threshold"
+                        className="max-w-[300px]"
+                    />
+                    <span className="text-muted-foreground text-sm">0-60, amount of seconds rounded up to full minute (0=everything rounded up)</span>
+                </div>
 
                 <SelectField
                     placeholder="Currency"

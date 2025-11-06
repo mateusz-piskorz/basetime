@@ -17,11 +17,15 @@ export const projects = publicProcedure.input(z.object({ orgId: z.string() })).q
                 { Organization: { Members: { some: { userId: session.userId, role: { in: ['OWNER', 'MANAGER'] } } } } },
             ],
         },
-        include: { _count: true, TimeEntries: true, Members: true },
+        include: { _count: true, TimeEntries: true, Members: true, Organization: { select: { roundUpSecondsThreshold: true } } },
     });
 
     return res.map((project) => {
-        const loggedMinutes = sumTimeEntries({ entries: project.TimeEntries, dayjs });
+        const loggedMinutes = sumTimeEntries({
+            entries: project.TimeEntries,
+            dayjs,
+            roundUpSecondsThreshold: project.Organization.roundUpSecondsThreshold,
+        });
         const percentCompleted = project.estimatedMinutes ? ((loggedMinutes / project.estimatedMinutes) * 100).toFixed(2) : undefined;
 
         return { ...project, loggedTime: formatMinutes(loggedMinutes), loggedMinutes, percentCompleted };

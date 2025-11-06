@@ -2,9 +2,6 @@ import { clsx, type ClassValue } from 'clsx';
 import { Dayjs } from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 
-/** 0-60, amount of seconds rounded up to full minute (0=everything rounded up) */
-const roundUpSecondsThreshold = 0;
-
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
@@ -67,10 +64,12 @@ export const getDurationInMinutes = ({
     start,
     end,
     dayjs,
+    roundUpSecondsThreshold,
 }: {
     dayjs: typeof import('dayjs');
     start: Date | string | Dayjs;
     end: Date | string | Dayjs | null;
+    roundUpSecondsThreshold: number;
 }) => {
     const diffSeconds = dayjs(end || Date.now()).diff(dayjs(start), 's');
 
@@ -91,9 +90,17 @@ type Input = {
     end: Date | string | null;
 }[];
 
-export const sumTimeEntries = ({ entries, dayjs }: { entries: Input; dayjs: typeof import('dayjs') }) => {
+export const sumTimeEntries = ({
+    entries,
+    dayjs,
+    roundUpSecondsThreshold,
+}: {
+    entries: Input;
+    dayjs: typeof import('dayjs');
+    roundUpSecondsThreshold: number;
+}) => {
     return entries.reduce((sum, entry) => {
-        return sum + getDurationInMinutes({ start: entry.start, end: entry.end, dayjs });
+        return sum + getDurationInMinutes({ start: entry.start, end: entry.end, dayjs, roundUpSecondsThreshold });
     }, 0);
 };
 

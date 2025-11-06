@@ -17,7 +17,7 @@ type Props = {
 
 export const ActivityGraph = ({ scope }: Props) => {
     const { dayjs } = useDayjs();
-    const { orgId } = useMember();
+    const { orgId, roundUpSecondsThreshold } = useMember();
     const { data: timeEntries } = trpc.timeEntriesPaginated.useQuery({
         orgId,
         ...(scope === 'organization' && { members: 'all' }),
@@ -32,8 +32,9 @@ export const ActivityGraph = ({ scope }: Props) => {
                 end: new Date(),
                 granularity: 'day',
                 dayjs,
+                roundUpSecondsThreshold,
             }),
-        [timeEntries, dayjs],
+        [timeEntries, dayjs, roundUpSecondsThreshold],
     );
 
     const weekSegments = Array.from({ length: 7 }, (_, i) => dayjs().startOf('week').add(i, 'day').format('ddd'));

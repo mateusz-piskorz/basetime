@@ -7,14 +7,14 @@ import { deleteOrgSchemaS, updateOrgLogoSchema, upsertOrgSchemaS } from '../zod/
 import { action, validateBase64 } from './_utils';
 
 export const upsertOrg = action(upsertOrgSchemaS, async (validated, session) => {
-    const { name, currency, organizationId, roundUpMinutesThreshold, weekStart } = validated;
+    const { name, currency, organizationId, roundUpMinutesThreshold, weekStart, roundUpSecondsThreshold } = validated;
     const { userId } = session;
     try {
         let res;
         if (organizationId) {
             res = await prisma.organization.update({
                 where: { id: organizationId, Members: { some: { userId, role: { in: ['MANAGER', 'OWNER'] } } } },
-                data: { currency, name, roundUpMinutesThreshold, weekStart },
+                data: { currency, name, roundUpMinutesThreshold, roundUpSecondsThreshold, weekStart },
             });
         } else {
             res = await prisma.organization.create({
@@ -22,8 +22,6 @@ export const upsertOrg = action(upsertOrgSchemaS, async (validated, session) => 
                     currency: currency || 'EUR',
                     name: name || `${session.name}'s organization`,
                     Members: { create: { role: 'OWNER', userId } },
-                    roundUpMinutesThreshold,
-                    weekStart,
                 },
             });
         }

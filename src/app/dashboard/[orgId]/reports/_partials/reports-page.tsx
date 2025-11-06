@@ -15,7 +15,7 @@ import { PeriodDropdown } from './period-dropdown';
 
 export const ReportsPage = () => {
     const { dayjs } = useDayjs();
-    const { orgId, member, roundUpMinutesThreshold } = useMember();
+    const { orgId, member, roundUpMinutesThreshold, roundUpSecondsThreshold } = useMember();
 
     const [startDate, setStartDate] = useState(dayjs().startOf('week').toDate());
     const [endDate, setEndDate] = useState(dayjs().endOf('week').toDate());
@@ -50,10 +50,14 @@ export const ReportsPage = () => {
             end: endDate,
             granularity,
             dayjs,
+            roundUpSecondsThreshold,
         });
-    }, [timeEntriesData, startDate, endDate, dayjs]);
+    }, [timeEntriesData, startDate, endDate, dayjs, roundUpSecondsThreshold]);
 
-    const totalMinutes = useMemo(() => sumTimeEntries({ entries: timeEntriesData?.data || [], dayjs }), [timeEntriesData, dayjs]);
+    const totalMinutes = useMemo(
+        () => sumTimeEntries({ entries: timeEntriesData?.data || [], dayjs, roundUpSecondsThreshold }),
+        [timeEntriesData, dayjs, roundUpSecondsThreshold],
+    );
     const billableAmount = useMemo(
         () =>
             sumBillableAmount({
@@ -61,10 +65,10 @@ export const ReportsPage = () => {
                 members:
                     timeEntriesByMember?.map((member) => ({
                         hourlyRate: member.hourlyRate || 0,
-                        minutes: sumTimeEntries({ entries: member.TimeEntries, dayjs }),
+                        minutes: sumTimeEntries({ entries: member.TimeEntries, dayjs, roundUpSecondsThreshold }),
                     })) || [],
             }),
-        [timeEntriesByMember, roundUpMinutesThreshold, dayjs],
+        [timeEntriesByMember, roundUpMinutesThreshold, dayjs, roundUpSecondsThreshold],
     );
 
     return (

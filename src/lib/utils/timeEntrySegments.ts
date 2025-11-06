@@ -51,9 +51,18 @@ type TimeEntrySegments = {
     granularity?: Granularity;
     nameFormatter?: (val: { index: number; date: Date }) => string;
     dayjs: typeof import('dayjs');
+    roundUpSecondsThreshold: number;
 };
 
-export const timeEntrySegments = ({ start, end, timeEntries, granularity = 'day', nameFormatter, dayjs }: TimeEntrySegments) => {
+export const timeEntrySegments = ({
+    start,
+    end,
+    timeEntries,
+    granularity = 'day',
+    nameFormatter,
+    dayjs,
+    roundUpSecondsThreshold,
+}: TimeEntrySegments) => {
     let max = 0;
     const segments = dateSegments({ start, end, granularity, nameFormatter, dayjs }).map((segment) => {
         let { loggedMinutes } = segment;
@@ -66,7 +75,7 @@ export const timeEntrySegments = ({ start, end, timeEntries, granularity = 'day'
             const overlapStart = entryStart > segment.start ? entryStart : segment.start;
             const overlapEnd = entryEnd < segment.end ? entryEnd : segment.end;
 
-            const duration = getDurationInMinutes({ end: overlapEnd, start: overlapStart, dayjs });
+            const duration = getDurationInMinutes({ end: overlapEnd, start: overlapStart, dayjs, roundUpSecondsThreshold });
 
             if (duration > 0) {
                 loggedMinutes += duration;

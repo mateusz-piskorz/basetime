@@ -80,7 +80,7 @@ export const timeEntriesPaginated = publicProcedure
             });
 
             const res = await prisma.timeEntry.findMany({
-                include: { Project: { select: { name: true, color: true } } },
+                include: { Project: { select: { name: true, color: true } }, Organization: { select: { roundUpSecondsThreshold: true } } },
                 where,
                 ...(!takeAll && { take: limit }),
                 skip,
@@ -88,7 +88,17 @@ export const timeEntriesPaginated = publicProcedure
             });
 
             const data = res.map((timeEntry) => {
-                return { ...timeEntry, duration: formatMinutes(getDurationInMinutes({ start: timeEntry.start, end: timeEntry.end, dayjs })) };
+                return {
+                    ...timeEntry,
+                    duration: formatMinutes(
+                        getDurationInMinutes({
+                            start: timeEntry.start,
+                            end: timeEntry.end,
+                            dayjs,
+                            roundUpSecondsThreshold: timeEntry.Organization.roundUpSecondsThreshold,
+                        }),
+                    ),
+                };
             });
 
             const totalPages = limit ? Math.ceil(total / limit) : 1;

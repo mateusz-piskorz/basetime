@@ -39,7 +39,7 @@ export default function OrganizationDashboardLayout({
         );
     }
 
-    const { member, currency, id, roundUpMinutesThreshold, weekStart, logo, name } = data[0];
+    const { member, currency, id, roundUpMinutesThreshold, roundUpSecondsThreshold, weekStart, logo, name } = data[0];
 
     return (
         <MemberProvider
@@ -47,6 +47,7 @@ export default function OrganizationDashboardLayout({
             currency={currency}
             orgId={id}
             roundUpMinutesThreshold={roundUpMinutesThreshold}
+            roundUpSecondsThreshold={roundUpSecondsThreshold}
             orgLogo={logo}
             orgName={name}
         >

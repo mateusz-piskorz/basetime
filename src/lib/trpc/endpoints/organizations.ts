@@ -32,7 +32,9 @@ export const organizations = publicProcedure
 
                 return {
                     ...organization,
-                    loggedTime: formatMinutes(sumTimeEntries({ entries: organization.TimeEntries, dayjs })),
+                    loggedTime: formatMinutes(
+                        sumTimeEntries({ entries: organization.TimeEntries, dayjs, roundUpSecondsThreshold: organization.roundUpSecondsThreshold }),
+                    ),
                     ownership: member.role === 'OWNER',
                     member,
                     logo,

@@ -84,7 +84,7 @@ model BlogPostComment {
   authorId String
   parentId String?
   Post     BlogPost                @relation(fields: [postId], references: [id], onDelete: Cascade)
-  Author   User                    @relation(fields: [authorId], references: [id])
+  Author   User                    @relation(fields: [authorId], references: [id], onDelete: Cascade)
   Parent   BlogPostComment?        @relation("BPCParentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   Replies  BlogPostComment[]       @relation("BPCParentReplies")
   Upvotes  BlogPostCommentUpvote[]
@@ -133,6 +133,7 @@ model Organization {
   name                    String
   currency                CURRENCY
   roundUpMinutesThreshold Int        @default(1)
+  roundUpSecondsThreshold Int        @default(12)
   weekStart               WEEK_START @default(MONDAY)
   createdAt               DateTime   @default(now())
   updatedAt               DateTime   @updatedAt

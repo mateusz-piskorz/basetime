@@ -6,6 +6,8 @@ FROM node:24.8.0-bullseye-slim AS base
 FROM base AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG BT_USER_PASSWORD
+ARG ADMIN_USER_PASSWORD
 ARG NEXT_PUBLIC_URL
 ARG NEXT_PUBLIC_MINIO_ENDPOINT
 ARG DATABASE_URL
@@ -16,7 +18,10 @@ RUN npm ci
 
 COPY . .
 
+RUN npx prisma migrate deploy
 RUN npx prisma generate
+RUN npx ts-node --transpile-only ./scripts/basetime-org-setup.ts
+RUN npx ts-node --transpile-only ./scripts/admin-user-setup.ts
 RUN npm run build
 
 # runner

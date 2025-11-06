@@ -26,6 +26,7 @@ export const members = publicProcedure.input(z.object({ orgId: z.string() })).qu
             User: { select: { id: true, name: true, email: true, avatarId: true } },
             TimeEntries: true,
             Projects: true,
+            Organization: { select: { roundUpSecondsThreshold: true } },
         },
     });
 
@@ -35,7 +36,9 @@ export const members = publicProcedure.input(z.object({ orgId: z.string() })).qu
             return {
                 ...member,
                 User: member.User,
-                loggedTime: formatMinutes(sumTimeEntries({ entries: member.TimeEntries, dayjs })),
+                loggedTime: formatMinutes(
+                    sumTimeEntries({ entries: member.TimeEntries, dayjs, roundUpSecondsThreshold: member.Organization.roundUpSecondsThreshold }),
+                ),
                 hourlyRate,
             };
         }),

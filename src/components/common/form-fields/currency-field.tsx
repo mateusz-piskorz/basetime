@@ -63,7 +63,7 @@ export const CurrencyField = <T extends FieldValues>({
         } else {
             setValue('');
         }
-    }, [valueW]);
+    }, [valueW, moneyFormatter]);
 
     return (
         <FormField

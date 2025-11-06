@@ -38,7 +38,6 @@ type Props = {
 };
 
 const FormComponent = ({ organizationId, defaultValues }: Props) => {
-    console.log(defaultValues);
     const trpcUtils = trpc.useUtils();
     const onSubmit = async (data: z.infer<typeof upsertOrgSchema>) => {
         const res = await upsertOrg({ ...data, organizationId });

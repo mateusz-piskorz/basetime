@@ -1,149 +1,244 @@
 import { prisma } from '@/lib/prisma';
-import { manualTimeEntry, removeTimeEntries, startTimer, stopTimer } from '@/lib/server-actions/time-entry';
-import { getSession } from '@/lib/session';
-import bcrypt from 'bcrypt';
+import { manualTimeEntry, removeTimeEntries, toggleTimer } from '@/lib/server-actions/time-entry';
+import { isArray } from 'lodash';
+import { mockSession } from '../utils/mock-session';
 
-const owner = {
-    id: 'idOwner',
-    memberId: 'idOwnerMember',
-};
-const manager = {
-    id: 'idManager',
-    memberId: 'idManagerMember',
-};
-const emp1 = {
-    id: 'idEmp1',
-    memberId: 'idEmp1Member',
-};
-const emp2 = {
-    id: 'idEmp2',
-    memberId: 'idEmp2Member',
-};
+describe('toggleTimer', () => {
+    const member1 = 'member1';
+    const member2 = 'member2';
+    const orgId = 'orgId';
+    const projectId = 'projectId';
 
-const orgId = 'organizationId123';
+    beforeAll(async () => {
+        await prisma.organization.create({
+            data: { id: orgId, name: 'o', currency: 'EUR', Projects: { create: { color: 'BLUE', name: '', id: projectId } } },
+        });
 
-jest.mock('@/lib/session', () => {
-    const mockGetSession = jest.fn();
-    mockGetSession.mockReturnValue({ userId: owner.id });
-    return {
-        getSession: mockGetSession,
-    };
-});
-
-test('project setup', async () => {
-    const pwHash = await bcrypt.hash('admin12345', 9);
-    await prisma.user.create({ data: { email: '1', name: '', password: pwHash, id: owner.id } });
-    await prisma.user.create({ data: { email: '2', name: '', password: pwHash, id: manager.id } });
-    await prisma.user.create({ data: { email: '3', name: '', password: pwHash, id: emp1.id } });
-    await prisma.user.create({ data: { email: '4', name: '', password: pwHash, id: emp2.id } });
-    await prisma.organization.create({
-        data: {
-            id: orgId,
-            name: 'o',
-            currency: 'EUR',
-            Members: {
-                createMany: {
-                    data: [
-                        { role: 'OWNER', userId: owner.id, id: owner.memberId },
-                        { role: 'MANAGER', userId: manager.id, id: manager.memberId },
-                        { role: 'EMPLOYEE', userId: emp1.id, id: emp1.memberId },
-                        { role: 'EMPLOYEE', userId: emp2.id, id: emp2.memberId },
-                    ],
+        for (const memberId of [member1, member2]) {
+            await prisma.user.create({
+                data: {
+                    id: memberId,
+                    email: memberId,
+                    name: '',
+                    password: '',
+                    Members: { create: { role: 'EMPLOYEE', organizationId: orgId, id: memberId } },
                 },
-            },
-        },
+            });
+        }
+    });
+
+    test('member1 can start a timer', async () => {
+        mockSession(member1);
+        const res = await toggleTimer({ name: 'work1', orgId, projectId });
+        expect(res.success).toBe(true);
+        expect(res.message).toBe('Timer started successfully');
+
+        const timeEntries = await prisma.timeEntry.findMany();
+        expect(timeEntries.length).toBe(1);
+        expect(timeEntries[0].memberId).toBe(member1);
+        expect(timeEntries[0].organizationId).toBe(orgId);
+        expect(timeEntries[0].name).toBe('work1');
+        expect(timeEntries[0].projectId).toBe(projectId);
+        expect(timeEntries[0].end).toBe(null);
+    });
+
+    test('member2 can start a timer, without affecting member1', async () => {
+        mockSession(member2);
+        const res = await toggleTimer({ name: 'work2', orgId, projectId });
+        expect(res.success).toBe(true);
+        expect(res.message).toBe('Timer started successfully');
+
+        const timeEntries = await prisma.timeEntry.findMany();
+        expect(timeEntries.length).toBe(2);
+        expect(timeEntries.find((t) => t.memberId === member1)?.name).toBe('work1');
+        expect(timeEntries.find((t) => t.memberId === member2)?.name).toBe('work2');
+    });
+
+    test('member1 can stop his timer', async () => {
+        mockSession(member1);
+        const res = await toggleTimer({ orgId });
+        expect(res.success).toBe(true);
+        expect(res.message).toBe('Timer stopped successfully');
+
+        const timeEntries = await prisma.timeEntry.findMany();
+        expect(timeEntries.length).toBe(2);
+        expect(timeEntries.find((t) => t.memberId === member1)?.end).not.toBe(null);
+        expect(timeEntries.find((t) => t.memberId === member2)?.end).toBe(null);
+    });
+
+    test('member2 can stop his timer', async () => {
+        mockSession(member2);
+        const res = await toggleTimer({ orgId });
+        expect(res.success).toBe(true);
+        expect(res.message).toBe('Timer stopped successfully');
+
+        const timeEntries = await prisma.timeEntry.findMany();
+        expect(timeEntries.length).toBe(2);
+        timeEntries.forEach((t) => {
+            expect(t.end).not.toBe(null);
+        });
     });
 });
 
-const mockedGetSession = getSession as jest.Mock;
+describe('removeTimeEntries', () => {
+    const employee = 'member1';
+    const manager = 'member2';
+    const owner = 'member3';
+    const orgId = 'orgId';
+    const projectId = 'projectId';
 
-// start/stop TimeTracker
+    const makeTimeEntries = async <T extends string | string[]>(memberId: T): Promise<T extends string ? string : string[]> => {
+        if (!isArray(memberId)) {
+            const entry = await prisma.timeEntry.create({ data: { name: '', start: new Date(), memberId, organizationId: orgId } });
+            // @ts-expect-error cos
+            return entry.id;
+        }
 
-test('employee can start and stop timer', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res = await startTimer({ memberId: emp1.memberId, orgId });
-    expect(res.success).toBe(true);
-    const stopRes = await stopTimer({ timeEntryId: res.data!.id });
-    expect(stopRes.success).toBe(true);
+        await prisma.timeEntry.createMany({
+            data: memberId.map((m) => ({ name: '', start: new Date(), memberId: m, organizationId: orgId })),
+        });
+
+        // @ts-expect-error cos
+        return (await prisma.timeEntry.findMany()).map((e) => e.id);
+    };
+
+    beforeAll(async () => {
+        await prisma.organization.deleteMany();
+        await prisma.user.deleteMany();
+
+        await prisma.organization.create({
+            data: { id: orgId, name: 'o', currency: 'EUR', Projects: { create: { color: 'BLUE', name: '', id: projectId } } },
+        });
+
+        for (const memberId of [employee, manager, owner]) {
+            const role = {
+                member1: 'EMPLOYEE',
+                member2: 'MANAGER',
+                member3: 'OWNER',
+            } as const;
+
+            await prisma.user.create({
+                data: {
+                    id: memberId,
+                    email: memberId,
+                    name: '',
+                    password: '',
+                    Members: { create: { role: role[memberId as keyof typeof role], organizationId: orgId, id: memberId } },
+                },
+            });
+        }
+    });
+
+    beforeEach(async () => {
+        await prisma.timeEntry.deleteMany({});
+    });
+
+    test('employee can remove his time entry', async () => {
+        mockSession(employee);
+        expect((await removeTimeEntries({ timeEntryIds: [await makeTimeEntries(employee)] })).success).toBe(true);
+        expect((await prisma.timeEntry.findMany()).length).toBe(0);
+    });
+
+    test(`employee can't remove someone's time entry`, async () => {
+        mockSession(employee);
+        expect((await removeTimeEntries({ timeEntryIds: [await makeTimeEntries(manager)] })).success).toBe(false);
+        expect((await prisma.timeEntry.findMany()).length).toBe(1);
+    });
+
+    test(`manager can remove his and someone's time entry`, async () => {
+        mockSession(manager);
+        expect((await removeTimeEntries({ timeEntryIds: await makeTimeEntries([manager, employee]) })).success).toBe(true);
+        expect((await prisma.timeEntry.findMany()).length).toBe(0);
+    });
+
+    test(`owner can remove his and someone's time entry`, async () => {
+        mockSession(owner);
+        expect((await removeTimeEntries({ timeEntryIds: await makeTimeEntries([owner, manager]) })).success).toBe(true);
+        expect((await prisma.timeEntry.findMany()).length).toBe(0);
+    });
 });
 
-test('manager can start and stop timer', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res = await startTimer({ memberId: manager.memberId, orgId });
-    expect(res.success).toBe(true);
-    const stopRes = await stopTimer({ timeEntryId: res.data!.id });
-    expect(stopRes.success).toBe(true);
-});
+describe('manualTimeEntry', () => {
+    const employee = 'member1';
+    const manager = 'member2';
+    const owner = 'member3';
+    const orgId = 'orgId';
+    const projectId = 'projectId';
 
-test('owner can start and stop timer', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await startTimer({ memberId: owner.memberId, orgId });
-    expect(res.success).toBe(true);
-    const stopRes = await stopTimer({ timeEntryId: res.data!.id });
-    expect(stopRes.success).toBe(true);
-});
+    beforeAll(async () => {
+        await prisma.organization.deleteMany();
+        await prisma.user.deleteMany();
 
-// manual/remove time entry
+        await prisma.organization.create({
+            data: { id: orgId, name: 'o', currency: 'EUR', Projects: { create: { color: 'BLUE', name: '', id: projectId } } },
+        });
 
-test('employee can create manual time entry and remove it', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res = await manualTimeEntry({ orgId, start: new Date(), end: new Date() });
-    expect(res.success).toBe(true);
-    const removeRes = await removeTimeEntries({ timeEntryIds: [res.data!.id] });
-    expect(removeRes.success).toBe(true);
-});
+        for (const memberId of [employee, manager, owner]) {
+            const role = {
+                member1: 'EMPLOYEE',
+                member2: 'MANAGER',
+                member3: 'OWNER',
+            } as const;
 
-test('employee cannot edit other time entries', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: emp2.id });
-    const res = await manualTimeEntry({ orgId, start: new Date(), end: new Date() });
-    expect(res.success).toBe(true);
+            await prisma.user.create({
+                data: {
+                    id: memberId,
+                    email: memberId,
+                    name: '',
+                    password: '',
+                    Members: { create: { role: role[memberId as keyof typeof role], organizationId: orgId, id: memberId } },
+                },
+            });
+        }
+    });
 
-    mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res2 = await manualTimeEntry({ timeEntryId: res.data!.id, orgId, start: new Date(), end: new Date() });
-    expect(res2.success).toBe(false);
-    mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const removeRes = await removeTimeEntries({ timeEntryIds: [res.data!.id] });
-    expect(removeRes.success).toBe(false);
-});
+    beforeEach(async () => {
+        await prisma.timeEntry.deleteMany({});
+    });
 
-test('manager can create manual time entry and remove it', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res = await manualTimeEntry({ orgId, start: new Date(), end: new Date() });
-    expect(res.success).toBe(true);
-    const removeRes = await removeTimeEntries({ timeEntryIds: [res.data!.id] });
-    expect(removeRes.success).toBe(true);
-});
+    test('employee can add time entry and edit it', async () => {
+        mockSession(employee);
+        const res = await manualTimeEntry({ end: new Date(), start: new Date(), orgId, name: 'SU-100', projectId });
+        expect(res.success).toBe(true);
 
-test('manager can edit other time entries', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: emp2.id });
-    const res = await manualTimeEntry({ orgId, start: new Date(), end: new Date() });
-    expect(res.success).toBe(true);
+        expect((await prisma.timeEntry.findMany()).length).toBe(1);
+        const timeEntry = await prisma.timeEntry.findFirst();
+        expect(timeEntry?.projectId).toBe(projectId);
+        expect(timeEntry?.organizationId).toBe(orgId);
+        expect(timeEntry?.name).toBe('SU-100');
+        expect(timeEntry?.end).not.toBe(null);
 
-    mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res2 = await manualTimeEntry({ timeEntryId: res.data!.id, orgId, start: new Date(), end: new Date() });
-    expect(res2.success).toBe(true);
-    mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const removeRes = await removeTimeEntries({ timeEntryIds: [res.data!.id] });
-    expect(removeRes.success).toBe(true);
-});
+        mockSession(employee);
+        const updateRes = await manualTimeEntry({ timeEntryId: timeEntry?.id, name: 'SU-200', orgId });
+        expect(updateRes.success).toBe(true);
+        expect((await prisma.timeEntry.findMany()).length).toBe(1);
+        expect((await prisma.timeEntry.findFirst())?.name).toBe('SU-200');
+    });
 
-test('owner can create manual time entry and remove it', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await manualTimeEntry({ orgId, start: new Date(), end: new Date() });
-    expect(res.success).toBe(true);
-    const removeRes = await removeTimeEntries({ timeEntryIds: [res.data!.id] });
-    expect(removeRes.success).toBe(true);
-});
+    test(`employee can't edit someone's time entry`, async () => {
+        mockSession(employee);
+        const { id } = await prisma.timeEntry.create({ data: { name: '', start: new Date(), organizationId: orgId, memberId: manager } });
+        const res = await manualTimeEntry({ name: 'updated-name', timeEntryId: id });
+        expect(res.success).toBe(false);
+        expect((await prisma.timeEntry.findMany()).length).toBe(1);
+        expect((await prisma.timeEntry.findFirst())?.name).not.toBe('updated-name');
+    });
 
-test('owner can edit other time entries', async () => {
-    mockedGetSession.mockReturnValueOnce({ userId: emp2.id });
-    const res = await manualTimeEntry({ orgId, start: new Date(), end: new Date() });
-    expect(res.success).toBe(true);
+    test(`manager can edit someone's time entry`, async () => {
+        mockSession(manager);
+        const { id } = await prisma.timeEntry.create({ data: { name: '', start: new Date(), organizationId: orgId, memberId: employee } });
+        const res = await manualTimeEntry({ name: 'updated-name', timeEntryId: id });
+        expect(res.success).toBe(true);
+        expect((await prisma.timeEntry.findMany()).length).toBe(1);
+        expect((await prisma.timeEntry.findFirst())?.name).toBe('updated-name');
+    });
 
-    mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res2 = await manualTimeEntry({ timeEntryId: res.data!.id, orgId, start: new Date(), end: new Date() });
-    expect(res2.success).toBe(true);
-    mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const removeRes = await removeTimeEntries({ timeEntryIds: [res.data!.id] });
-    expect(removeRes.success).toBe(true);
+    test(`owner can edit someone's time entry`, async () => {
+        mockSession(owner);
+        const { id } = await prisma.timeEntry.create({ data: { name: '', start: new Date(), organizationId: orgId, memberId: employee } });
+        const res = await manualTimeEntry({ name: 'updated-name', timeEntryId: id });
+        expect(res.success).toBe(true);
+        expect((await prisma.timeEntry.findMany()).length).toBe(1);
+        expect((await prisma.timeEntry.findFirst())?.name).toBe('updated-name');
+    });
 });

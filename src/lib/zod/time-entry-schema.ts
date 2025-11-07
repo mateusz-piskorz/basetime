@@ -5,20 +5,19 @@ export const startTimerSchema = z.object({
     projectId: z.string().nullish(),
 });
 
-export const startTimerSchemaS = z.object({
+export const toggleTimerSchemaS = z.object({
+    orgId: z.string(),
     name: z.string().optional(),
     projectId: z.string().nullish(),
-    orgId: z.string(),
-    memberId: z.string(),
 });
 
 export const manualTimeEntrySchemaS = z.object({
     timeEntryId: z.string().optional(),
     name: z.string().optional(),
-    start: z.date(),
-    end: z.date(),
+    start: z.date().optional(),
+    end: z.date().optional(),
     projectId: z.string().optional(),
-    orgId: z.string(),
+    orgId: z.string().optional(),
 });
 
 export const manualTimeEntrySchema = z.object({

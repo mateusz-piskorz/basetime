@@ -1,30 +1,31 @@
 'use server';
 
 import { prisma } from '../prisma';
-import { manualTimeEntrySchemaS, removeTimeEntriesSchemaS, startTimerSchemaS, stopTimerSchemaS } from '../zod/time-entry-schema';
+import { manualTimeEntrySchemaS, removeTimeEntriesSchemaS, toggleTimerSchemaS } from '../zod/time-entry-schema';
 import { action } from './_utils';
 
-// todo: check permission
-export const startTimer = action(startTimerSchemaS, async ({ memberId, orgId, name, projectId }) => {
+export const toggleTimer = action(toggleTimerSchemaS, async ({ orgId, name, projectId }, { userId }) => {
     try {
-        const res = await prisma.timeEntry.create({
-            data: { start: new Date(), memberId, name: name || 'unnamed time entry', organizationId: orgId, projectId },
+        const member = await prisma.member.findFirst({
+            where: { organizationId: orgId, userId },
+            include: { TimeEntries: { where: { end: null } } },
         });
 
-        return { success: true, data: res };
+        if (!member) return { success: false, message: 'Error - member not found' };
+
+        // stop timer
+        if (member.TimeEntries.length > 0) {
+            await prisma.timeEntry.update({ where: { id: member.TimeEntries[0].id }, data: { end: new Date() } });
+            return { success: true, message: 'Timer stopped successfully' };
+        }
+
+        // start timer
+        await prisma.timeEntry.create({
+            data: { memberId: member.id, start: new Date(), name: name || 'unnamed time entry', organizationId: orgId, projectId },
+        });
+        return { success: true, message: 'Timer started successfully' };
     } catch {
         return { success: false, message: 'Error - startTimer' };
-    }
-});
-
-// todo: check permission
-export const stopTimer = action(stopTimerSchemaS, async ({ timeEntryId }) => {
-    try {
-        await prisma.timeEntry.update({ where: { id: timeEntryId, end: null }, data: { end: new Date() } });
-
-        return { success: true };
-    } catch {
-        return { success: false, message: 'Error - stopTimer' };
     }
 });
 
@@ -60,6 +61,7 @@ export const manualTimeEntry = action(manualTimeEntrySchemaS, async (validated, 
                 },
             });
         } else {
+            if (!start || !orgId) return { success: false, message: 'Error - start and orgId arg is required' };
             res = await prisma.timeEntry.create({
                 data: { start, end, memberId: member.id, name: name || 'unnamed time entry', organizationId: orgId, projectId },
             });

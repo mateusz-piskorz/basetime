@@ -20,14 +20,8 @@ export const manualTimeEntrySchemaS = z
         projectId: z.string().optional(),
         orgId: z.string().optional(),
     })
-    .refine((data) => data.timeEntryId && !data.start, {
-        message: 'start date is required',
-        path: ['start'],
-    })
-    .refine((data) => data.timeEntryId && !data.orgId, {
-        message: 'orgId is required',
-        path: ['orgId'],
-    });
+    .refine((data) => data.timeEntryId || !!data.start, { message: 'start date is required', path: ['start'] })
+    .refine((data) => data.timeEntryId || !!data.orgId, { message: 'orgId is required', path: ['orgId'] });
 
 export const manualTimeEntrySchema = z.object({
     duration: z.string(),

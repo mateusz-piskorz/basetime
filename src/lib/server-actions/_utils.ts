@@ -10,14 +10,10 @@ export function action<T extends z.ZodType, H extends (validated: z.infer<T>, se
 ): (data: z.infer<T>) => Promise<Awaited<ReturnType<H>>> {
     return async (data: z.infer<T>) => {
         const validated = schema.safeParse(data);
-        if (!validated.success) {
-            return { success: false, message: 'Error validating fields' };
-        }
+        if (!validated.success) return { success: false, message: 'Error validating fields' };
 
         const session = await getSession();
-        if (!session) {
-            return { success: false, message: 'Error session invalid' };
-        }
+        if (!session) return { success: false, message: 'Error session invalid' };
 
         return handler(validated.data, session);
     };

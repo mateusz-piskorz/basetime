@@ -25,7 +25,7 @@ export const toggleTimer = action(toggleTimerSchemaS, async ({ orgId, name, proj
         });
         return { success: true, message: 'Timer started successfully' };
     } catch {
-        return { success: false, message: 'Error - startTimer' };
+        return { success: false, message: 'Error - toggleTimer' };
     }
 });
 
@@ -61,9 +61,15 @@ export const manualTimeEntry = action(manualTimeEntrySchemaS, async (validated, 
                 },
             });
         } else {
-            if (!start || !orgId) return { success: false, message: 'Error - start and orgId arg is required' };
             res = await prisma.timeEntry.create({
-                data: { start, end, memberId: member.id, name: name || 'unnamed time entry', organizationId: orgId, projectId },
+                data: {
+                    start: start as Date,
+                    end,
+                    memberId: member.id,
+                    name: name || 'unnamed time entry',
+                    organizationId: orgId as string,
+                    projectId,
+                },
             });
         }
 

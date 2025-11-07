@@ -5,21 +5,23 @@ export const startTimerSchema = z.object({
     projectId: z.string().nullish(),
 });
 
-export const startTimerSchemaS = z.object({
+export const toggleTimerSchemaS = z.object({
+    orgId: z.string(),
     name: z.string().optional(),
     projectId: z.string().nullish(),
-    orgId: z.string(),
-    memberId: z.string(),
 });
 
-export const manualTimeEntrySchemaS = z.object({
-    timeEntryId: z.string().optional(),
-    name: z.string().optional(),
-    start: z.date(),
-    end: z.date(),
-    projectId: z.string().optional(),
-    orgId: z.string(),
-});
+export const manualTimeEntrySchemaS = z
+    .object({
+        timeEntryId: z.string().optional(),
+        name: z.string().optional(),
+        start: z.date().optional(),
+        end: z.date().optional(),
+        projectId: z.string().optional(),
+        orgId: z.string().optional(),
+    })
+    .refine((data) => data.timeEntryId || !!data.start, { message: 'start date is required', path: ['start'] })
+    .refine((data) => data.timeEntryId || !!data.orgId, { message: 'orgId is required', path: ['orgId'] });
 
 export const manualTimeEntrySchema = z.object({
     duration: z.string(),

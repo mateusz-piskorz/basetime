@@ -34,7 +34,7 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
     useEffect(() => {
         form.reset({
             memberIds: project?.Members.map((e) => e.id),
-            color: '#fff',
+            color: '#B96D40',
             estimatedDuration: project?.estimatedMinutes ? formatMinutes(project.estimatedMinutes) : undefined,
             name: project?.name,
         });
@@ -43,7 +43,6 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
     const onSubmit = async (data: z.infer<typeof upsertProjectSchema>) => {
         const res = await upsertProject({
             ...data,
-            color: '#fff',
             estimatedMinutes: durationParser(data.estimatedDuration, 'm'),
             orgId,
             projectId: project?.id,

@@ -4,7 +4,6 @@ import { SelectField } from '@/components/common/form-fields/select-field';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
-import { projectColor } from '@/lib/constants/project-color';
 import { useMember } from '@/lib/hooks/use-member';
 import { updateMember } from '@/lib/server-actions/member';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
@@ -79,7 +78,8 @@ export const UpdateMemberDialog = ({ open, setOpen, onSuccess, member }: Props) 
                                     label: (
                                         <>
                                             <span className="max-w-[100px] truncate">{name}</span>
-                                            <span className="h-2 min-w-2 rounded-full" style={{ backgroundColor: projectColor[color] }} />
+                                            {/* todo: project badge */}
+                                            <span className="h-2 min-w-2 rounded-full" style={{ backgroundColor: color }} />
                                         </>
                                     ),
                                     value: id,

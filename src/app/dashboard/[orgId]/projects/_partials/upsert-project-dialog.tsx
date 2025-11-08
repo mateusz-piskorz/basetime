@@ -1,7 +1,7 @@
 import { DurationField } from '@/components/common/form-fields/duration-field';
+import { HexPickerField } from '@/components/common/form-fields/hex-picker-field';
 import { InputField } from '@/components/common/form-fields/input-field';
 import { MultiSelectField } from '@/components/common/form-fields/multi-select-field';
-import { SelectField } from '@/components/common/form-fields/select-field';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
@@ -11,7 +11,6 @@ import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { formatMinutes } from '@/lib/utils/common';
 import { upsertProjectSchema } from '@/lib/zod/project-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PROJECT_COLOR } from '@prisma/client';
 import durationParser from 'parse-duration';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -35,7 +34,7 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
     useEffect(() => {
         form.reset({
             memberIds: project?.Members.map((e) => e.id),
-            color: project?.color,
+            color: '#fff',
             estimatedDuration: project?.estimatedMinutes ? formatMinutes(project.estimatedMinutes) : undefined,
             name: project?.name,
         });
@@ -44,6 +43,7 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
     const onSubmit = async (data: z.infer<typeof upsertProjectSchema>) => {
         const res = await upsertProject({
             ...data,
+            color: '#fff',
             estimatedMinutes: durationParser(data.estimatedDuration, 'm'),
             orgId,
             projectId: project?.id,
@@ -79,12 +79,7 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
                         </div>
                         <p className="text-muted-foreground -mt-4 text-sm">you can type human language here e.g. 2h 30m</p>
 
-                        <SelectField
-                            form={form}
-                            name="color"
-                            label="Color"
-                            selectOptions={Object.values(PROJECT_COLOR).map((e) => ({ label: e, value: e }))}
-                        />
+                        <HexPickerField className="justify-start" form={form} name="color" label="Color" />
 
                         <Button disabled={form.formState.isSubmitting} type="submit">
                             Save

@@ -45,7 +45,7 @@ export const RecentTimeEntries = ({ scope }: Props) => {
                                 <>
                                     <div className="flex flex-col gap-1">
                                         <span className="text-sm">{entry.name}</span>
-                                        <ProjectBadge size="sm" name={entry.Project?.name || 'No Project'} color={entry.Project?.color || 'GRAY'} />
+                                        <ProjectBadge size="sm" name={entry.Project?.name || 'No Project'} hex={entry.Project?.color || 'GRAY'} />
                                     </div>
                                     <StartButton size="sm" actionState="start" />
                                 </>

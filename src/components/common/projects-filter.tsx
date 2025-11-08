@@ -1,6 +1,5 @@
 'use client';
 
-import { projectColor } from '@/lib/constants/project-color';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { MultiSelect } from './multi-select';
@@ -19,7 +18,8 @@ export const ProjectsFilter = ({ projects, setProjects }: Props) => {
             options={(data || []).map(({ id, name, color }) => ({
                 label: (
                     <>
-                        <span className="mr-2 inline-block h-2 w-2 rounded-full" style={{ backgroundColor: projectColor[color] }} />
+                        {/* todo: project badge */}
+                        <span className="mr-2 inline-block h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
                         {name}
                     </>
                 ),

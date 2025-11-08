@@ -12,7 +12,7 @@ import {
     SliderTrack,
 } from '@/components/ui/color';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Input, Label, parseColor } from 'react-aria-components';
+import { Input, parseColor } from 'react-aria-components';
 import { Button } from '../ui/button';
 
 type Props = {
@@ -31,40 +31,65 @@ export const HexPicker = ({ onChange, value }: Props) => {
                     </Button>
                 </PopoverTrigger>
 
-                <PopoverContent>
+                <PopoverContent className="space-y-4">
                     <div>
-                        <ColorArea colorSpace="hsb" xChannel="saturation" yChannel="brightness" className="h-[164px] rounded-b-none border-b-0">
+                        <ColorArea
+                            colorSpace="hsb"
+                            xChannel="saturation"
+                            yChannel="brightness"
+                            className="h-[164px] w-full rounded-b-none border-b-0"
+                        >
                             <ColorThumb className="z-50" />
                         </ColorArea>
+
                         <ColorSlider colorSpace="hsb" channel="hue">
-                            <SliderTrack className="rounded-t-none border-t-0">
+                            <SliderTrack className="w-full rounded-t-none border-t-0">
                                 <ColorThumb className="top-1/2" />
                             </SliderTrack>
                         </ColorSlider>
                     </div>
 
-                    <ColorField colorSpace="hsb" className="w-48">
-                        <Label>Hex</Label>
-                        <Input />
-                    </ColorField>
-
-                    <ColorSwatchPicker className="w-48">
-                        <ColorSwatchPickerItem color="#F00">
+                    <ColorSwatchPicker className="">
+                        <ColorSwatchPickerItem color="#4F8EF7">
                             <ColorSwatch />
                         </ColorSwatchPickerItem>
-                        <ColorSwatchPickerItem color="#f90">
+                        <ColorSwatchPickerItem color="#43E97B">
                             <ColorSwatch />
                         </ColorSwatchPickerItem>
-                        <ColorSwatchPickerItem color="#0F0">
+                        <ColorSwatchPickerItem color="#F5A623">
                             <ColorSwatch />
                         </ColorSwatchPickerItem>
-                        <ColorSwatchPickerItem color="#08f">
+                        <ColorSwatchPickerItem color="#FF3B30">
                             <ColorSwatch />
                         </ColorSwatchPickerItem>
-                        <ColorSwatchPickerItem color="#00f">
+                        <ColorSwatchPickerItem color="#FFD700">
+                            <ColorSwatch />
+                        </ColorSwatchPickerItem>
+                        <ColorSwatchPickerItem color="#A259F7">
+                            <ColorSwatch />
+                        </ColorSwatchPickerItem>
+                        <ColorSwatchPickerItem color="#00B4D8">
+                            <ColorSwatch />
+                        </ColorSwatchPickerItem>
+                        <ColorSwatchPickerItem color="#F78CA2">
+                            <ColorSwatch />
+                        </ColorSwatchPickerItem>
+                        <ColorSwatchPickerItem color="#FFB6B9">
+                            <ColorSwatch />
+                        </ColorSwatchPickerItem>
+                        <ColorSwatchPickerItem color="#22223B">
+                            <ColorSwatch />
+                        </ColorSwatchPickerItem>
+                        <ColorSwatchPickerItem color="#E6E6EA">
+                            <ColorSwatch />
+                        </ColorSwatchPickerItem>
+                        <ColorSwatchPickerItem color="#2EC4B6">
                             <ColorSwatch />
                         </ColorSwatchPickerItem>
                     </ColorSwatchPicker>
+                    <ColorField colorSpace="hsb" className="">
+                        <Input />
+                    </ColorField>
                 </PopoverContent>
             </Popover>
         </ColorPicker>

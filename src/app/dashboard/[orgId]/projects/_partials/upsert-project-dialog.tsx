@@ -34,7 +34,7 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
     useEffect(() => {
         form.reset({
             memberIds: project?.Members.map((e) => e.id),
-            color: '#B96D40',
+            color: project?.color,
             estimatedDuration: project?.estimatedMinutes ? formatMinutes(project.estimatedMinutes) : undefined,
             name: project?.name,
         });

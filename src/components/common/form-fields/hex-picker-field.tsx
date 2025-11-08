@@ -26,7 +26,7 @@ export const HexPickerField = <T extends FieldValues>({ form, label, name: props
                     <FormItem className={className}>
                         {label && <FormLabel>{label}</FormLabel>}
                         <FormControl>
-                            <HexPicker onChange={(color) => field.onChange(color)} value={field.value} />
+                            <HexPicker onChange={(color) => field.onChange(color)} value={field.value || '#B96D40'} />
                         </FormControl>
                         {errorMessage && <FormMessage />}
                     </FormItem>

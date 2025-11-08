@@ -17,12 +17,6 @@ enum BLOG_POST_STATUS {
   PUBLISHED
 }
 
-enum PROJECT_COLOR {
-  GRAY
-  BLUE
-  ORANGE
-}
-
 enum MEMBER_ROLE {
   OWNER
   MANAGER
@@ -201,12 +195,12 @@ model TimeEntry {
 }
 
 model Project {
-  id               String        @id @default(cuid(2))
+  id               String   @id @default(cuid(2))
   name             String
   estimatedMinutes Int?
-  color            PROJECT_COLOR
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+  color            String   @default("#B96D40")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   organizationId String
   Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)

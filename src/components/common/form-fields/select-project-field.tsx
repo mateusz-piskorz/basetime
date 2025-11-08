@@ -2,7 +2,6 @@
 
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { projectColor } from '@/lib/constants/project-color';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
@@ -60,7 +59,8 @@ export const SelectProjectField = <T extends FieldValues>({
                                 <SelectLabel>Projects</SelectLabel>
                                 {(data || []).map(({ id, name, color }) => (
                                     <SelectItem key={id} value={id}>
-                                        <span className="h-2 min-w-2 rounded-full" style={{ backgroundColor: projectColor[color] }} />
+                                        {/* todo: project badge */}
+                                        <span className="h-2 min-w-2 rounded-full" style={{ backgroundColor: color }} />
                                         <span className={cn('max-w-[100px] truncate', textClassName)}>{name}</span>
                                     </SelectItem>
                                 ))}

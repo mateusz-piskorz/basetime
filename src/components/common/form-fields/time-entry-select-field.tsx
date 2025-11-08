@@ -108,7 +108,7 @@ export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, na
                                         <Command>
                                             <CommandList>
                                                 <CommandGroup>
-                                                    <p className="text-muted-foreground px-2 py-[1px] text-xs">Recently tracked time entries</p>
+                                                    <p className="text-muted-foreground px-2 py-px text-xs">Recently tracked time entries</p>
                                                     {data?.data.map((timeEntry) => (
                                                         <CommandItem
                                                             className="flex justify-between"
@@ -123,7 +123,7 @@ export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, na
                                                             <p className="truncate">{timeEntry.name}</p>
                                                             <ProjectBadge
                                                                 name={timeEntry.Project?.name || 'No Project'}
-                                                                color={timeEntry.Project?.color || 'GRAY'}
+                                                                hex={timeEntry.Project?.color || '#B96D40'}
                                                             />
                                                         </CommandItem>
                                                     ))}

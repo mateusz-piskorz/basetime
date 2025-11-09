@@ -136,6 +136,7 @@ model Organization {
   Invitations Invitation[]
   Projects    Project[]
   TimeEntries TimeEntry[]
+  Tasks       Task[]
 }
 
 model Member {
@@ -152,6 +153,8 @@ model Member {
   HourlyRates    HourlyRate[]
   Projects       Project[]
   TimeEntries    TimeEntry[]
+  Tasks          Task[]
+
   // todo:
   // @@id([userId, organizationId])
 }
@@ -188,10 +191,29 @@ model TimeEntry {
 
   memberId       String
   projectId      String?
+  taskId         String?
   organizationId String
   Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   Member         Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  Project        Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  Project        Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  Task           Task?        @relation(fields: [taskId], references: [id], onDelete: SetNull)
+}
+
+model Task {
+  id               String   @id @default(cuid(2))
+  name             String
+  description      String?
+  estimatedMinutes Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  organizationId String
+  projectId      String
+  assignedId     String?
+  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  Project        Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  Assigned       Member?      @relation(fields: [assignedId], references: [id], onDelete: SetNull)
+  TimeEntries    TimeEntry[]
 }
 
 model Project {
@@ -205,6 +227,6 @@ model Project {
   organizationId String
   Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   Members        Member[]
-
-  TimeEntries TimeEntry[]
+  TimeEntries    TimeEntry[]
+  Tasks          Task[]
 }

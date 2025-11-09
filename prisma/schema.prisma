@@ -136,7 +136,7 @@ model Organization {
   Invitations Invitation[]
   Projects    Project[]
   TimeEntries TimeEntry[]
-  tasks       Task[]
+  Tasks       Task[]
 }
 
 model Member {
@@ -153,9 +153,10 @@ model Member {
   HourlyRates    HourlyRate[]
   Projects       Project[]
   TimeEntries    TimeEntry[]
+  Tasks          Task[]
+
   // todo:
   // @@id([userId, organizationId])
-  tasks          Task[]
 }
 
 model Invitation {
@@ -190,17 +191,18 @@ model TimeEntry {
 
   memberId       String
   projectId      String?
+  taskId         String?
   organizationId String
   Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   Member         Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  Project        Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  task           Task?        @relation(fields: [taskId], references: [id])
-  taskId         String?
+  Project        Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  Task           Task?        @relation(fields: [taskId], references: [id], onDelete: SetNull)
 }
 
 model Task {
   id               String   @id @default(cuid(2))
   name             String
+  description      String?
   estimatedMinutes Int?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -211,8 +213,7 @@ model Task {
   Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   Project        Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   Assigned       Member?      @relation(fields: [assignedId], references: [id], onDelete: SetNull)
-
-  TimeEntries TimeEntry[]
+  TimeEntries    TimeEntry[]
 }
 
 model Project {
@@ -226,7 +227,6 @@ model Project {
   organizationId String
   Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   Members        Member[]
-
-  TimeEntries TimeEntry[]
-  tasks       Task[]
+  TimeEntries    TimeEntry[]
+  Tasks          Task[]
 }

@@ -8,7 +8,7 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar';
 import { useMember } from '@/lib/hooks/use-member';
-import { ChartNoAxesColumnIncreasing, Clock, FolderClosed, LayoutGrid, Settings, Users2 } from 'lucide-react';
+import { ChartNoAxesColumnIncreasing, Clock, FolderClosed, LayoutGrid, Settings, Table2, Users2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -46,6 +46,15 @@ export const SidebarContent = () => {
             href: `/dashboard/${orgId}/members`,
             icon: Users2,
         },
+        ...(['OWNER', 'MANAGER'].includes(member.role)
+            ? [
+                  {
+                      title: 'Tasks',
+                      href: `/dashboard/${orgId}/tasks`,
+                      icon: Table2,
+                  },
+              ]
+            : []),
         ...(member.role == 'OWNER'
             ? [
                   {

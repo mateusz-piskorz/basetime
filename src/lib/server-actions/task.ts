@@ -1,3 +1,5 @@
+'use server';
+
 import { prisma } from '../prisma';
 import { deleteTaskSchemaS, upsertTaskSchemaS } from '../zod/task-schema';
 import { action } from './_utils';

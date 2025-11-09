@@ -40,6 +40,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
                       description: st.description,
                       assignedMemberId: st.assignedId,
                       duration: String(st.estimatedMinutes),
+                      projectId: st.projectId,
                   }
                 : undefined,
         );
@@ -84,8 +85,8 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
                         }}
                         className="flex flex-col gap-y-6"
                     >
-                        <InputField form={form} name="name" />
-                        <InputField form={form} name="description" />
+                        <InputField form={form} name="name" label="Name" />
+                        <InputField form={form} name="description" label="Description" />
                         <div className="flex flex-col gap-6 sm:flex-row-reverse sm:items-end sm:gap-4">
                             <SelectProjectField form={form} name="projectId" textClassName="max-sm:max-w-full" />
                             <DurationField label="Duration" className="w-full" form={form} name="duration" />
@@ -93,6 +94,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
                         <p className="text-muted-foreground -mt-4 text-sm">you can type human language here e.g. 2h 30m</p>
 
                         <SelectField
+                            label="AssignedMember"
                             form={form}
                             name="assignedMemberId"
                             selectOptions={(members || []).map((member) => ({ label: member.User.name, value: member.id }))}

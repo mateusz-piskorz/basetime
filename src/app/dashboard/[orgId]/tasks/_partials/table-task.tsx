@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 'use client';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
@@ -24,7 +22,7 @@ import { UpsertTaskDialog } from './upsert-task-dialog';
 export const TableTask = () => {
     const { orgId, member } = useMember();
     // filter
-    const [members, setMembers] = useState<string[]>([]);
+    const [assignedIds, setAssignedIds] = useState<string[]>([]);
     // filter
     const [projects, setProjects] = useState<string[]>([]);
     const { limit, page } = useTablePagination();
@@ -53,7 +51,7 @@ export const TableTask = () => {
         order_direction,
         page,
         limit,
-        members,
+        assignedIds,
         projects,
         q,
     });
@@ -106,7 +104,7 @@ export const TableTask = () => {
                                 />
 
                                 <ProjectsFilter projects={projects} setProjects={setProjects} />
-                                {['MANAGER', 'OWNER'].includes(member.role) && <MembersFilter members={members} setMembers={setMembers} />}
+                                {['MANAGER', 'OWNER'].includes(member.role) && <MembersFilter members={assignedIds} setMembers={setAssignedIds} />}
                             </div>
                             <div className="flex gap-4">
                                 <DataTableViewOptions table={table} />

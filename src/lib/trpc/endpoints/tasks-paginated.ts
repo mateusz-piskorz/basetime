@@ -9,7 +9,7 @@ export const tasksPaginated = publicProcedure
         z.object({
             orgId: z.string(),
             projects: z.array(z.string()).nullish(),
-            members: z.union([z.array(z.string()), z.literal('all')]).nullish(),
+            assignedIds: z.union([z.array(z.string()), z.literal('all')]).nullish(),
             page: z.number().nullish(),
             limit: z.number().nullish(),
             order_column: z.string().nullish(),
@@ -17,7 +17,7 @@ export const tasksPaginated = publicProcedure
             q: z.string().nullish(),
         }),
     )
-    .query(async ({ input: { orgId, members, projects, limit: limitInput, order_column, order_direction, page: pageInput, q } }) => {
+    .query(async ({ input: { orgId, assignedIds, projects, limit: limitInput, order_column, order_direction, page: pageInput, q } }) => {
         const session = await getSession();
         if (!session) return { totalPages: 1, total: 0, page: 1, limit: 25, data: [] };
 
@@ -28,17 +28,17 @@ export const tasksPaginated = publicProcedure
         const where = {
             organizationId: orgId,
             ...(q && { name: { contains: q } }),
-            ...(members === 'all'
+            ...(assignedIds === 'all'
                 ? {
                       Organization: {
                           Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] as MEMBER_ROLE[] } } },
                       },
                   }
-                : members?.length
+                : assignedIds?.length
                   ? {
-                        memberId: { in: members },
+                        assignedId: { in: assignedIds },
                         OR: [
-                            { Member: { userId: session.userId } },
+                            { Assigned: { userId: session.userId } },
                             {
                                 Organization: {
                                     Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] as MEMBER_ROLE[] } } },
@@ -46,7 +46,7 @@ export const tasksPaginated = publicProcedure
                             },
                         ],
                     }
-                  : { Member: { userId: session.userId } }),
+                  : { Assigned: { userId: session.userId } }),
             ...(projects?.length && {
                 Project: {
                     id: { in: projects },

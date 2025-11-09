@@ -51,7 +51,7 @@ export const TableTask = () => {
         order_direction,
         page,
         limit,
-        assignedIds,
+        assignedIds: assignedIds.length ? assignedIds : 'all',
         projects,
         q,
     });

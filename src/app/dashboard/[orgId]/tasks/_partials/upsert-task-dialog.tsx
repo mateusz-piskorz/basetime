@@ -51,7 +51,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
             name,
             orgId,
             projectId,
-            assignedMemberId,
+            assignedMemberId: assignedMemberId === 'null' ? null : assignedMemberId,
             description,
             estimatedMinutes: durationParser(duration ?? undefined, 'm'),
             taskId: selectedTask?.id,
@@ -94,6 +94,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
                         <p className="text-muted-foreground -mt-4 text-sm">you can type human language here e.g. 2h 30m</p>
 
                         <SelectField
+                            nullOption="Unassigned"
                             label="AssignedMember"
                             form={form}
                             name="assignedMemberId"

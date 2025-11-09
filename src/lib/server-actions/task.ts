@@ -15,7 +15,7 @@ export const upsertTask = action(upsertTaskSchemaS, async (validated, { userId }
                 description,
                 estimatedMinutes,
                 Project: { connect: { id: projectId } },
-                Assigned: { connect: { id: assignedMemberId ?? undefined } },
+                ...(assignedMemberId && { Assigned: { connect: { id: assignedMemberId } } }),
                 Organization: { connect: { id: orgId, Members: { some: { userId, role: { in: ['OWNER', 'MANAGER'] } } } } },
             },
             update: {
@@ -23,7 +23,7 @@ export const upsertTask = action(upsertTaskSchemaS, async (validated, { userId }
                 description,
                 estimatedMinutes,
                 Project: { connect: { id: projectId } },
-                Assigned: { connect: { id: assignedMemberId ?? undefined } },
+                ...(assignedMemberId ? { Assigned: { connect: { id: assignedMemberId } } } : { Assigned: { disconnect: true } }),
                 Organization: { connect: { id: orgId, Members: { some: { userId, role: { in: ['OWNER', 'MANAGER'] } } } } },
             },
         });

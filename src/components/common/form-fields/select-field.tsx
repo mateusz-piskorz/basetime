@@ -18,6 +18,7 @@ type Props<T extends FieldValues> = {
     errorMessage?: boolean;
     disabled?: boolean;
     size?: 'sm' | 'default' | 'lg';
+    nullOption?: string;
 };
 
 export const SelectField = <T extends FieldValues>({
@@ -30,6 +31,7 @@ export const SelectField = <T extends FieldValues>({
     disabled,
     size,
     errorMessage = true,
+    nullOption,
 }: Props<T>) => {
     const name = propsName as string;
     const { control } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
@@ -48,6 +50,7 @@ export const SelectField = <T extends FieldValues>({
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
+                            {nullOption && <SelectItem value={'null'}>{nullOption}</SelectItem>}
                             {selectOptions.map(({ label, value, disabled }) => (
                                 <SelectItem disabled={disabled} key={value} value={value}>
                                     {label}

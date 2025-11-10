@@ -1,11 +1,15 @@
-import { getQueryClient, trpc } from '@/lib/trpc/server-client';
+'use server';
+
+import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/session';
 import { redirect } from 'next/navigation';
 
-const queryClient = getQueryClient();
-
 export default async function DashboardPage() {
-    const [organization] = await queryClient.fetchQuery(trpc.organizations.queryOptions({ limit: 1 }));
-    if (organization) return redirect(`/dashboard/${organization.id}/overview`);
+    const session = await getSession();
+    if (!session) return redirect('/login');
+
+    const org = await prisma.organization.findFirst({ where: { Members: { some: { userId: session.userId } } } });
+    if (org) return redirect(`/dashboard/${org.id}/overview`);
 
     return redirect('/dashboard/user/organizations');
 }

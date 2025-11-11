@@ -1,9 +1,46 @@
 'use server';
 
 import { prisma } from '../prisma';
-import { deleteTaskSchemaS, upsertTaskSchemaS } from '../zod/task-schema';
+import { createTaskSchemaS, deleteTaskSchemaS, upsertTaskSchemaS } from '../zod/task-schema';
 import { action } from './_utils';
 
+// create|update|delete functions separately
+
+// this + transaction may actually work
+// because await prisma.task.create will fail if firstInColumn will not be found because it was removed or updated
+// test it with incorrect id
+
+// update it might not work, prisma will update only newTask.TaskBelow not firstInColumn.taskAbove, it's 2 side relation check if in practice!
+
+export const createTask = action(
+    createTaskSchemaS,
+    async ({ assignedMemberId, columnId, name, orgId, projectId, description, estimatedMinutes }, { userId }) => {
+        try {
+            await prisma.$transaction(async (tx) => {
+                const firstInColumn = await tx.task.findFirst({
+                    where: { projectId, columnId, organizationId: orgId, taskAboveId: null },
+                });
+
+                await tx.task.create({
+                    data: {
+                        name,
+                        description,
+                        estimatedMinutes,
+                        Organization: { connect: { id: orgId, Members: { some: { userId } } } },
+                        Project: { connect: { id: projectId } },
+                        ...(assignedMemberId && { Assigned: { connect: { id: assignedMemberId } } }),
+                        ...(columnId && { Column: { connect: { id: columnId } } }),
+                        ...(firstInColumn && { TaskBelow: { connect: { id: firstInColumn.id, updatedAt: firstInColumn.updatedAt } } }),
+                    },
+                });
+            });
+
+            return { success: true };
+        } catch {
+            return { success: false, message: 'Error - createTask' };
+        }
+    },
+);
 export const upsertTask = action(upsertTaskSchemaS, async (validated, { userId }) => {
     try {
         const { assignedMemberId, name, orgId, projectId, description, estimatedMinutes, taskId } = validated;

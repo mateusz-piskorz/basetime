@@ -26,7 +26,9 @@ type Props = {
     onSuccess?: () => void;
 };
 
-export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Props) => {
+// think about pagination
+
+export const UpsertColumnDialog = ({ open, setOpen, selectedTask, onSuccess }: Props) => {
     const trpcUtils = trpc.useUtils();
     const { orgId } = useMember();
     const form = useForm<z.infer<typeof upsertTaskSchema>>({ resolver: zodResolver(upsertTaskSchema) });

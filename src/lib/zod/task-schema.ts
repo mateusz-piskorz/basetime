@@ -8,6 +8,16 @@ export const upsertTaskSchema = z.object({
     duration: z.string().nullish(),
 });
 
+export const createTaskSchemaS = z.object({
+    orgId: z.string().nonempty(),
+    projectId: z.string().nonempty(),
+    name: z.string().nonempty(),
+    columnId: z.string().nullable(),
+    description: z.string().nullish(),
+    assignedMemberId: z.string().nullable(),
+    estimatedMinutes: z.number().nullish(),
+});
+
 export const upsertTaskSchemaS = z.object({
     orgId: z.string().nonempty(),
     projectId: z.string().nonempty(),

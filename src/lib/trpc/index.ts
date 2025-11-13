@@ -4,6 +4,7 @@ import { blogPostComments } from './endpoints/blog-post-comments';
 import { blogPostUpvote } from './endpoints/blog-post-upvote';
 import { currentUser } from './endpoints/current-user';
 import { invitations } from './endpoints/invitations';
+import { kanbanColumns } from './endpoints/kanban-columns';
 import { members } from './endpoints/members';
 import { organizations } from './endpoints/organizations';
 import { projects } from './endpoints/projects';
@@ -26,6 +27,7 @@ export const appRouter = createTRPCRouter({
     timeEntriesPaginated,
     timeEntriesByMember,
     tasksPaginated,
+    kanbanColumns,
 });
 
 export type AppRouter = typeof appRouter;

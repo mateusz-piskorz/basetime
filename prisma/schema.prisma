@@ -132,11 +132,12 @@ model Organization {
   createdAt               DateTime   @default(now())
   updatedAt               DateTime   @updatedAt
 
-  Members     Member[]
-  Invitations Invitation[]
-  Projects    Project[]
-  TimeEntries TimeEntry[]
-  Tasks       Task[]
+  Members       Member[]
+  Invitations   Invitation[]
+  Projects      Project[]
+  TimeEntries   TimeEntry[]
+  Tasks         Task[]
+  KanbanColumns KanbanColumn[]
 }
 
 model Member {
@@ -210,10 +211,29 @@ model Task {
   organizationId String
   projectId      String
   assignedId     String?
-  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  Project        Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  Assigned       Member?      @relation(fields: [assignedId], references: [id], onDelete: SetNull)
+  columnId       String?
+  Organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  Project        Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  Assigned       Member?       @relation(fields: [assignedId], references: [id], onDelete: SetNull)
+  Column         KanbanColumn? @relation(fields: [columnId], references: [id], onDelete: SetNull)
   TimeEntries    TimeEntry[]
+
+  taskAboveId String? @unique
+  TaskAbove   Task?   @relation("TaskOrdering", fields: [taskAboveId], references: [id])
+  TaskBelow   Task?   @relation("TaskOrdering")
+}
+
+model KanbanColumn {
+  id        String   @id @default(cuid(2))
+  name      String
+  color     String   @default("#B96D40")
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Tasks          Task[]
+  organizationId String
+  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 model Project {

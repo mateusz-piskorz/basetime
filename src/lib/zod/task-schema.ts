@@ -6,6 +6,17 @@ export const upsertTaskSchema = z.object({
     description: z.string().nullish(),
     assignedMemberId: z.string().nullable(),
     duration: z.string().nullish(),
+    columnId: z.string().nullable(),
+});
+
+export const createTaskSchemaS = z.object({
+    orgId: z.string().nonempty(),
+    projectId: z.string().nonempty(),
+    name: z.string().nonempty(),
+    columnId: z.string().nullable(),
+    description: z.string().nullish(),
+    assignedMemberId: z.string().nullable(),
+    estimatedMinutes: z.number().nullish(),
 });
 
 export const upsertTaskSchemaS = z.object({

@@ -46,7 +46,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
         );
     }, [selectedTask, form.formState.isSubmitSuccessful]);
 
-    async function onSubmit({ name, assignedMemberId, description, duration, projectId }: z.infer<typeof upsertTaskSchema>) {
+    async function onSubmit({ name, assignedMemberId, description, duration, projectId, columnId }: z.infer<typeof upsertTaskSchema>) {
         const res = await createTask({
             name,
             orgId,
@@ -54,7 +54,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
             assignedMemberId: assignedMemberId === 'null' ? null : assignedMemberId,
             description,
             estimatedMinutes: durationParser(duration ?? undefined, 'm'),
-            columnId: null,
+            columnId,
         });
 
         if (!res.success) {
@@ -62,13 +62,14 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
             return;
         }
 
-        trpcUtils.tasksPaginated.refetch();
+        trpcUtils.kanbanColumns.refetch();
         toast.success(`Task ${selectedTask ? 'Updated' : 'Created'} successfully`);
         onSuccess?.();
         setOpen(false);
     }
 
     const { data: members } = trpc.members.useQuery({ orgId });
+    const { data: columns } = trpc.kanbanColumns.useQuery({ orgId });
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -92,6 +93,13 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
                             <DurationField label="Duration" className="w-full" form={form} name="duration" />
                         </div>
                         <p className="text-muted-foreground -mt-4 text-sm">you can type human language here e.g. 2h 30m</p>
+
+                        <SelectField
+                            label="Status"
+                            form={form}
+                            name="columnId"
+                            selectOptions={(columns || []).map((column) => ({ label: column.name, value: column.id }))}
+                        />
 
                         <SelectField
                             nullOption="Unassigned"

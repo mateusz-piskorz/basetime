@@ -4,13 +4,7 @@ import { prisma } from '../prisma';
 import { createTaskSchemaS, deleteTaskSchemaS, upsertTaskSchemaS } from '../zod/task-schema';
 import { action } from './_utils';
 
-// create|update|delete functions separately
-
-// this + transaction may actually work
-// because await prisma.task.create will fail if firstInColumn will not be found because it was removed or updated
-// test it with incorrect id
-
-// update it might not work, prisma will update only newTask.TaskBelow not firstInColumn.taskAbove, it's 2 side relation check if in practice!
+// only create task is done
 
 export const createTask = action(
     createTaskSchemaS,

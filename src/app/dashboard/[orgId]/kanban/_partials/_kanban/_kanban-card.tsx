@@ -1,29 +1,36 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { KanbanCard as KanbanCardUI } from '@/components/ui/kanban';
-import { dateFormatter, exampleFeatures, shortDateFormatter } from './_constant';
+import { Card } from '@/components/ui/card';
+import * as KanbanUI from '@/components/ui/kanban';
+import { TrpcRouterOutput } from '@/lib/trpc/client';
 
 type Props = {
-    columnId: string;
-    feature: (typeof exampleFeatures)[number];
+    task: NonNullable<TrpcRouterOutput['kanbanTasks']>['data'][number];
 };
 
-export const KanbanCard = ({ columnId, feature }: Props) => {
+export const KanbanCard = ({ task }: Props) => {
     return (
-        <KanbanCardUI column={columnId} id={feature.id} name={feature.name}>
-            <div className="flex items-start justify-between gap-2">
-                <div className="flex flex-col gap-1">
-                    <p className="m-0 flex-1 text-sm font-medium">{feature.name}</p>
+        <KanbanUI.Item key={task.id} value={task.id} asHandle asChild>
+            <Card variant="outline-light-theme">
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between gap-2">
+                        <span className="line-clamp-1 text-sm font-medium">{task.name}</span>
+                        {/* <Badge
+                            variant={task.priority === 'high' ? 'destructive' : task.priority === 'medium' ? 'default' : 'secondary'}
+                            className="pointer-events-none h-5 rounded-sm px-1.5 text-[11px] capitalize"
+                        >
+                            {task.priority}
+                        </Badge> */}
+                    </div>
+                    <div className="text-muted-foreground flex items-center justify-between text-xs">
+                        {task.Assigned && (
+                            <div className="flex items-center gap-1">
+                                <div className="bg-primary/20 size-2 rounded-full" />
+                                <span className="line-clamp-1">{task.Assigned?.User.name}</span>
+                            </div>
+                        )}
+                        {/* {task.dueDate && <time className="text-[10px] tabular-nums">{task.dueDate}</time>} */}
+                    </div>
                 </div>
-                {feature.owner && (
-                    <Avatar className="h-4 w-4 shrink-0">
-                        <AvatarImage src={feature.owner.image} />
-                        <AvatarFallback>{feature.owner.name?.slice(0, 2)}</AvatarFallback>
-                    </Avatar>
-                )}
-            </div>
-            <p className="text-muted-foreground m-0 text-xs">
-                {shortDateFormatter.format(feature.startAt)} - {dateFormatter.format(feature.endAt)}
-            </p>
-        </KanbanCardUI>
+            </Card>
+        </KanbanUI.Item>
     );
 };

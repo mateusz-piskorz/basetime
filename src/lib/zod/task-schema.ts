@@ -6,6 +6,7 @@ export const upsertTaskSchema = z.object({
     description: z.string().nullish(),
     assignedMemberId: z.string().nullable(),
     duration: z.string().nullish(),
+    columnId: z.string().nullable(),
 });
 
 export const createTaskSchemaS = z.object({

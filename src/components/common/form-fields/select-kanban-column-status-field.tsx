@@ -2,7 +2,10 @@
 
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useMember } from '@/lib/hooks/use-member';
+import { trpc } from '@/lib/trpc/client';
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
+import { cn } from '@/lib/utils/common';
 
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 
@@ -12,29 +15,30 @@ type Props<T extends FieldValues> = {
     form: UseFormReturn<T>;
     name: TypedFieldPath<T, FieldType>;
     className?: React.HTMLAttributes<'div'>['className'];
-    selectOptions: { label: string | React.ReactNode; value: string; disabled?: boolean }[];
+    textClassName?: string;
     label?: string;
     placeholder?: string;
     errorMessage?: boolean;
     disabled?: boolean;
     size?: 'sm' | 'default' | 'lg';
-    nullOption?: string;
 };
 
-export const SelectField = <T extends FieldValues>({
+export const SelectKanbanColumnStatusField = <T extends FieldValues>({
     form,
     className,
-    selectOptions,
+    textClassName,
     label,
     name: propsName,
     placeholder,
     disabled,
     size,
     errorMessage = true,
-    nullOption,
 }: Props<T>) => {
     const name = propsName as string;
     const { control } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
+
+    const { orgId } = useMember();
+    const { data } = trpc.kanbanColumns.useQuery({ orgId });
 
     return (
         <FormField
@@ -50,10 +54,10 @@ export const SelectField = <T extends FieldValues>({
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                            {nullOption && <SelectItem value={'null'}>{nullOption}</SelectItem>}
-                            {selectOptions.map(({ label, value, disabled }) => (
-                                <SelectItem disabled={disabled} key={value} value={value}>
-                                    {label}
+                            {(data || []).map(({ id, name, color }) => (
+                                <SelectItem key={id} value={id}>
+                                    <span className="h-2 min-w-2 rounded-full" style={{ backgroundColor: color }} />
+                                    <span className={cn('max-w-[100px] truncate', textClassName)}>{name}</span>
                                 </SelectItem>
                             ))}
                         </SelectContent>

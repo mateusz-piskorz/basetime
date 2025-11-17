@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TASK_PRIORITY {
+  MINOR
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
 enum USER_ROLE {
   USER
   ADMIN
@@ -132,11 +139,12 @@ model Organization {
   createdAt               DateTime   @default(now())
   updatedAt               DateTime   @updatedAt
 
-  Members     Member[]
-  Invitations Invitation[]
-  Projects    Project[]
-  TimeEntries TimeEntry[]
-  Tasks       Task[]
+  Members       Member[]
+  Invitations   Invitation[]
+  Projects      Project[]
+  TimeEntries   TimeEntry[]
+  Tasks         Task[]
+  KanbanColumns KanbanColumn[]
 }
 
 model Member {
@@ -200,20 +208,37 @@ model TimeEntry {
 }
 
 model Task {
-  id               String   @id @default(cuid(2))
+  id               String        @id @default(cuid(2))
   name             String
   description      String?
   estimatedMinutes Int?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  priority         TASK_PRIORITY @default(MEDIUM)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   organizationId String
   projectId      String
   assignedId     String?
-  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  Project        Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  Assigned       Member?      @relation(fields: [assignedId], references: [id], onDelete: SetNull)
+  kanbanColumnId String?
+  Organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  Project        Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  Assigned       Member?       @relation(fields: [assignedId], references: [id], onDelete: SetNull)
+  KanbanColumn   KanbanColumn? @relation(fields: [kanbanColumnId], references: [id], onDelete: SetNull)
   TimeEntries    TimeEntry[]
+}
+
+model KanbanColumn {
+  id        String   @id @default(cuid(2))
+  name      String
+  color     String   @default("#B96D40")
+  order     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Tasks          Task[]
+  TasksOrder     String[]
+  organizationId String
+  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 model Project {

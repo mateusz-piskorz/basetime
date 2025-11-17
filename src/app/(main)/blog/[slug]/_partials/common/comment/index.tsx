@@ -60,7 +60,7 @@ export const Comment = ({ comment, nestLevel, className, initialDisplayResponses
                 open={confirmOpen}
                 setOpen={setConfirmOpen}
                 title="Do you really want to remove comment"
-                description='"This action cannot be undone. Comment will be removed permanently"'
+                description="This action cannot be undone. Comment will be removed permanently"
             />
 
             <div className="flex gap-2">

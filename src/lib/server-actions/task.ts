@@ -1,46 +1,76 @@
 'use server';
 
 import { prisma } from '../prisma';
-import { deleteTaskSchemaS, upsertTaskSchemaS } from '../zod/task-schema';
+import { createTaskSchemaS, deleteTaskSchemaS, moveTaskOnKanbanSchemaS, updateTaskSchemaS } from '../zod/task-schema';
 import { action } from './_utils';
 
-export const upsertTask = action(upsertTaskSchemaS, async (validated, { userId }) => {
-    try {
-        const { assignedMemberId, name, orgId, projectId, description, estimatedMinutes, taskId } = validated;
+export const createTask = action(
+    createTaskSchemaS,
+    async ({ assignedMemberId, kanbanColumnId, name, orgId, projectId, description, estimatedMinutes, priority }, { userId }) => {
+        try {
+            await prisma.task.create({
+                data: {
+                    name,
+                    description,
+                    estimatedMinutes,
+                    priority,
+                    Organization: { connect: { id: orgId, Members: { some: { userId } } } },
+                    Project: { connect: { id: projectId } },
+                    ...(assignedMemberId && { Assigned: { connect: { id: assignedMemberId } } }),
+                    ...(kanbanColumnId && { KanbanColumn: { connect: { id: kanbanColumnId } } }),
+                },
+            });
+            return { success: true };
+        } catch {
+            return { success: false, message: 'Error - createTask' };
+        }
+    },
+);
 
-        const res = await prisma.task.upsert({
-            where: { id: taskId || '' },
-            create: {
-                name,
-                description,
-                estimatedMinutes,
-                Project: { connect: { id: projectId } },
-                ...(assignedMemberId && { Assigned: { connect: { id: assignedMemberId } } }),
-                Organization: { connect: { id: orgId, Members: { some: { userId, role: { in: ['OWNER', 'MANAGER'] } } } } },
-            },
-            update: {
-                name,
-                description,
-                estimatedMinutes,
-                Project: { connect: { id: projectId } },
-                ...(assignedMemberId ? { Assigned: { connect: { id: assignedMemberId } } } : { Assigned: { disconnect: true } }),
-                Organization: { connect: { id: orgId, Members: { some: { userId, role: { in: ['OWNER', 'MANAGER'] } } } } },
-            },
+export const updateTask = action(
+    updateTaskSchemaS,
+    async ({ assignedMemberId, kanbanColumnId, name, orgId, projectId, description, estimatedMinutes, priority, taskId }, { userId }) => {
+        try {
+            await prisma.task.update({
+                where: { id: taskId },
+                data: {
+                    name,
+                    description,
+                    estimatedMinutes,
+                    priority,
+                    Organization: { connect: { id: orgId, Members: { some: { userId } } } },
+                    Project: { connect: { id: projectId } },
+                    ...(assignedMemberId && { Assigned: { connect: { id: assignedMemberId } } }),
+                    ...(kanbanColumnId && { KanbanColumn: { connect: { id: kanbanColumnId } } }),
+                },
+            });
+            return { success: true };
+        } catch {
+            return { success: false, message: 'Error - updateTask' };
+        }
+    },
+);
+
+export const moveTaskOnKanban = action(moveTaskOnKanbanSchemaS, async ({ kanbanColumnId, taskId, tasksOrder }, { userId }) => {
+    try {
+        await prisma.$transaction(async (tx) => {
+            await tx.task.update({ where: { id: taskId, Organization: { Members: { some: { userId } } } }, data: { kanbanColumnId } });
+            await tx.kanbanColumn.update({
+                where: { id: kanbanColumnId, Organization: { Members: { some: { userId } } } },
+                data: { TasksOrder: tasksOrder },
+            });
         });
 
-        return { success: true, data: res };
+        return { success: true };
     } catch {
-        return { success: false, message: 'Error - upsertTask' };
+        return { success: false, message: 'Error - moveTaskOnKanban' };
     }
 });
 
 export const deleteTask = action(deleteTaskSchemaS, async ({ taskId }, { userId }) => {
     try {
         await prisma.task.delete({
-            where: {
-                id: taskId,
-                Organization: { Members: { some: { userId, role: { in: ['MANAGER', 'OWNER'] } } } },
-            },
+            where: { id: taskId, Organization: { Members: { some: { userId } } } },
         });
 
         return { success: true };

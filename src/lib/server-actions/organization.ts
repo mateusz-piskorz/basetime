@@ -24,6 +24,30 @@ export const upsertOrg = action(upsertOrgSchemaS, async (validated, session) => 
                     Members: { create: { role: 'OWNER', userId } },
                 },
             });
+            const project = await prisma.project.create({
+                data: {
+                    name: 'Example Project',
+                    color: '#00B4D8',
+                    organizationId: res.id,
+                },
+            });
+            await prisma.kanbanColumn.create({
+                data: {
+                    organizationId: res.id,
+                    name: 'Backlog',
+                    order: 0,
+                    color: '#00B4D8',
+                    Tasks: { create: { organizationId: res.id, name: 'Example Task', priority: 'MEDIUM', projectId: project.id } },
+                },
+            });
+            await prisma.kanbanColumn.create({
+                data: {
+                    organizationId: res.id,
+                    name: 'In Progress',
+                    order: 1,
+                    color: '#F5A623',
+                },
+            });
         }
 
         return { success: true, data: res };

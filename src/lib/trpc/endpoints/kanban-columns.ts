@@ -7,14 +7,24 @@ export const kanbanColumns = publicProcedure.input(z.object({ orgId: z.string() 
     const session = await getSession();
     if (!session) return [];
 
-    return await prisma.kanbanColumn.findMany({
+    const columns = await prisma.kanbanColumn.findMany({
         where: {
             Organization: {
                 id: orgId,
-                Members: { some: { userId: session.userId, role: { in: ['OWNER', 'MANAGER'] } } },
+                Members: { some: { userId: session.userId } },
             },
         },
-        include: { Tasks: { orderBy: { taskAboveId: 'desc' }, include: { Assigned: { select: { User: { select: { name: true } } } } } } },
+        include: {
+            Tasks: {
+                orderBy: { updatedAt: 'desc' },
+                include: {
+                    Project: { select: { color: true, name: true } },
+                    Assigned: { select: { User: { select: { name: true, avatarId: true, id: true } } } },
+                },
+            },
+        },
         orderBy: { order: 'asc' },
     });
+
+    return columns;
 });

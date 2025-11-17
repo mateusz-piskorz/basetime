@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -193,7 +194,7 @@ type KanbanRootProps<T> = Omit<DndContextProps, "collisionDetection"> &
   (T extends object ? GetItemValue<T> : Partial<GetItemValue<T>>) & {
     value: Record<UniqueIdentifier, T[]>;
     onValueChange?: (columns: Record<UniqueIdentifier, T[]>) => void;
-    onMove?: (event: DragEndEvent & { overIndex: number, overColumn?:string|number, type:"column"|"card" }) => void;
+    onMove?: (event: DragEndEvent & { overIndex: number, overColumnId?:string|number, type:"column"|"card", tasksOrder?: string[] }) => void;
     strategy?: SortableContextProps["strategy"];
     orientation?: "horizontal" | "vertical";
     flatCursor?: boolean;
@@ -434,15 +435,14 @@ function KanbanRoot<T>(props: KanbanRootProps<T>) {
             (item) => getItemValue(item) === over.id,
           );
           
-          // index already changed in DragOverEvent so no need to update it here
-          // so simply pass activeIndex to some extra function
-          // extra function should be after onValueChange
           if (activeIndex !== overIndex) {
             const newColumns = { ...value };
             newColumns[activeColumn] = arrayMove(items, activeIndex, overIndex);
             onValueChange?.(newColumns);
+            onMove?.({ ...event, overIndex, overColumnId: overColumn, type:'card', tasksOrder:newColumns[activeColumn].map(e=>(e as any).id) });
+          }else{
+            onMove?.({ ...event, overIndex, overColumnId: overColumn, type:'card',tasksOrder:value[activeColumn].map(e=>(e as any).id) });
           }
-          onMove?.({ ...event, overIndex, overColumn, type:'card' });
         }
       }
 

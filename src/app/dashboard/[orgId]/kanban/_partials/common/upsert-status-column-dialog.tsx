@@ -4,6 +4,7 @@
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { HexPickerField } from '@/components/common/form-fields/hex-picker-field';
 import { InputField } from '@/components/common/form-fields/input-field';
+import { SelectField } from '@/components/common/form-fields/select-field';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
@@ -12,7 +13,7 @@ import { createKanbanColumn, deleteKanbanColumn, updateKanbanColumn } from '@/li
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { upsertKanbanColumnSchema } from '@/lib/zod/kanban-column-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -24,13 +25,15 @@ type Props = {
     onSuccess?: () => void;
 };
 
-export const UpsertColumnDialog = ({ open, setOpen, selectedColumn, onSuccess }: Props) => {
+export const UpsertStatusColumnDialog = ({ open, setOpen, selectedColumn, onSuccess }: Props) => {
     const [confirmOpen, setConfirmOpen] = React.useState(false);
     const trpcUtils = trpc.useUtils();
     const { orgId } = useMember();
     const form = useForm<z.infer<typeof upsertKanbanColumnSchema>>({ resolver: zodResolver(upsertKanbanColumnSchema) });
 
-    useEffect(() => {
+    const { data: kanbanColumnsLength, refetch } = trpc.kanbanColumnsLength.useQuery({ orgId });
+
+    React.useEffect(() => {
         const st = selectedColumn;
         form.reset(
             st
@@ -39,26 +42,17 @@ export const UpsertColumnDialog = ({ open, setOpen, selectedColumn, onSuccess }:
                       color: st.color,
                       order: String(st.order),
                   }
-                : undefined,
+                : { color: '#B96D40' },
         );
+        refetch();
     }, [selectedColumn, form.formState.isSubmitSuccessful]);
 
     async function onSubmit({ name, color, order }: z.infer<typeof upsertKanbanColumnSchema>) {
         let res;
         if (selectedColumn) {
-            res = await updateKanbanColumn({
-                name,
-                columnId: selectedColumn.id,
-                color,
-                order: Number(order),
-            });
+            res = await updateKanbanColumn({ name, columnId: selectedColumn.id, color, order: Number(order) });
         } else {
-            res = await createKanbanColumn({
-                name,
-                orgId,
-                color,
-                order: Number(order),
-            });
+            res = await createKanbanColumn({ name, orgId, color, order: Number(order) });
         }
 
         if (!res.success) {
@@ -67,7 +61,7 @@ export const UpsertColumnDialog = ({ open, setOpen, selectedColumn, onSuccess }:
         }
 
         trpcUtils.kanbanColumns.refetch();
-        toast.success(`Column ${selectedColumn ? 'Updated' : 'Created'} successfully`);
+        toast.success(`Kanban Status Column ${selectedColumn ? 'Updated' : 'Created'} successfully`);
         onSuccess?.();
         setOpen(false);
     }
@@ -80,22 +74,23 @@ export const UpsertColumnDialog = ({ open, setOpen, selectedColumn, onSuccess }:
                     setOpen={setConfirmOpen}
                     onContinue={async () => {
                         const res = await deleteKanbanColumn({ columnId: selectedColumn!.id });
+                        console.log(res);
                         if (res.success) {
-                            toast.success('column deleted successfully');
+                            toast.success('Kanban Status Column deleted successfully');
                             trpcUtils.kanbanColumns.refetch();
                             setOpen(false);
                             return;
                         }
                         toast.error(res.message || 'something went wrong - deleteKanbanColumn');
                     }}
-                    title="Do you really want to remove column?"
-                    description="This action cannot be undone. Column will be removed permanently, tasks will be moved to status unknown"
+                    title="Do you really want to remove kanban status column?"
+                    description="This action cannot be undone. Kanban status column will be removed permanently"
                 />
             )}
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>{selectedColumn ? 'Update' : 'Create'} Column</DialogTitle>
+                        <DialogTitle>{selectedColumn ? 'Update' : 'Create'} Kanban Status Column</DialogTitle>
                         <DialogDescription>Fill in the details below to {selectedColumn ? 'Update' : 'Create'} Column</DialogDescription>
                     </DialogHeader>
 
@@ -107,13 +102,23 @@ export const UpsertColumnDialog = ({ open, setOpen, selectedColumn, onSuccess }:
                             }}
                             className="flex flex-col gap-y-6"
                         >
-                            <InputField form={form} name="name" label="Name" />
+                            <InputField form={form} name="name" label="Name" placeholder="In Progress" />
 
                             <HexPickerField className="justify-start" form={form} name="color" label="Color" />
 
-                            <InputField form={form} name="order" label="Order" />
+                            <SelectField
+                                form={form}
+                                name="order"
+                                label="Order"
+                                selectOptions={Array.from({ length: kanbanColumnsLength ? kanbanColumnsLength + 1 : 1 }).map((_, i) => ({
+                                    label: String(i),
+                                    value: String(i),
+                                }))}
+                            />
 
-                            <Button type="submit" className="w-full sm:w-auto" size="lg">
+                            {/* <InputField form={form} name="order" label="Order" /> */}
+
+                            <Button type="submit" className="w-full sm:w-auto" size="lg" disabled={form.formState.isSubmitting}>
                                 Submit
                             </Button>
                         </form>
@@ -126,7 +131,7 @@ export const UpsertColumnDialog = ({ open, setOpen, selectedColumn, onSuccess }:
                                 <p className="font-medium">Warning</p>
                                 <p className="text-sm">Please proceed with caution, this cannot be undone.</p>
                                 <Button className="mt-3" variant="destructive" onClick={() => setConfirmOpen(true)}>
-                                    Delete column
+                                    Delete Column
                                 </Button>
                             </div>
                         </div>

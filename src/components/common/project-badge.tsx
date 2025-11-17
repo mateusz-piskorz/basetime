@@ -10,9 +10,8 @@ type Props = {
 
 export const ProjectBadge = ({ hex, name, size = 'base' }: Props) => {
     return (
-        <Badge className={cn('text-primary border-ring rounded border bg-transparent text-sm font-normal', size === 'sm' && 'text-xs')}>
-            <span className="size-2 rounded-full" style={{ backgroundColor: hex }} />
-            {name}
+        <Badge variant="outline" className={cn('max-w-[150px]', size === 'sm' && 'text-xs')} style={{ borderColor: hex, color: hex }}>
+            <span className="truncate">{name}</span>
         </Badge>
     );
 };

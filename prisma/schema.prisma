@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TASK_PRIORITY {
+  MINOR
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
 enum USER_ROLE {
   USER
   ADMIN
@@ -201,26 +208,23 @@ model TimeEntry {
 }
 
 model Task {
-  id               String   @id @default(cuid(2))
+  id               String        @id @default(cuid(2))
   name             String
   description      String?
   estimatedMinutes Int?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  priority         TASK_PRIORITY
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   organizationId String
   projectId      String
   assignedId     String?
-  columnId       String?
+  kanbanColumnId String?
   Organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   Project        Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
   Assigned       Member?       @relation(fields: [assignedId], references: [id], onDelete: SetNull)
-  Column         KanbanColumn? @relation(fields: [columnId], references: [id], onDelete: SetNull)
+  KanbanColumn   KanbanColumn? @relation(fields: [kanbanColumnId], references: [id], onDelete: SetNull)
   TimeEntries    TimeEntry[]
-
-  taskAboveId String? @unique
-  TaskAbove   Task?   @relation("TaskOrdering", fields: [taskAboveId], references: [id])
-  TaskBelow   Task?   @relation("TaskOrdering")
 }
 
 model KanbanColumn {
@@ -232,6 +236,7 @@ model KanbanColumn {
   updatedAt DateTime @updatedAt
 
   Tasks          Task[]
+  TasksOrder     String[]
   organizationId String
   Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }

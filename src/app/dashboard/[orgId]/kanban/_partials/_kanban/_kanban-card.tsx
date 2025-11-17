@@ -1,36 +1,34 @@
+import { TaskPriorityBadge } from '@/components/common/task-priority-badge';
+import { UserInfo } from '@/components/common/user-info';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import * as KanbanUI from '@/components/ui/kanban';
 import { TrpcRouterOutput } from '@/lib/trpc/client';
+import { Eye } from 'lucide-react';
 
 type Props = {
-    task: NonNullable<TrpcRouterOutput['kanbanTasks']>['data'][number];
+    task: NonNullable<TrpcRouterOutput['kanbanColumns']>[number]['Tasks'][number];
+    onTaskSelect: (taskId: string) => void;
 };
 
-export const KanbanCard = ({ task }: Props) => {
+export const KanbanCard = ({ task, onTaskSelect }: Props) => {
     return (
-        <KanbanUI.Item key={task.id} value={task.id} asHandle asChild>
-            <Card variant="outline-light-theme">
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between gap-2">
-                        <span className="line-clamp-1 text-sm font-medium">{task.name}</span>
-                        {/* <Badge
-                            variant={task.priority === 'high' ? 'destructive' : task.priority === 'medium' ? 'default' : 'secondary'}
-                            className="pointer-events-none h-5 rounded-sm px-1.5 text-[11px] capitalize"
-                        >
-                            {task.priority}
-                        </Badge> */}
+        <div className="relative">
+            <Button className="absolute top-0 right-0 z-10" variant="ghost" onClick={() => onTaskSelect(task.id)}>
+                <span className="sr-only">settings</span>
+                <Eye />
+            </Button>
+            <KanbanUI.Item key={task.id} value={task.id} asHandle asChild>
+                <Card variant="outline-light-theme" className="relative px-4">
+                    <div className="flex flex-col gap-4">
+                        <p className="line-clamp-2 text-base font-bold">{task.name}</p>
+                        <div className="flex gap-2">
+                            <UserInfo textUnder="Assigned" name="Unassigned" />
+                        </div>
+                        <TaskPriorityBadge priority={task.priority} />
                     </div>
-                    <div className="text-muted-foreground flex items-center justify-between text-xs">
-                        {task.Assigned && (
-                            <div className="flex items-center gap-1">
-                                <div className="bg-primary/20 size-2 rounded-full" />
-                                <span className="line-clamp-1">{task.Assigned?.User.name}</span>
-                            </div>
-                        )}
-                        {/* {task.dueDate && <time className="text-[10px] tabular-nums">{task.dueDate}</time>} */}
-                    </div>
-                </div>
-            </Card>
-        </KanbanUI.Item>
+                </Card>
+            </KanbanUI.Item>
+        </div>
     );
 };

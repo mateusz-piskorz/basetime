@@ -10,13 +10,15 @@ type Props = {
     tasks: NonNullable<TrpcRouterOutput['kanbanColumns']>[number]['Tasks'];
     disabled: boolean;
     onColumnSelect: (columnId: string) => void;
+    onTaskSelect: React.ComponentProps<typeof KanbanCard>['onTaskSelect'];
 };
 
-export const KanbanColumn = ({ column, tasks, disabled, onColumnSelect }: Props) => {
+export const KanbanColumn = ({ column, tasks, disabled, onColumnSelect, onTaskSelect }: Props) => {
     return (
-        <KanbanUI.Column value={column.id} disabled={disabled}>
+        <KanbanUI.Column value={column.id} disabled={disabled} className="dark:bg-card min-w-[350px] border bg-transparent">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
+                    <div className="size-4 rounded-full" style={{ backgroundColor: column.color }} />
                     <span className="text-sm font-semibold">{column.name}</span>
                     <Badge variant="secondary" className="pointer-events-none rounded-sm">
                         {tasks.length}
@@ -36,7 +38,7 @@ export const KanbanColumn = ({ column, tasks, disabled, onColumnSelect }: Props)
             </div>
             <div className="flex flex-col gap-2 p-0.5">
                 {tasks.map((task) => (
-                    <KanbanCard key={task.id} task={task} />
+                    <KanbanCard key={task.id} task={task} onTaskSelect={onTaskSelect} />
                 ))}
             </div>
         </KanbanUI.Column>

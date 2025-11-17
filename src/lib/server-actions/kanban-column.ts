@@ -80,13 +80,16 @@ export const updateKanbanColumn = action(updateKanbanColumnSchemaS, async ({ nam
 
 export const deleteKanbanColumn = action(deleteKanbanColumnSchemaS, async ({ columnId }, { userId }) => {
     try {
-        await prisma.$transaction(async (tx) => {
-            const deletedColumn = await tx.kanbanColumn.findUnique({
-                where: { id: columnId, Organization: { Members: { some: { userId, role: { in: ['OWNER', 'MANAGER'] } } } } },
-                select: { order: true, organizationId: true },
-            });
+        const deletedColumn = await prisma.kanbanColumn.findUnique({
+            where: { id: columnId, Organization: { Members: { some: { userId, role: { in: ['OWNER', 'MANAGER'] } } } } },
+            select: { order: true, organizationId: true, _count: true },
+        });
+        if (deletedColumn?._count.Tasks) {
+            return { success: false, message: 'Error - column has tasks, please remove them first' };
+        }
+        if (!deletedColumn) return { success: false, message: 'Error - permissions' };
 
-            if (!deletedColumn) return { success: false, message: 'Error - permissions' };
+        await prisma.$transaction(async (tx) => {
             const { organizationId } = deletedColumn;
 
             await tx.kanbanColumn.delete({ where: { id: columnId } });

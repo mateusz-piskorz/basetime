@@ -98,7 +98,7 @@ export const AddCommentForm = ({ parentComment, infiniteQueryArgs, onCommentAdde
                         form={form}
                         name="content"
                         placeholder="What are your thoughts?"
-                        classNameInput="border-none shadow-none max-h-[150px] resize-none  dark:bg-transparent"
+                        classNameInput="border-none shadow-none max-h-[150px] resize-none dark:bg-transparent"
                     />
 
                     <div className="flex justify-end gap-2 p-4">

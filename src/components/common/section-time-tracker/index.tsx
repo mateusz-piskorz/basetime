@@ -49,10 +49,11 @@ export const SectionTimeTracker = ({ className }: Props) => {
 
         if (activeTimeEntry) {
             res = await toggleTimer({ orgId });
-            form.reset({ name: '', projectId: 'no-project' });
+            form.reset({ name: '', projectId: 'no-project', taskId: 'no-task' });
         } else {
             const projectId = data.projectId === 'no-project' ? undefined : data.projectId;
-            res = await toggleTimer({ name: data.name, projectId, orgId });
+            const taskId = data.taskId === 'no-task' ? undefined : data.taskId;
+            res = await toggleTimer({ name: data.name, projectId, orgId, taskId });
         }
 
         if (!res.success) {

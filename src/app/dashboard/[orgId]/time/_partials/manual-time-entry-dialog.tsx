@@ -82,7 +82,7 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
             start,
             end,
             timeEntryId: selectedTimeEntry?.id,
-            taskId: taskId === 'no-project' ? undefined : taskId,
+            taskId: taskId === 'no-task' ? undefined : taskId,
         });
 
         if (!res.success) {

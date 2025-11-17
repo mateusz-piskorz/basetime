@@ -1,9 +1,3 @@
-/*
-  Warnings:
-
-  - Added the required column `priority` to the `Task` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "TASK_PRIORITY" AS ENUM ('MINOR', 'MEDIUM', 'HIGH', 'CRITICAL');
 
@@ -12,7 +6,7 @@ ALTER TABLE "public"."TimeEntry" DROP CONSTRAINT "TimeEntry_projectId_fkey";
 
 -- AlterTable
 ALTER TABLE "Task" ADD COLUMN     "kanbanColumnId" TEXT,
-ADD COLUMN     "priority" "TASK_PRIORITY" NOT NULL;
+ADD COLUMN     "priority" "TASK_PRIORITY" NOT NULL DEFAULT 'MEDIUM';
 
 -- CreateTable
 CREATE TABLE "KanbanColumn" (

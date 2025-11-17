@@ -23,7 +23,7 @@ export const KanbanCard = ({ task, onTaskSelect }: Props) => {
                     <div className="flex flex-col gap-4">
                         <p className="line-clamp-2 text-base font-bold">{task.name}</p>
                         <div className="flex gap-2">
-                            <UserInfo textUnder="Assigned" name="Unassigned" />
+                            <UserInfo textUnder="Assigned" name={task.Assigned?.User.name ?? 'Unassigned'} />
                         </div>
                         <TaskPriorityBadge priority={task.priority} />
                     </div>

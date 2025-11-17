@@ -41,5 +41,5 @@ export const moveTaskOnKanbanSchemaS = z.object({
 });
 
 export const deleteTaskSchemaS = z.object({
-    taskId: z.string().nonempty().min(0),
+    taskId: z.string().nonempty(),
 });

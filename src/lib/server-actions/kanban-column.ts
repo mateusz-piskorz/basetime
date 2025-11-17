@@ -33,7 +33,7 @@ export const createKanbanColumn = action(createKanbanColumnSchemaS, async ({ col
 
 export const updateKanbanColumn = action(updateKanbanColumnSchemaS, async ({ name, color, order, columnId }, { userId }) => {
     try {
-        await prisma.$transaction(async (tx) => {
+        return await prisma.$transaction(async (tx) => {
             const currentColumn = await tx.kanbanColumn.findUnique({
                 where: { id: columnId, Organization: { Members: { some: { userId, role: { in: ['OWNER', 'MANAGER'] } } } } },
                 select: { order: true, organizationId: true },
@@ -70,9 +70,8 @@ export const updateKanbanColumn = action(updateKanbanColumnSchemaS, async ({ nam
                 where: { id: columnId },
                 data: { name, color, order },
             });
+            return { success: true };
         });
-
-        return { success: true };
     } catch {
         return { success: false, message: 'Error - updateKanbanColumn' };
     }

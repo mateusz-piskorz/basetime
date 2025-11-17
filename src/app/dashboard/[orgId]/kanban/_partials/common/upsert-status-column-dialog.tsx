@@ -74,7 +74,7 @@ export const UpsertStatusColumnDialog = ({ open, setOpen, selectedColumn, onSucc
                     setOpen={setConfirmOpen}
                     onContinue={async () => {
                         const res = await deleteKanbanColumn({ columnId: selectedColumn!.id });
-                        console.log(res);
+
                         if (res.success) {
                             toast.success('Kanban Status Column deleted successfully');
                             trpcUtils.kanbanColumns.refetch();

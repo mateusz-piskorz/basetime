@@ -37,7 +37,7 @@ export const upsertOrg = action(upsertOrgSchemaS, async (validated, session) => 
                     name: 'Backlog',
                     order: 0,
                     color: '#00B4D8',
-                    Tasks: { create: { organizationId: res.id, name: '', priority: 'MEDIUM', projectId: project.id } },
+                    Tasks: { create: { organizationId: res.id, name: 'Example Task', priority: 'MEDIUM', projectId: project.id } },
                 },
             });
             await prisma.kanbanColumn.create({

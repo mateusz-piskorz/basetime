@@ -18,6 +18,7 @@ export const kanbanColumns = publicProcedure.input(z.object({ orgId: z.string() 
             Tasks: {
                 orderBy: { updatedAt: 'desc' },
                 include: {
+                    _count: true,
                     Project: { select: { color: true, name: true } },
                     Assigned: { select: { User: { select: { name: true, avatarId: true, id: true } } } },
                 },

@@ -70,6 +70,7 @@ export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, na
                                 <Popover open={hasOptions ? open : false} onOpenChange={setOpen}>
                                     <PopoverAnchor asChild>
                                         <Input
+                                            autoComplete="off"
                                             className={classNameInput}
                                             {...field}
                                             ref={inputRef}

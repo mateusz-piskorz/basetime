@@ -3,8 +3,9 @@ import { UserInfo } from '@/components/common/user-info';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import * as KanbanUI from '@/components/ui/kanban';
+import { Separator } from '@/components/ui/separator';
 import { TrpcRouterOutput } from '@/lib/trpc/client';
-import { Eye } from 'lucide-react';
+import { Eye, FileClock, MessagesSquare } from 'lucide-react';
 
 type Props = {
     task: NonNullable<TrpcRouterOutput['kanbanColumns']>[number]['Tasks'][number];
@@ -19,13 +20,23 @@ export const KanbanCard = ({ task, onTaskSelect }: Props) => {
                 <Eye />
             </Button>
             <KanbanUI.Item key={task.id} value={task.id} asHandle asChild>
-                <Card variant="outline-light-theme" className="relative px-4">
-                    <div className="flex flex-col gap-4">
+                <Card variant="outline-light-theme" className="relative">
+                    <div className="flex flex-col gap-4 px-4">
                         <p className="line-clamp-2 text-base font-bold">{task.name}</p>
                         <div className="flex gap-2">
                             <UserInfo textUnder="Assigned" name={task.Assigned?.User.name ?? 'Unassigned'} />
                         </div>
                         <TaskPriorityBadge priority={task.priority} />
+                    </div>
+                    <Separator />
+                    <div className="flex gap-6 px-4 font-mono text-sm">
+                        <div className="flex items-center gap-1.5">
+                            <FileClock className="size-4" />
+                            {task._count.TimeEntries}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <MessagesSquare className="size-4" />0
+                        </div>
                     </div>
                 </Card>
             </KanbanUI.Item>

@@ -2,6 +2,7 @@
 
 /* eslint-disable react-hooks/exhaustive-deps */
 import { InputField } from '@/components/common/form-fields/input-field';
+import { SelectTaskField } from '@/components/common/form-fields/select-task-field';
 import { TimeEntrySelectField } from '@/components/common/form-fields/time-entry-select-field';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -64,12 +65,13 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
                               roundUpSecondsThreshold,
                           }),
                       ),
+                      taskId: ste.taskId || 'no-task',
                   }
                 : undefined,
         );
     }, [selectedTimeEntry, form.formState.isSubmitSuccessful]);
 
-    async function onSubmit({ endDate, endTime, startDate, startTime, name, projectId }: z.infer<typeof manualTimeEntrySchema>) {
+    async function onSubmit({ endDate, endTime, startDate, startTime, name, projectId, taskId }: z.infer<typeof manualTimeEntrySchema>) {
         const start = prepareDateTime({ date: startDate, time: startTime, dayjs });
         const end = prepareDateTime({ date: endDate, time: endTime, dayjs });
 
@@ -80,6 +82,7 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
             start,
             end,
             timeEntryId: selectedTimeEntry?.id,
+            taskId: taskId === 'no-task' ? undefined : taskId,
         });
 
         if (!res.success) {
@@ -126,24 +129,32 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
                                 placeholder="What did you work on?"
                             />
                         </div>
-                        <div className="flex flex-col gap-6 sm:flex-row-reverse sm:items-end sm:gap-4">
-                            <SelectProjectField form={form} name="projectId" textClassName="max-sm:max-w-full" />
-
-                            <DurationField
-                                label="Duration"
-                                className="w-full"
+                        <div className="flex gap-4">
+                            <SelectProjectField form={form} name="projectId" className="w-full" />
+                            <SelectTaskField
                                 form={form}
-                                name="duration"
-                                onBlur={(minutes) => {
-                                    const endDate = form.getValues('endDate');
-                                    const endTime = form.getValues('endTime');
-                                    const startDate = dayjs(prepareDateTime({ date: endDate, time: endTime, dayjs })).add(-(minutes || 90), 'm');
-
-                                    form.setValue('startDate', startDate.toDate());
-                                    form.setValue('startTime', startDate.format('HH:mm'));
-                                }}
+                                name="taskId"
+                                className="w-full"
+                                disabled={form.watch('projectId') === 'no-project'}
+                                projectId={form.watch('projectId')}
                             />
                         </div>
+
+                        <DurationField
+                            label="Duration"
+                            className="w-full"
+                            form={form}
+                            name="duration"
+                            onBlur={(minutes) => {
+                                const endDate = form.getValues('endDate');
+                                const endTime = form.getValues('endTime');
+                                const startDate = dayjs(prepareDateTime({ date: endDate, time: endTime, dayjs })).add(-(minutes || 90), 'm');
+
+                                form.setValue('startDate', startDate.toDate());
+                                form.setValue('startTime', startDate.format('HH:mm'));
+                            }}
+                        />
+
                         <p className="text-muted-foreground -mt-4 text-sm">you can type human language here e.g. 2h 30m</p>
 
                         <div className="mt-10 flex items-end gap-4">

@@ -22,6 +22,7 @@ export const upsertOrg = action(upsertOrgSchemaS, async (validated, session) => 
                     currency: currency || 'EUR',
                     name: name || `${session.name}'s organization`,
                     Members: { create: { role: 'OWNER', userId } },
+                    taskLastNumber: 1,
                 },
             });
             const project = await prisma.project.create({
@@ -37,7 +38,15 @@ export const upsertOrg = action(upsertOrgSchemaS, async (validated, session) => 
                     name: 'Backlog',
                     order: 0,
                     color: '#00B4D8',
-                    Tasks: { create: { organizationId: res.id, name: 'Example Task', priority: 'MEDIUM', projectId: project.id } },
+                    Tasks: {
+                        create: {
+                            organizationId: res.id,
+                            name: 'Example Task',
+                            priority: 'MEDIUM',
+                            projectId: project.id,
+                            taskNumber: res.taskLastNumber,
+                        },
+                    },
                 },
             });
             await prisma.kanbanColumn.create({

@@ -8,19 +8,27 @@ export const createTask = action(
     createTaskSchemaS,
     async ({ assignedMemberId, kanbanColumnId, name, orgId, projectId, description, estimatedMinutes, priority }, { userId }) => {
         try {
-            await prisma.task.create({
-                data: {
-                    name,
-                    description,
-                    estimatedMinutes,
-                    priority,
-                    Organization: { connect: { id: orgId, Members: { some: { userId } } } },
-                    Project: { connect: { id: projectId } },
-                    ...(assignedMemberId && { Assigned: { connect: { id: assignedMemberId } } }),
-                    ...(kanbanColumnId && { KanbanColumn: { connect: { id: kanbanColumnId } } }),
-                },
+            return await prisma.$transaction(async (prisma) => {
+                const orgSeq = await prisma.organization.update({
+                    where: { id: orgId, Members: { some: { userId } } },
+                    data: { taskLastNumber: { increment: 1 } },
+                });
+
+                await prisma.task.create({
+                    data: {
+                        taskNumber: orgSeq.taskLastNumber,
+                        name,
+                        description,
+                        estimatedMinutes,
+                        priority,
+                        Organization: { connect: { id: orgId, Members: { some: { userId } } } },
+                        Project: { connect: { id: projectId } },
+                        ...(assignedMemberId && { Assigned: { connect: { id: assignedMemberId } } }),
+                        ...(kanbanColumnId && { KanbanColumn: { connect: { id: kanbanColumnId } } }),
+                    },
+                });
+                return { success: true } as const;
             });
-            return { success: true };
         } catch {
             return { success: false, message: 'Error - createTask' };
         }

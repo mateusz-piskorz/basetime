@@ -4,7 +4,7 @@ import { prisma } from '../prisma';
 import { manualTimeEntrySchemaS, removeTimeEntriesSchemaS, toggleTimerSchemaS } from '../zod/time-entry-schema';
 import { action } from './_utils';
 
-export const toggleTimer = action(toggleTimerSchemaS, async ({ orgId, name, projectId }, { userId }) => {
+export const toggleTimer = action(toggleTimerSchemaS, async ({ orgId, name, projectId, taskId }, { userId }) => {
     try {
         const member = await prisma.member.findFirst({
             where: { organizationId: orgId, userId },
@@ -21,7 +21,7 @@ export const toggleTimer = action(toggleTimerSchemaS, async ({ orgId, name, proj
 
         // start timer
         await prisma.timeEntry.create({
-            data: { memberId: member.id, start: new Date(), name: name || 'unnamed time entry', organizationId: orgId, projectId },
+            data: { memberId: member.id, start: new Date(), name: name || 'unnamed time entry', organizationId: orgId, projectId, taskId },
         });
         return { success: true, message: 'Timer started successfully' };
     } catch {
@@ -46,7 +46,7 @@ export const removeTimeEntries = action(removeTimeEntriesSchemaS, async ({ timeE
 
 export const manualTimeEntry = action(manualTimeEntrySchemaS, async (validated, { userId }) => {
     try {
-        const { name, projectId, orgId, end, start, timeEntryId } = validated;
+        const { name, projectId, orgId, end, start, timeEntryId, taskId } = validated;
         const member = await prisma.member.findFirst({ where: { userId, organizationId: orgId } });
 
         if (!member) return { success: false, message: 'Error member not found' };
@@ -54,7 +54,7 @@ export const manualTimeEntry = action(manualTimeEntrySchemaS, async (validated, 
         let res;
         if (timeEntryId) {
             res = await prisma.timeEntry.update({
-                data: { start, end, name: name || 'unnamed time entry', organizationId: orgId, projectId },
+                data: { start, end, name: name || 'unnamed time entry', organizationId: orgId, projectId, taskId },
                 where: {
                     id: timeEntryId,
                     OR: [{ Member: { userId } }, { Organization: { Members: { some: { userId, role: { in: ['OWNER', 'MANAGER'] } } } } }],
@@ -69,6 +69,7 @@ export const manualTimeEntry = action(manualTimeEntrySchemaS, async (validated, 
                     name: name || 'unnamed time entry',
                     organizationId: orgId as string,
                     projectId,
+                    taskId,
                 },
             });
         }

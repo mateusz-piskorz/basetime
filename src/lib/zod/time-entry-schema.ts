@@ -3,12 +3,14 @@ import z from 'zod';
 export const startTimerSchema = z.object({
     name: z.string().optional(),
     projectId: z.string().nullish(),
+    taskId: z.string().nullish(),
 });
 
 export const toggleTimerSchemaS = z.object({
     orgId: z.string(),
     name: z.string().optional(),
     projectId: z.string().nullish(),
+    taskId: z.string().nullish(),
 });
 
 export const manualTimeEntrySchemaS = z
@@ -18,6 +20,7 @@ export const manualTimeEntrySchemaS = z
         start: z.date().optional(),
         end: z.date().optional(),
         projectId: z.string().optional(),
+        taskId: z.string().optional(),
         orgId: z.string().optional(),
     })
     .refine((data) => data.timeEntryId || !!data.start, { message: 'start date is required', path: ['start'] })
@@ -30,6 +33,7 @@ export const manualTimeEntrySchema = z.object({
     startTime: z.string(),
     endTime: z.string(),
     name: z.string().optional(),
+    taskId: z.string().optional(),
     projectId: z.string().optional(),
 });
 

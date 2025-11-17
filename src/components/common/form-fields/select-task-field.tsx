@@ -21,9 +21,10 @@ type Props<T extends FieldValues> = {
     errorMessage?: boolean;
     disabled?: boolean;
     size?: 'sm' | 'default' | 'lg';
+    projectId?: string;
 };
 
-export const SelectProjectField = <T extends FieldValues>({
+export const SelectTaskField = <T extends FieldValues>({
     form,
     className,
     textClassName,
@@ -32,13 +33,14 @@ export const SelectProjectField = <T extends FieldValues>({
     placeholder,
     disabled,
     size,
+    projectId,
     errorMessage = true,
 }: Props<T>) => {
     const name = propsName as string;
     const { control } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
 
-    const { orgId } = useMember();
-    const { data } = trpc.projects.useQuery({ orgId });
+    const { orgId, member } = useMember();
+    const { data } = trpc.tasks.useQuery({ orgId, projectId: projectId!, assignedMember: member.id }, { enabled: Boolean(projectId) });
 
     return (
         <FormField
@@ -47,20 +49,18 @@ export const SelectProjectField = <T extends FieldValues>({
             render={({ field }) => (
                 <FormItem className={className}>
                     {label && <FormLabel>{label}</FormLabel>}
-                    <Select onValueChange={field.onChange} value={field.value || 'no-project'} disabled={disabled}>
+                    <Select onValueChange={field.onChange} value={field.value || 'no-task'} disabled={disabled}>
                         <FormControl>
                             <SelectTrigger size={size} className={cn('w-full', size === 'sm' && 'text-[13px]')}>
                                 <SelectValue placeholder={placeholder} />
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                            <SelectItem value="no-project">No Project</SelectItem>
+                            <SelectItem value="no-task">No Task</SelectItem>
                             <SelectGroup>
-                                <SelectLabel>Projects</SelectLabel>
-                                {(data || []).map(({ id, name, color }) => (
+                                <SelectLabel>Tasks</SelectLabel>
+                                {data?.map(({ id, name }) => (
                                     <SelectItem key={id} value={id}>
-                                        {/* todo: project badge */}
-                                        <span className="h-2 min-w-2 rounded-full" style={{ backgroundColor: color }} />
                                         <span className={cn('max-w-[100px] truncate', size === 'sm' && 'max-w-[80px]', textClassName)}>{name}</span>
                                     </SelectItem>
                                 ))}

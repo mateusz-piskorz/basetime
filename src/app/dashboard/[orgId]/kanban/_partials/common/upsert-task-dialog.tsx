@@ -13,7 +13,7 @@ import { Form } from '@/components/ui/form';
 import { useMember } from '@/lib/hooks/use-member';
 import { createTask, deleteTask, updateTask } from '@/lib/server-actions/task';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
-import { cn } from '@/lib/utils/common';
+import { cn, formatMinutes } from '@/lib/utils/common';
 import { upsertTaskSchema } from '@/lib/zod/task-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TASK_PRIORITY } from '@prisma/client';
@@ -46,7 +46,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
                       name: st.name,
                       description: st.description,
                       assignedMemberId: st.assignedId,
-                      duration: String(st.estimatedMinutes),
+                      ETA: st.estimatedMinutes ? formatMinutes(st.estimatedMinutes) : undefined,
                       projectId: st.projectId,
                       priority: st.priority,
                       kanbanColumnId: st.kanbanColumnId,
@@ -55,15 +55,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
         );
     }, [selectedTask, form.formState.isSubmitSuccessful]);
 
-    async function onSubmit({
-        name,
-        priority,
-        assignedMemberId,
-        description,
-        duration,
-        projectId,
-        kanbanColumnId,
-    }: z.infer<typeof upsertTaskSchema>) {
+    async function onSubmit({ name, priority, assignedMemberId, description, ETA, projectId, kanbanColumnId }: z.infer<typeof upsertTaskSchema>) {
         let res;
         if (selectedTask) {
             res = await updateTask({
@@ -74,7 +66,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
                 projectId,
                 assignedMemberId: assignedMemberId === 'null' ? null : assignedMemberId,
                 description,
-                estimatedMinutes: durationParser(duration ?? undefined, 'm'),
+                estimatedMinutes: durationParser(ETA ?? undefined, 'm'),
                 kanbanColumnId,
             });
         } else {
@@ -85,7 +77,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
                 projectId,
                 assignedMemberId: assignedMemberId === 'null' ? null : assignedMemberId,
                 description,
-                estimatedMinutes: durationParser(duration ?? undefined, 'm'),
+                estimatedMinutes: durationParser(ETA ?? undefined, 'm'),
                 kanbanColumnId,
             });
         }
@@ -96,6 +88,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
         }
 
         trpcUtils.kanbanColumns.refetch();
+        trpcUtils.tasks.refetch();
         toast.success(`Task ${selectedTask ? 'Updated' : 'Created'} successfully`);
         onSuccess?.();
         setOpen(false);
@@ -178,7 +171,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
                                 classNameInput="resize-none min-h-[100px] max-h-[150px]"
                             />
 
-                            <DurationField label="Duration" className="w-full" form={form} name="duration" />
+                            <DurationField label="ETA" className="w-full" form={form} name="ETA" />
 
                             <p className="text-muted-foreground -mt-4 text-sm">you can type human language here e.g. 2h 30m</p>
 

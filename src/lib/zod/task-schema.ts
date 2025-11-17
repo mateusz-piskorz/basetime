@@ -7,7 +7,7 @@ export const upsertTaskSchema = z.object({
     priority: z.nativeEnum(TASK_PRIORITY),
     description: z.string().nullish(),
     assignedMemberId: z.string().nullable(),
-    duration: z.string().nullish(),
+    ETA: z.string().nullish(),
     kanbanColumnId: z.string().nullable(),
 });
 

@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import z from 'zod';
 import { DashboardHeading } from '../dashboard-heading';
 import { SelectProjectField } from '../form-fields/select-project-field';
+import { SelectTaskField } from '../form-fields/select-task-field';
 import { TimeEntrySelectField } from '../form-fields/time-entry-select-field';
 import { StartButton } from '../start-button';
 import { Timer } from './_timer';
@@ -104,6 +105,17 @@ export const SectionTimeTracker = ({ className }: Props) => {
                                 className="hidden md:block"
                             />
 
+                            <SelectTaskField
+                                className="hidden md:block"
+                                form={form}
+                                name="taskId"
+                                size="sm"
+                                projectId={form.watch('projectId') || undefined}
+                                disabled={
+                                    form.watch('projectId') === 'no-project' || Boolean(activeTimeEntry) || isFetching || form.formState.isSubmitting
+                                }
+                            />
+
                             <Separator orientation="vertical" />
                             <Timer
                                 key={activeTimeEntry ? activeTimeEntry.id : 'timer-0'}
@@ -114,13 +126,26 @@ export const SectionTimeTracker = ({ className }: Props) => {
                     </div>
 
                     <div className="flex flex-wrap items-center justify-between gap-6">
-                        <SelectProjectField
-                            form={form}
-                            name="projectId"
-                            disabled={Boolean(activeTimeEntry) || isFetching || form.formState.isSubmitting}
-                            size="lg"
-                            className="w-[150px] md:hidden"
-                        />
+                        <div className="flex items-center gap-8 md:hidden">
+                            <SelectProjectField
+                                form={form}
+                                name="projectId"
+                                disabled={Boolean(activeTimeEntry) || isFetching || form.formState.isSubmitting}
+                                size="lg"
+                                className="w-[150px]"
+                            />
+
+                            <SelectTaskField
+                                className="w-[150px]"
+                                form={form}
+                                name="taskId"
+                                size="lg"
+                                projectId={form.watch('projectId') || undefined}
+                                disabled={
+                                    form.watch('projectId') === 'no-project' || Boolean(activeTimeEntry) || isFetching || form.formState.isSubmitting
+                                }
+                            />
+                        </div>
 
                         <StartButton
                             disabled={form.formState.isSubmitting || isFetching}

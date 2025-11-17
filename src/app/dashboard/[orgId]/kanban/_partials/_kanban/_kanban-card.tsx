@@ -21,6 +21,9 @@ export const KanbanCard = ({ task, onTaskSelect }: Props) => {
             </Button>
             <KanbanUI.Item key={task.id} value={task.id} asHandle asChild>
                 <Card variant="outline-light-theme" className="relative">
+                    <div className="px-4">
+                        <p className="line-clamp-2 text-base font-bold italic">task-{task.taskNumber}</p>
+                    </div>
                     <div className="flex flex-col gap-4 px-4">
                         <p className="line-clamp-2 text-base font-bold">{task.name}</p>
                         <div className="flex gap-2">

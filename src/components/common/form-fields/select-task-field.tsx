@@ -59,9 +59,9 @@ export const SelectTaskField = <T extends FieldValues>({
                             <SelectItem value="no-task">No Task</SelectItem>
                             <SelectGroup>
                                 <SelectLabel>Tasks</SelectLabel>
-                                {data?.map(({ id, name }) => (
+                                {data?.map(({ id, taskNumber }) => (
                                     <SelectItem key={id} value={id}>
-                                        <span className={cn('max-w-[100px] truncate', size === 'sm' && 'max-w-[80px]', textClassName)}>{name}</span>
+                                        <span>task-{taskNumber}</span>
                                     </SelectItem>
                                 ))}
                             </SelectGroup>

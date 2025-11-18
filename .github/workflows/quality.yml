@@ -6,28 +6,7 @@ on:
       - develop
       - main
 
-jobs:
   quality:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Dependencies
-        run: npm install
-
-      # - name: prisma generate
-      #   run: npx prisma generate
-
-      - name: Format
-        run: npm run format
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Types
-        run: npm run types
-
-  tests:
     needs: quality
     runs-on: ubuntu-latest
     steps:
@@ -48,6 +27,15 @@ jobs:
 
       - name: Run prisma migrations
         run: npx prisma migrate deploy
+
+      - name: Format
+        run: npm run format
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Types
+        run: npm run types
 
       - name: Start Next.js server
         run: nohup npm run dev &

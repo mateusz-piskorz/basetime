@@ -5,48 +5,47 @@ on:
     branches: ['main']
   workflow_dispatch:
 
-  jobs:
-    tests:
-      runs-on: ubuntu-latest
-      env:
-        PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
+    steps:
+      - uses: actions/checkout@v4
 
-      steps:
-        - uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: npm install
 
-        - name: Install Dependencies
-          run: npm install
+      - name: Copy Environment File
+        run: cp .env.example .env
 
-        - name: Copy Environment File
-          run: cp .env.example .env
+      - name: Build and run dev containers
+        run: |
+          docker compose --file docker-compose.dev.yml up -d --build --force-recreate
 
-        - name: Build and run dev containers
-          run: |
-            docker compose --file docker-compose.dev.yml up -d --build --force-recreate
+      - name: Wait for containers
+        run: sleep 5
 
-        - name: Wait for containers
-          run: sleep 5
+      - name: Run prisma migrations
+        run: npx prisma migrate deploy
 
-        - name: Run prisma migrations
-          run: npx prisma migrate deploy
+      - name: Format
+        run: npm run format
 
-        - name: Format
-          run: npm run format
+      - name: Lint
+        run: npm run lint
 
-        - name: Lint
-          run: npm run lint
+      - name: Types
+        run: npm run types
 
-        - name: Types
-          run: npm run types
+      - name: Start Next.js server
+        run: nohup npm run dev &
 
-        - name: Start Next.js server
-          run: nohup npm run dev &
+      - name: Wait for server to be ready
+        run: npx wait-on http://localhost:3000 --timeout 20000
 
-        - name: Wait for server to be ready
-          run: npx wait-on http://localhost:3000 --timeout 20000
-
-        - name: test
-          run: npm run test
+      - name: test
+        run: npm run test
 
   deploy:
     needs: tests
@@ -54,7 +53,7 @@ on:
     environment: stg
     runs-on: self-hosted
     env:
-      PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
+      BT_USER_PASSWORD: ${{ secrets.BT_USER_PASSWORD }}
       ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
       NEXT_PUBLIC_URL: ${{ vars.NEXT_PUBLIC_URL }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}

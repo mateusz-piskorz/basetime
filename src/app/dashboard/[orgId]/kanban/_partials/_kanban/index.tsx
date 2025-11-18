@@ -1,11 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
+import { MembersFilter } from '@/components/common/members-filter';
+import { MultiSelect } from '@/components/common/multi-select';
+import { ProjectsFilter } from '@/components/common/projects-filter';
 import * as KanbanUI from '@/components/ui/kanban';
 import { useMember } from '@/lib/hooks/use-member';
 import { updateKanbanColumn } from '@/lib/server-actions/kanban-column';
 import { moveTaskOnKanban } from '@/lib/server-actions/task';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
+import { TASK_PRIORITY } from '@prisma/client';
 import * as React from 'react';
 import { toast } from 'sonner';
 import { UpsertStatusColumnDialog } from '../common/upsert-status-column-dialog';
@@ -19,8 +23,12 @@ export function Kanban() {
     const [selectedColumnId, setSelectedColumnId] = React.useState<string | null>();
     const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>();
 
+    const [assignedMemberIds, setAssignedMemberIds] = React.useState<string[]>([]);
+    const [projectIds, setProjectIds] = React.useState<string[]>([]);
+    const [priorities, setPriorities] = React.useState<TASK_PRIORITY[]>([]);
+
     const { orgId } = useMember();
-    const { data: columnsData, refetch } = trpc.kanbanColumns.useQuery({ orgId });
+    const { data: columnsData, refetch } = trpc.kanbanColumns.useQuery({ orgId, assignedMemberIds, priorities, projectIds });
     const [columns, setColumns] = React.useState<Record<string, Task[]>>({});
 
     React.useEffect(() => {
@@ -68,6 +76,20 @@ export function Kanban() {
                 setOpen={(val) => setSelectedTaskId((prev) => (val ? prev : null))}
                 selectedTask={selectedTask!}
             />
+
+            <div className="space-x-4">
+                <ProjectsFilter projects={projectIds} setProjects={setProjectIds} />
+                <MembersFilter members={assignedMemberIds} setMembers={setAssignedMemberIds} />
+                <MultiSelect
+                    options={Object.keys(TASK_PRIORITY).map((val) => ({
+                        label: val,
+                        value: val,
+                    }))}
+                    setValues={(val) => setPriorities(val as TASK_PRIORITY[])}
+                    values={priorities}
+                    title="Priority"
+                />
+            </div>
 
             <KanbanUI.Root
                 value={columns}

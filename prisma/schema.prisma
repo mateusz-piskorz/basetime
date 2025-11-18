@@ -157,12 +157,13 @@ model Member {
 
   userId         String
   organizationId String
-  User           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  User           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   HourlyRates    HourlyRate[]
   Projects       Project[]
   TimeEntries    TimeEntry[]
   Tasks          Task[]
+  TaskComments   TaskComment[]
 
   // todo:
   // @@id([userId, organizationId])
@@ -227,8 +228,21 @@ model Task {
   Assigned       Member?       @relation(fields: [assignedId], references: [id], onDelete: SetNull)
   KanbanColumn   KanbanColumn? @relation(fields: [kanbanColumnId], references: [id], onDelete: SetNull)
   TimeEntries    TimeEntry[]
+  TaskComments   TaskComment[]
 
   @@unique(name: "taskNumberId", [organizationId, taskNumber])
+}
+
+model TaskComment {
+  id        String   @id @default(cuid(2))
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  taskId    String
+  authorId  String
+
+  Author Member @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  Task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
 }
 
 model KanbanColumn {

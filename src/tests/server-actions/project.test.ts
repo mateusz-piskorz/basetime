@@ -70,20 +70,20 @@ const mockedGetSession = getSession as jest.Mock;
 // updateProject
 test('employee cannot update project', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: emp1.id });
-    const res = await upsertProject({ orgId, projectId, color: 'ORANGE', shortName: '4' });
+    const res = await upsertProject({ orgId, projectId, color: 'ORANGE', shortName: '44' });
     expect(res.success).toBe(false);
 });
 
 test('manager can update project', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: manager.id });
-    const res = await upsertProject({ orgId, projectId, color: 'ORANGE', shortName: '5' });
+    const res = await upsertProject({ orgId, projectId, color: 'ORANGE', shortName: '55' });
     expect(res.success).toBe(true);
     expect(res.data?.color).toBe('ORANGE');
 });
 
 test('owner can update project', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: owner.id });
-    const res = await upsertProject({ orgId, projectId, color: 'BLUE', shortName: '6' });
+    const res = await upsertProject({ orgId, projectId, color: 'BLUE', shortName: '66' });
     expect(res.success).toBe(true);
     expect(res.data?.color).toBe('BLUE');
 });
@@ -92,7 +92,7 @@ test('owner can update project', async () => {
 test('owner can create project', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: owner.id });
     const projectName = 'new project';
-    const res = await upsertProject({ orgId, color: 'GRAY', name: projectName, shortName: '7' });
+    const res = await upsertProject({ orgId, color: 'GRAY', name: projectName, shortName: '77' });
     expect(res.success).toBe(true);
     expect(res.data?.name).toBe(projectName);
 });
@@ -100,7 +100,7 @@ test('owner can create project', async () => {
 test('manager can create project', async () => {
     mockedGetSession.mockReturnValueOnce({ userId: manager.id });
     const projectName = 'new project2';
-    const res = await upsertProject({ orgId, color: 'BLUE', name: projectName, shortName: '1' });
+    const res = await upsertProject({ orgId, color: 'BLUE', name: projectName, shortName: '88' });
     expect(res.success).toBe(true);
     expect(res.data?.name).toBe(projectName);
 });

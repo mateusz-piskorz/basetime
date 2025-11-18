@@ -8,6 +8,7 @@ import { Nullable, TypedFieldPath } from '@/lib/types/common';
 import { cn } from '@/lib/utils/common';
 
 import { FieldValues, UseFormReturn } from 'react-hook-form';
+import { ProjectBadge } from '../project-badge';
 
 type FieldType = Nullable<string>;
 
@@ -57,11 +58,9 @@ export const SelectProjectField = <T extends FieldValues>({
                             <SelectItem value="no-project">No Project</SelectItem>
                             <SelectGroup>
                                 <SelectLabel>Projects</SelectLabel>
-                                {(data || []).map(({ id, name, color }) => (
+                                {(data || []).map(({ id, shortName, color }) => (
                                     <SelectItem key={id} value={id}>
-                                        {/* todo: project badge */}
-                                        <span className="h-2 min-w-2 rounded-full" style={{ backgroundColor: color }} />
-                                        <span className={cn('max-w-[100px] truncate', size === 'sm' && 'max-w-[80px]', textClassName)}>{name}</span>
+                                        <ProjectBadge className="border-none px-0" hex={color} name={shortName} />
                                     </SelectItem>
                                 ))}
                             </SelectGroup>

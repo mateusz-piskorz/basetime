@@ -3,27 +3,11 @@ name: Production deploy
 on:
   workflow_dispatch:
 
-jobs:
-  quality:
+  jobs:
+    tests:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Format
-        run: npm run format
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Types
-        run: npm run types
-
-  tests:
-    needs: quality
-    runs-on: ubuntu-latest
+    env:
+      PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
     steps:
       - uses: actions/checkout@v4
 
@@ -43,6 +27,15 @@ jobs:
       - name: Run prisma migrations
         run: npx prisma migrate deploy
 
+      - name: Format
+        run: npm run format
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Types
+        run: npm run types
+
       - name: Start Next.js server
         run: nohup npm run dev &
 
@@ -58,7 +51,7 @@ jobs:
     environment: prod
     runs-on: self-hosted
     env:
-      BT_USER_PASSWORD: ${{ secrets.BT_USER_PASSWORD }}
+      PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: 1
       ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
       NEXT_PUBLIC_URL: ${{ vars.NEXT_PUBLIC_URL }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}

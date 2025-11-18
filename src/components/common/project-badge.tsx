@@ -6,11 +6,12 @@ type Props = {
     name: string;
     hex: string;
     size?: 'sm' | 'base';
+    className?: string;
 };
 
-export const ProjectBadge = ({ hex, name, size = 'base' }: Props) => {
+export const ProjectBadge = ({ hex, name, size = 'base', className }: Props) => {
     return (
-        <Badge className={cn('text-primary border-ring rounded border bg-transparent text-sm font-normal', size === 'sm' && 'text-xs')}>
+        <Badge className={cn('text-primary border-ring rounded border bg-transparent text-sm font-normal', size === 'sm' && 'text-xs', className)}>
             <span className="size-2 rounded-full" style={{ backgroundColor: hex }} />
             {name}
         </Badge>

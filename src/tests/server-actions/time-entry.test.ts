@@ -11,7 +11,7 @@ describe('toggleTimer', () => {
 
     beforeAll(async () => {
         await prisma.organization.create({
-            data: { id: orgId, name: 'o', currency: 'EUR', Projects: { create: { color: 'BLUE', name: '', id: projectId } } },
+            data: { id: orgId, name: 'o', currency: 'EUR', Projects: { create: { color: 'BLUE', name: '', id: projectId, shortName: '1' } } },
         });
 
         for (const memberId of [member1, member2]) {
@@ -107,7 +107,7 @@ describe('removeTimeEntries', () => {
         await prisma.user.deleteMany();
 
         await prisma.organization.create({
-            data: { id: orgId, name: 'o', currency: 'EUR', Projects: { create: { color: 'BLUE', name: '', id: projectId } } },
+            data: { id: orgId, name: 'o', currency: 'EUR', Projects: { create: { color: 'BLUE', name: '', id: projectId, shortName: '2' } } },
         });
 
         for (const memberId of [employee, manager, owner]) {
@@ -170,7 +170,7 @@ describe('manualTimeEntry', () => {
         await prisma.user.deleteMany();
 
         await prisma.organization.create({
-            data: { id: orgId, name: 'o', currency: 'EUR', Projects: { create: { color: 'BLUE', name: '', id: projectId } } },
+            data: { id: orgId, name: 'o', currency: 'EUR', Projects: { create: { color: 'BLUE', name: '', id: projectId, shortName: '3' } } },
         });
 
         for (const memberId of [employee, manager, owner]) {

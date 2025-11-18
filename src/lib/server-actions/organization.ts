@@ -30,6 +30,7 @@ export const upsertOrg = action(upsertOrgSchemaS, async (validated, session) => 
                     name: 'Example Project',
                     color: '#00B4D8',
                     organizationId: res.id,
+                    shortName: 'ep1',
                 },
             });
             await prisma.kanbanColumn.create({

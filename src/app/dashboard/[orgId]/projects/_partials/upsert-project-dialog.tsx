@@ -37,6 +37,7 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
             color: project?.color,
             estimatedDuration: project?.estimatedMinutes ? formatMinutes(project.estimatedMinutes) : undefined,
             name: project?.name,
+            shortName: project?.shortName,
         });
     }, [form, form.formState.isSubmitSuccessful, project]);
 
@@ -64,7 +65,8 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
                 <DialogTitle>{project ? `Update ${project.name}` : 'Create project'}</DialogTitle>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" style={{ marginBottom: '16px' }}>
-                        <InputField form={form} type="text" name="name" label="Project Name" placeholder="New Project" />
+                        <InputField form={form} type="text" name="name" label="Project Name" placeholder="My New Project" />
+                        <InputField form={form} type="text" name="shortName" label="Short Name" placeholder="MNP" />
 
                         <div className="flex flex-col gap-6 sm:flex-row-reverse sm:items-end sm:gap-4">
                             <MultiSelectField

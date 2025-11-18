@@ -248,6 +248,7 @@ model KanbanColumn {
 model Project {
   id               String   @id @default(cuid(2))
   name             String
+  shortName        String
   estimatedMinutes Int?
   color            String   @default("#B96D40")
   createdAt        DateTime @default(now())
@@ -258,4 +259,6 @@ model Project {
   Members        Member[]
   TimeEntries    TimeEntry[]
   Tasks          Task[]
+
+  @@unique(name: "shortNameId", [organizationId, shortName])
 }

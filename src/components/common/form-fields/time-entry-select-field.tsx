@@ -123,7 +123,7 @@ export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, na
                                                         >
                                                             <p className="truncate">{timeEntry.name}</p>
                                                             <ProjectBadge
-                                                                name={timeEntry.Project?.name || 'No Project'}
+                                                                name={timeEntry.Project?.shortName || 'No Project'}
                                                                 hex={timeEntry.Project?.color || '#B96D40'}
                                                             />
                                                         </CommandItem>

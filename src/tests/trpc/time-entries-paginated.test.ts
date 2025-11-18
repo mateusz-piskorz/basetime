@@ -69,7 +69,7 @@ test('time-entries-paginated setup', async () => {
                         id: user.memberId,
                         organizationId: orgId,
                         role: user.role,
-                        Projects: { create: { color: 'BLUE', name: '', id: user.projectId, organizationId: orgId } },
+                        Projects: { create: { color: 'BLUE', name: '', id: user.projectId, organizationId: orgId, shortName: '1' } },
                         TimeEntries: {
                             create: [
                                 {

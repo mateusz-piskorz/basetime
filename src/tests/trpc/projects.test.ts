@@ -31,7 +31,7 @@ test('projects setup', async () => {
                     create: {
                         role: user.role,
                         organizationId: organization.id,
-                        Projects: { create: { color: 'BLUE', name: '', id: user.projectId, organizationId: orgId } },
+                        Projects: { create: { color: 'BLUE', name: '', id: user.projectId, organizationId: orgId, shortName: '3' } },
                     },
                 },
             },

@@ -80,7 +80,10 @@ export const timeEntriesPaginated = publicProcedure
             });
 
             const res = await prisma.timeEntry.findMany({
-                include: { Project: { select: { name: true, color: true } }, Organization: { select: { roundUpSecondsThreshold: true } } },
+                include: {
+                    Project: { select: { name: true, color: true, shortName: true } },
+                    Organization: { select: { roundUpSecondsThreshold: true } },
+                },
                 where,
                 ...(!takeAll && { take: limit }),
                 skip,

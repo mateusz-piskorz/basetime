@@ -1,36 +1,54 @@
 'use server';
 
-import { MEMBER_ROLE } from '@prisma/client';
 import { prisma } from '../prisma';
 import { createProjectSchemaS, deleteProjectSchemaS } from '../zod/project-schema';
 import { action } from './_utils';
 
 export const upsertProject = action(createProjectSchemaS, async (validated, session) => {
     try {
-        const { memberIds, name, estimatedMinutes, color, orgId, projectId } = validated;
+        const { memberIds, name, estimatedMinutes, color, orgId, projectId, shortName } = validated;
 
-        const data = {
-            Organization: {
-                connect: {
-                    id: orgId,
-                    Members: { some: { userId: session.userId, role: { in: ['MANAGER', 'OWNER'] as MEMBER_ROLE[] } } },
-                },
-            },
-            Members: { connect: memberIds?.map((id) => ({ id })) },
-            estimatedMinutes,
-        };
+        if (await prisma.project.findFirst({ where: { organizationId: orgId, shortName, id: { not: projectId } } })) {
+            return { success: false, message: `short name ${shortName} already exists in organization` };
+        }
 
         const res = await prisma.project.upsert({
             where: { id: projectId || '' },
             create: {
                 name: name || `${session.name}'s project`,
+                shortName,
                 color: color || 'GRAY',
-                ...data,
+                Organization: {
+                    connect: {
+                        id: orgId,
+                        Members: {
+                            some: {
+                                userId: session.userId,
+                                role: { in: ['MANAGER', 'OWNER'] },
+                            },
+                        },
+                    },
+                },
+                Members: { connect: memberIds?.map((id) => ({ id })) },
+                estimatedMinutes,
             },
             update: {
+                shortName,
                 name,
                 color,
-                ...data,
+                Organization: {
+                    connect: {
+                        id: orgId,
+                        Members: {
+                            some: {
+                                userId: session.userId,
+                                role: { in: ['MANAGER', 'OWNER'] },
+                            },
+                        },
+                    },
+                },
+                Members: { connect: memberIds?.map((id) => ({ id })) },
+                estimatedMinutes,
             },
         });
 

@@ -140,7 +140,14 @@ async function members() {
 
 async function projects() {
     await prisma.project.createMany({
-        data: projectArr.map(({ color, name, id, estimatedMinutes }) => ({ id, color, name, organizationId: orgId, estimatedMinutes })),
+        data: projectArr.map(({ color, name, id, estimatedMinutes }, i) => ({
+            id,
+            color,
+            name,
+            organizationId: orgId,
+            estimatedMinutes,
+            shortName: `${name}-${i}`,
+        })),
     });
 
     for (const { id } of projectArr) {

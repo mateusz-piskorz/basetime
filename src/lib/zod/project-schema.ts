@@ -18,7 +18,7 @@ export const createProjectSchemaS = z.object({
     shortName: z
         .string()
         .nonempty()
-        .refine((str) => str.length >= 2 && str.length <= 4, '2-5 characters'),
+        .refine((str) => str.length >= 2 && str.length <= 5, '2-5 characters'),
     color: z.string().optional(),
     memberIds: z.array(z.string()).optional(),
     estimatedMinutes: z.number().nullish(),

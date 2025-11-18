@@ -8,7 +8,7 @@ export const upsertProject = action(createProjectSchemaS, async (validated, sess
     try {
         const { memberIds, name, estimatedMinutes, color, orgId, projectId, shortName } = validated;
 
-        if (await prisma.project.findFirst({ where: { organizationId: orgId, shortName } })) {
+        if (await prisma.project.findFirst({ where: { organizationId: orgId, shortName, id: { not: projectId } } })) {
             return { success: false, message: `short name ${shortName} already exists in organization` };
         }
 

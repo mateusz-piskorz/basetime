@@ -9,6 +9,7 @@ import { kanbanColumnsLength } from './endpoints/kanban-columns-length';
 import { members } from './endpoints/members';
 import { organizations } from './endpoints/organizations';
 import { projects } from './endpoints/projects';
+import { task } from './endpoints/task';
 import { tasks } from './endpoints/tasks';
 import { timeEntriesByMember } from './endpoints/time-entries-by-member';
 import { timeEntriesPaginated } from './endpoints/time-entries-paginated';
@@ -30,6 +31,7 @@ export const appRouter = createTRPCRouter({
     kanbanColumns,
     kanbanColumnsLength,
     tasks,
+    task,
 });
 
 export type AppRouter = typeof appRouter;

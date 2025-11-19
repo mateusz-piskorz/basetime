@@ -26,7 +26,7 @@ export const projects = publicProcedure.input(z.object({ orgId: z.string() })).q
             dayjs,
             roundUpSecondsThreshold: project.Organization.roundUpSecondsThreshold,
         });
-        const percentCompleted = project.estimatedMinutes ? ((loggedMinutes / project.estimatedMinutes) * 100).toFixed(2) : undefined;
+        const percentCompleted = project.estimatedMinutes ? Number(((loggedMinutes / project.estimatedMinutes) * 100).toFixed(2)) : undefined;
 
         return { ...project, loggedTime: formatMinutes(loggedMinutes), loggedMinutes, percentCompleted };
     });

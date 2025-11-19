@@ -11,6 +11,14 @@ export const upsertTaskSchema = z.object({
     kanbanColumnId: z.string().nullable(),
 });
 
+export const updateTaskDetailsSchema = z.object({
+    projectId: z.string().nonempty(),
+    priority: z.nativeEnum(TASK_PRIORITY),
+    assignedMemberId: z.string().nullable(),
+    ETA: z.string().nullish(),
+    kanbanColumnId: z.string().nullable(),
+});
+
 export const createTaskSchemaS = z.object({
     orgId: z.string().nonempty(),
     projectId: z.string().nonempty(),

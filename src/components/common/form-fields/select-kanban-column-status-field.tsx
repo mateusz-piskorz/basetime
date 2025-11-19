@@ -44,28 +44,32 @@ export const SelectKanbanColumnStatusField = <T extends FieldValues>({
         <FormField
             control={control}
             name={name}
-            render={({ field }) => (
-                <FormItem className={className}>
-                    {label && <FormLabel>{label}</FormLabel>}
-                    <Select onValueChange={field.onChange} value={field.value || ''} disabled={disabled}>
-                        <FormControl>
-                            <SelectTrigger size={size} className="w-full">
-                                <SelectValue placeholder={placeholder} />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            {(data || []).map(({ id, name, color }) => (
-                                <SelectItem key={id} value={id}>
-                                    <span className="h-2 min-w-2 rounded-full" style={{ backgroundColor: color }} />
-                                    <span className={cn('max-w-[100px] truncate', textClassName)}>{name}</span>
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+            render={({ field }) => {
+                // console.log('dwa', field.value);
+                // this changes status to empty string for some reason
+                return (
+                    <FormItem className={className}>
+                        {label && <FormLabel>{label}</FormLabel>}
+                        <Select onValueChange={field.onChange} value={field.value || ''} disabled={disabled}>
+                            <FormControl>
+                                <SelectTrigger size={size} className="w-full">
+                                    <SelectValue placeholder={placeholder} />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                {(data || []).map(({ id, name, color }) => (
+                                    <SelectItem key={id} value={id}>
+                                        <span className="h-2 min-w-2 rounded-full" style={{ backgroundColor: color }} />
+                                        <span className={cn('max-w-[100px] truncate', textClassName)}>{name}</span>
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
 
-                    {errorMessage && <FormMessage />}
-                </FormItem>
-            )}
+                        {errorMessage && <FormMessage />}
+                    </FormItem>
+                );
+            }}
         />
     );
 };

@@ -1,3 +1,4 @@
+import { ProgressBar } from '@/components/common/progress-bar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useMember } from '@/lib/hooks/use-member';
@@ -47,21 +48,8 @@ export const ProjectCard = ({
                         <div> {estimatedMinutes ? formatMinutes(estimatedMinutes) : '-'}</div>
                     </div>
                 </div>
-                <div className="w-full">
-                    <div className="text-muted-foreground mb-1 flex justify-between text-xs">
-                        <span>Progress</span>
-                        <span>{percentCompleted ?? 0}%</span>
-                    </div>
-                    <div className="bg-muted h-2 w-full overflow-hidden rounded">
-                        <div
-                            className="bg-accent-secondary h-2 rounded"
-                            style={{
-                                width: `${Math.min(Number(percentCompleted ?? 0), 100)}%`,
-                                transition: 'width 0.3s',
-                            }}
-                        />
-                    </div>
-                </div>
+                <ProgressBar percentCompleted={percentCompleted ?? 0} />
+
                 {currentUserRole !== 'EMPLOYEE' && (
                     <div className="flex flex-wrap gap-2">
                         <Button onClick={() => manageProject(id)}>Manage</Button>

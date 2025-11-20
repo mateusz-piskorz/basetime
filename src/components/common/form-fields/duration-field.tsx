@@ -12,7 +12,7 @@ type Props<T extends FieldValues> = {
     name: TypedFieldPath<T, FieldType>;
     className?: React.HTMLAttributes<'div'>['className'];
     errorMessage?: boolean;
-    placeholder?: string;
+
     onBlur?: (minutes: number) => void;
     label?: string;
 };
@@ -22,7 +22,7 @@ export const DurationField = <T extends FieldValues>({
     label,
     name: propsName,
     className,
-    placeholder,
+
     errorMessage = true,
     onBlur,
 }: Props<T>) => {
@@ -39,14 +39,16 @@ export const DurationField = <T extends FieldValues>({
                         {label && <FormLabel>{label}</FormLabel>}
                         <FormControl>
                             <Input
+                                autoComplete="off"
                                 type="text"
                                 inputMode="numeric"
-                                placeholder={placeholder}
+                                placeholder="1h 20min"
                                 {...field}
                                 value={field.value || ''}
                                 onBlur={(e) => {
                                     const minutes = durationParser(e.target.value, 'm');
-                                    setValue(name, formatMinutes(minutes || 90));
+
+                                    setValue(name, e.target.value === '' ? null : formatMinutes(minutes || 90));
                                     field.onBlur();
                                     onBlur?.(minutes || 90);
                                 }}

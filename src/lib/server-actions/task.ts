@@ -37,23 +37,24 @@ export const createTask = action(
 
 export const updateTask = action(
     updateTaskSchemaS,
-    async ({ assignedMemberId, kanbanColumnId, name, orgId, projectId, description, estimatedMinutes, priority, taskId }, { userId }) => {
+    async ({ assignedMemberId, kanbanColumnId, name, projectId, description, estimatedMinutes, priority, taskId }, { userId }) => {
+        console.log(description);
         try {
             await prisma.task.update({
-                where: { id: taskId },
+                where: { id: taskId, Organization: { Members: { some: { userId } } } },
                 data: {
                     name,
                     description,
                     estimatedMinutes,
                     priority,
-                    Organization: { connect: { id: orgId, Members: { some: { userId } } } },
-                    Project: { connect: { id: projectId } },
+                    ...(projectId && { Project: { connect: { id: projectId } } }),
                     ...(assignedMemberId && { Assigned: { connect: { id: assignedMemberId } } }),
                     ...(kanbanColumnId && { KanbanColumn: { connect: { id: kanbanColumnId } } }),
                 },
             });
             return { success: true };
-        } catch {
+        } catch (e) {
+            console.log(e);
             return { success: false, message: 'Error - updateTask' };
         }
     },

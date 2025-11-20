@@ -15,8 +15,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
 import { DashboardHeading } from '../dashboard-heading';
-import { SelectProjectField } from '../form-fields/select-project-field';
-import { SelectTaskField } from '../form-fields/select-task-field';
+import { SelectProjectField } from '../form-fields/custom-select/select-project-field';
+import { SelectTaskField } from '../form-fields/custom-select/select-task-field';
 import { TimeEntrySelectField } from '../form-fields/time-entry-select-field';
 import { StartButton } from '../start-button';
 import { Timer } from './_timer';
@@ -42,18 +42,16 @@ export const SectionTimeTracker = ({ className }: Props) => {
         if (activeTimeEntry) refetch();
     }, []);
 
-    const form = useForm({ resolver: zodResolver(startTimerSchema), defaultValues: { projectId: 'no-project' } });
+    const form = useForm({ resolver: zodResolver(startTimerSchema), defaultValues: { projectId: 'null', taskId: 'null' } });
 
-    const onSubmit = async (data: z.infer<typeof startTimerSchema>) => {
+    const onSubmit = async ({ name, projectId, taskId }: z.infer<typeof startTimerSchema>) => {
         let res;
 
         if (activeTimeEntry) {
             res = await toggleTimer({ orgId });
-            form.reset({ name: '', projectId: 'no-project', taskId: 'no-task' });
+            form.reset({ name: '', projectId: 'null', taskId: 'null' });
         } else {
-            const projectId = data.projectId === 'no-project' ? undefined : data.projectId;
-            const taskId = data.taskId === 'no-task' ? undefined : data.taskId;
-            res = await toggleTimer({ name: data.name, projectId, orgId, taskId });
+            res = await toggleTimer({ name, projectId, orgId, taskId });
         }
 
         if (!res.success) {
@@ -99,6 +97,7 @@ export const SectionTimeTracker = ({ className }: Props) => {
 
                         <div className="flex h-full items-center gap-2 pr-2 sm:gap-4 sm:pr-4">
                             <SelectProjectField
+                                nullOption
                                 form={form}
                                 name="projectId"
                                 disabled={Boolean(activeTimeEntry) || isFetching || form.formState.isSubmitting}
@@ -107,14 +106,13 @@ export const SectionTimeTracker = ({ className }: Props) => {
                             />
 
                             <SelectTaskField
+                                nullOption
                                 className="hidden md:block"
                                 form={form}
                                 name="taskId"
                                 size="sm"
                                 projectId={form.watch('projectId') || undefined}
-                                disabled={
-                                    form.watch('projectId') === 'no-project' || Boolean(activeTimeEntry) || isFetching || form.formState.isSubmitting
-                                }
+                                disabled={form.watch('projectId') === 'null' || Boolean(activeTimeEntry) || isFetching || form.formState.isSubmitting}
                             />
 
                             <Separator orientation="vertical" />
@@ -129,6 +127,7 @@ export const SectionTimeTracker = ({ className }: Props) => {
                     <div className="flex flex-wrap items-center justify-between gap-6">
                         <div className="flex items-center gap-8 md:hidden">
                             <SelectProjectField
+                                nullOption
                                 form={form}
                                 name="projectId"
                                 disabled={Boolean(activeTimeEntry) || isFetching || form.formState.isSubmitting}
@@ -137,6 +136,7 @@ export const SectionTimeTracker = ({ className }: Props) => {
                             />
 
                             <SelectTaskField
+                                nullOption
                                 className="w-[150px]"
                                 form={form}
                                 name="taskId"

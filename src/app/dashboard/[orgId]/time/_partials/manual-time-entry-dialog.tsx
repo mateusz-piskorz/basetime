@@ -1,8 +1,8 @@
 'use client';
 
 /* eslint-disable react-hooks/exhaustive-deps */
+import { SelectTaskField } from '@/components/common/form-fields/custom-select/select-task-field';
 import { InputField } from '@/components/common/form-fields/input-field';
-import { SelectTaskField } from '@/components/common/form-fields/select-task-field';
 import { TimeEntrySelectField } from '@/components/common/form-fields/time-entry-select-field';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -19,8 +19,8 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
 import { CalendarField } from '../../../../../components/common/form-fields/calendar-field';
+import { SelectProjectField } from '../../../../../components/common/form-fields/custom-select/select-project-field';
 import { DurationField } from '../../../../../components/common/form-fields/duration-field';
-import { SelectProjectField } from '../../../../../components/common/form-fields/select-project-field';
 
 type Props = {
     open: boolean;

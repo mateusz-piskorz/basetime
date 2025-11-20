@@ -32,13 +32,12 @@ export const createTaskSchemaS = z.object({
 
 export const updateTaskSchemaS = z.object({
     taskId: z.string().nonempty(),
-    orgId: z.string().nonempty(),
-    projectId: z.string().nonempty(),
-    name: z.string().nonempty(),
-    kanbanColumnId: z.string().nullable(),
-    priority: z.nativeEnum(TASK_PRIORITY),
+    projectId: z.string().optional(),
+    name: z.string().optional(),
+    kanbanColumnId: z.string().nullish(),
+    priority: z.nativeEnum(TASK_PRIORITY).optional(),
     description: z.string().nullish(),
-    assignedMemberId: z.string().nullable(),
+    assignedMemberId: z.string().nullish(),
     estimatedMinutes: z.number().nullish(),
 });
 

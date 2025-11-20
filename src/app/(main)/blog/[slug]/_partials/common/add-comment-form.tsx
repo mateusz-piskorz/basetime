@@ -24,9 +24,8 @@ type Props = {
 export const AddCommentForm = ({ parentComment, infiniteQueryArgs, onCommentAdded, onCancel }: Props) => {
     const { postId, limitQuery, sorting } = useBlogCommentsSheet();
     const trpcUtils = trpc.useUtils();
-    const form = useForm({
-        resolver: zodResolver(blogPostCommentSchema),
-    });
+
+    const form = useForm({ resolver: zodResolver(blogPostCommentSchema) });
 
     useEffect(() => {
         form.reset({ postId, parentId: parentComment?.id, content: '' });

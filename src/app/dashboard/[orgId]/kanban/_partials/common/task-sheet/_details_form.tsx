@@ -1,15 +1,22 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+'use client';
 
-import { SelectKanbanColumnStatusField } from '@/components/common/form-fields/select-kanban-column-status-field';
-import { SelectProjectField } from '@/components/common/form-fields/select-project-field';
+import { SelectKanbanColumnStatusField } from '@/components/common/form-fields/custom-select/select-kanban-column-status-field';
+import { SelectMemberField } from '@/components/common/form-fields/custom-select/select-member-field';
+import { SelectProjectField } from '@/components/common/form-fields/custom-select/select-project-field';
+import { SelectTaskPriorityField } from '@/components/common/form-fields/custom-select/select-task-priority-field';
+import { DurationField } from '@/components/common/form-fields/duration-field';
+import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
-import { TrpcRouterOutput } from '@/lib/trpc/client';
+import { useMember } from '@/lib/hooks/use-member';
+import { updateTask } from '@/lib/server-actions/task';
+import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { formatMinutes } from '@/lib/utils/common';
 import { updateTaskDetailsSchema } from '@/lib/zod/task-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FolderClosed, Loader } from 'lucide-react';
-import React from 'react';
+import { FolderClosed, Goal, Hourglass, Loader, UserCheck2 } from 'lucide-react';
+import durationParser from 'parse-duration';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import z from 'zod';
 
 type Props = {
@@ -17,37 +24,44 @@ type Props = {
 };
 
 export const DetailsForm = ({ task }: Props) => {
-    const form = useForm<z.infer<typeof updateTaskDetailsSchema>>({ resolver: zodResolver(updateTaskDetailsSchema) });
+    const { estimatedMinutes, projectId, assignedId, priority, kanbanColumnId, id: taskId } = task;
+    const { orgId } = useMember();
+    const trpcUtils = trpc.useUtils();
 
-    const onSubmit = async (data: z.infer<typeof updateTaskDetailsSchema>) => {
-        console.log(data);
+    const defaultValues = {
+        ETA: estimatedMinutes ? formatMinutes(estimatedMinutes) : undefined,
+        projectId,
+        assignedMemberId: assignedId,
+        priority,
+        kanbanColumnId,
     };
 
-    React.useEffect(() => {
-        form.reset(
-            task
-                ? {
-                      assignedMemberId: task.assignedId,
-                      ETA: task.estimatedMinutes ? formatMinutes(task.estimatedMinutes) : undefined,
-                      projectId: task.projectId,
-                      priority: task.priority,
-                      kanbanColumnId: task.kanbanColumnId,
-                  }
-                : {},
-        );
-    }, [task, form.formState.isSubmitSuccessful]);
-    const status = form.watch('kanbanColumnId');
-    console.log(status);
+    const form = useForm({ resolver: zodResolver(updateTaskDetailsSchema), defaultValues });
+
+    const onSubmit = async (data: z.infer<typeof updateTaskDetailsSchema>) => {
+        const { ETA, ...rest } = data;
+        const res = await updateTask({
+            orgId,
+            taskId,
+            estimatedMinutes: durationParser(ETA ?? undefined, 'm'),
+            ...rest,
+        });
+        if (!res.success) {
+            toast.error(res.message);
+            return;
+        }
+
+        form.reset(data);
+
+        trpcUtils.kanbanColumns.refetch({ orgId });
+        trpcUtils.tasks.refetch();
+        trpcUtils.task.refetch({ taskId });
+    };
+
     return (
         <Form {...form}>
-            <form
-                onSubmit={(event) => {
-                    // event.stopPropagation();
-                    form.handleSubmit(onSubmit)(event);
-                }}
-                className="space-y-5"
-            >
-                <div className="flex justify-between">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 px-4 text-sm">
+                <div className="flex items-center justify-between">
                     <div className="flex gap-2">
                         <FolderClosed className="size-5" />
                         <p>Project</p>
@@ -55,13 +69,44 @@ export const DetailsForm = ({ task }: Props) => {
                     <SelectProjectField form={form} name="projectId" />
                 </div>
 
-                <div className="flex justify-between">
+                <div className="flex items-center justify-between">
                     <div className="flex gap-2">
                         <Loader className="size-5" />
                         <p>Status</p>
                     </div>
-
                     <SelectKanbanColumnStatusField form={form} name="kanbanColumnId" />
+                </div>
+
+                <div className="flex items-center justify-between">
+                    <p className="flex gap-2">
+                        <Goal className="size-5" /> Priority
+                    </p>
+                    <SelectTaskPriorityField form={form} name="priority" />
+                </div>
+
+                <div className="flex items-center justify-between">
+                    <p className="flex gap-2">
+                        <Hourglass className="size-5" />
+                        ETA
+                    </p>
+                    <DurationField form={form} name="ETA" />
+                </div>
+
+                <div className="flex items-center justify-between">
+                    <p className="flex gap-2">
+                        <UserCheck2 className="size-5" />
+                        Assigned
+                    </p>
+                    <SelectMemberField form={form} name="assignedMemberId" nullOption />
+                </div>
+
+                <div className="flex justify-end gap-2">
+                    <Button disabled={!form.formState.isDirty} type="button" onClick={() => form.reset(defaultValues)} variant="link">
+                        Cancel
+                    </Button>
+                    <Button disabled={!form.formState.isDirty || form.formState.isSubmitting} type="submit" variant="secondary">
+                        Save
+                    </Button>
                 </div>
             </form>
         </Form>

@@ -1,7 +1,7 @@
 'use client';
 
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
@@ -21,10 +21,9 @@ type Props<T extends FieldValues> = {
     errorMessage?: boolean;
     disabled?: boolean;
     size?: 'sm' | 'default' | 'lg';
-    projectId?: string;
 };
 
-export const SelectTaskField = <T extends FieldValues>({
+export const SelectKanbanColumnStatusField = <T extends FieldValues>({
     form,
     className,
     textClassName,
@@ -33,14 +32,13 @@ export const SelectTaskField = <T extends FieldValues>({
     placeholder,
     disabled,
     size,
-    projectId,
     errorMessage = true,
 }: Props<T>) => {
     const name = propsName as string;
     const { control } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
 
-    const { orgId, member } = useMember();
-    const { data } = trpc.tasks.useQuery({ orgId, projectId: projectId!, assignedMember: member.id }, { enabled: Boolean(projectId) });
+    const { orgId } = useMember();
+    const { data } = trpc.kanbanColumns.useQuery({ orgId });
 
     return (
         <FormField
@@ -49,22 +47,19 @@ export const SelectTaskField = <T extends FieldValues>({
             render={({ field }) => (
                 <FormItem className={className}>
                     {label && <FormLabel>{label}</FormLabel>}
-                    <Select onValueChange={field.onChange} value={field.value || 'no-task'} disabled={disabled}>
+                    <Select onValueChange={(val) => val && field.onChange(val)} value={field.value || ''} disabled={disabled}>
                         <FormControl>
-                            <SelectTrigger size={size} className={cn('w-full', size === 'sm' && 'text-[13px]')}>
+                            <SelectTrigger size={size} className="w-full">
                                 <SelectValue placeholder={placeholder} />
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                            <SelectItem value="no-task">No Task</SelectItem>
-                            <SelectGroup>
-                                <SelectLabel>Tasks</SelectLabel>
-                                {data?.map(({ id, taskNumber }) => (
-                                    <SelectItem key={id} value={id}>
-                                        <span>task-{taskNumber}</span>
-                                    </SelectItem>
-                                ))}
-                            </SelectGroup>
+                            {(data || []).map(({ id, name, color }) => (
+                                <SelectItem key={id} value={id}>
+                                    <span className="h-2 min-w-2 rounded-full" style={{ backgroundColor: color }} />
+                                    <span className={cn('max-w-[100px] truncate', textClassName)}>{name}</span>
+                                </SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
 

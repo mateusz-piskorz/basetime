@@ -71,12 +71,6 @@ export function Kanban() {
                 selectedColumn={selectedColumn!}
             />
 
-            {/* <UpsertTaskDialog
-                open={Boolean(selectedTask)}
-                setOpen={(val) => setSelectedTaskId((prev) => (val ? prev : null))}
-                selectedTask={selectedTask!}
-            /> */}
-
             <TaskSheet open={Boolean(selectedTask)} setOpen={(val) => setSelectedTaskId((prev) => (val ? prev : null))} taskId={selectedTaskId} />
 
             <div className="space-x-4">

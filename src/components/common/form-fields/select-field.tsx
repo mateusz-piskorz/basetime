@@ -43,7 +43,7 @@ export const SelectField = <T extends FieldValues>({
             render={({ field }) => (
                 <FormItem className={className}>
                     {label && <FormLabel>{label}</FormLabel>}
-                    <Select onValueChange={field.onChange} value={field.value || ''} disabled={disabled}>
+                    <Select onValueChange={(val) => field.onChange(val === 'null' ? null : val)} value={field.value || 'null'} disabled={disabled}>
                         <FormControl>
                             <SelectTrigger size={size} className="w-full">
                                 <SelectValue placeholder={placeholder} />

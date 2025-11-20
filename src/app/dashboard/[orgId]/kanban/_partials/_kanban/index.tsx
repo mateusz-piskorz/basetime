@@ -12,8 +12,8 @@ import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { TASK_PRIORITY } from '@prisma/client';
 import * as React from 'react';
 import { toast } from 'sonner';
+import { TaskSheet } from '../common/task-sheet';
 import { UpsertStatusColumnDialog } from '../common/upsert-status-column-dialog';
-import { UpsertTaskDialog } from '../common/upsert-task-dialog';
 import { KanbanColumn } from './_kanban-column';
 
 type Task = NonNullable<TrpcRouterOutput['kanbanColumns']>[number]['Tasks'][number];
@@ -71,11 +71,7 @@ export function Kanban() {
                 selectedColumn={selectedColumn!}
             />
 
-            <UpsertTaskDialog
-                open={Boolean(selectedTask)}
-                setOpen={(val) => setSelectedTaskId((prev) => (val ? prev : null))}
-                selectedTask={selectedTask!}
-            />
+            <TaskSheet open={Boolean(selectedTask)} setOpen={(val) => setSelectedTaskId((prev) => (val ? prev : null))} taskId={selectedTaskId} />
 
             <div className="space-x-4">
                 <ProjectsFilter projects={projectIds} setProjects={setProjectIds} />

@@ -2,28 +2,28 @@
 'use client';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
+import { SelectKanbanColumnStatusField } from '@/components/common/form-fields/custom-select/select-kanban-column-status-field';
 import { InputField } from '@/components/common/form-fields/input-field';
 import { SelectField } from '@/components/common/form-fields/select-field';
-import { SelectKanbanColumnStatusField } from '@/components/common/form-fields/select-kanban-column-status-field';
 import { TextareaField } from '@/components/common/form-fields/textarea-field';
-import { TaskPriorityCircle } from '@/components/common/task-priority-circle';
+
+import { SelectTaskPriorityField } from '@/components/common/form-fields/custom-select/select-task-priority-field';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import { useMember } from '@/lib/hooks/use-member';
 import { createTask, deleteTask, updateTask } from '@/lib/server-actions/task';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
-import { cn, formatMinutes } from '@/lib/utils/common';
+import { formatMinutes } from '@/lib/utils/common';
 import { upsertTaskSchema } from '@/lib/zod/task-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TASK_PRIORITY } from '@prisma/client';
 import durationParser from 'parse-duration';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
+import { SelectProjectField } from '../../../../../../components/common/form-fields/custom-select/select-project-field';
 import { DurationField } from '../../../../../../components/common/form-fields/duration-field';
-import { SelectProjectField } from '../../../../../../components/common/form-fields/select-project-field';
 
 type Props = {
     open: boolean;
@@ -57,14 +57,14 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
 
     async function onSubmit({ name, priority, assignedMemberId, description, ETA, projectId, kanbanColumnId }: z.infer<typeof upsertTaskSchema>) {
         let res;
+
         if (selectedTask) {
             res = await updateTask({
                 taskId: selectedTask.id,
                 name,
                 priority,
-                orgId,
                 projectId,
-                assignedMemberId: assignedMemberId === 'null' ? null : assignedMemberId,
+                assignedMemberId,
                 description,
                 estimatedMinutes: durationParser(ETA ?? undefined, 'm'),
                 kanbanColumnId,
@@ -75,7 +75,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
                 priority,
                 orgId,
                 projectId,
-                assignedMemberId: assignedMemberId === 'null' ? null : assignedMemberId,
+                assignedMemberId,
                 description,
                 estimatedMinutes: durationParser(ETA ?? undefined, 'm'),
                 kanbanColumnId,
@@ -146,21 +146,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
                                         value: member.id,
                                     }))}
                                 />
-                                <SelectField
-                                    className="w-full"
-                                    label="Priority"
-                                    form={form}
-                                    name="priority"
-                                    selectOptions={Object.values(TASK_PRIORITY).map((priority) => ({
-                                        label: (
-                                            <>
-                                                <TaskPriorityCircle priority={priority} />
-                                                <span className={cn('max-w-[100px] truncate')}>{priority.toLowerCase()}</span>
-                                            </>
-                                        ),
-                                        value: priority,
-                                    }))}
-                                />
+                                <SelectTaskPriorityField form={form} name="priority" label="Priority" />
                             </div>
 
                             <InputField form={form} name="name" label="Name" />

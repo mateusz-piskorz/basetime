@@ -669,7 +669,7 @@ function KanbanBoard(props: KanbanBoardProps) {
           {...boardProps}
           ref={ref}
           className={cn(
-            "flex size-full gap-4",
+            "flex gap-4",
             context.orientation === "horizontal" ? "flex-row" : "flex-col",
             className,
           )}
@@ -806,7 +806,7 @@ function KanbanColumn(props: KanbanColumnProps) {
           ref={composedRef}
           style={composedStyle}
           className={cn(
-            "flex size-full flex-col gap-2 rounded-lg border bg-zinc-100 p-2.5 aria-disabled:pointer-events-none aria-disabled:opacity-50 dark:bg-zinc-900",
+            "flex size-full min-h-[300px] flex-col gap-2 rounded-lg border bg-zinc-100 p-2.5 aria-disabled:pointer-events-none aria-disabled:opacity-50 dark:bg-zinc-900",
             {
               "touch-none select-none": asHandle,
               "cursor-default": context.flatCursor,

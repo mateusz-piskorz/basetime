@@ -9,6 +9,7 @@ import { formatMinutes } from '@/lib/utils/common';
 import { X } from 'lucide-react';
 import { DescriptionForm } from './_description_form';
 import { DetailsForm } from './_details_form';
+import { TitleForm } from './_title_form';
 
 type Props = {
     open: boolean;
@@ -35,13 +36,13 @@ export const TaskSheet = ({ open, setOpen, taskId }: Props) => {
                         </SheetClose>
                         <SheetTitle className="mr-2 font-normal italic">Task-{task?.taskNumber}</SheetTitle>
                     </div>
-                    <SheetDescription className="sr-only">Preview and Manage organization TASK-{task?.taskNumber}</SheetDescription>
+                    <SheetDescription className="sr-only">Preview and Manage organization Task-{task?.taskNumber}</SheetDescription>
                 </SheetHeader>
                 <Separator />
                 {task && (
                     <>
                         <div className="space-y-6 px-4 text-sm">
-                            <h2 className="mb-8 text-xl font-semibold">{task.name}</h2>
+                            <TitleForm task={task} />
                             <ProgressBar percentCompleted={task.percentCompleted ?? 0} />
                             <div className="flex justify-between">
                                 <div className="flex gap-2">

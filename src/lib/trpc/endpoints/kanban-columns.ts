@@ -34,7 +34,7 @@ export const kanbanColumns = publicProcedure
                     orderBy: { updatedAt: 'desc' },
                     include: {
                         _count: true,
-                        Project: { select: { color: true, name: true } },
+                        Project: { select: { color: true, name: true, shortName: true } },
                         Assigned: { select: { User: { select: { name: true, avatarId: true, id: true } } } },
                     },
                 },

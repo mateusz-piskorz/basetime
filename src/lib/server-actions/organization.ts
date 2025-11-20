@@ -58,6 +58,14 @@ export const upsertOrg = action(upsertOrgSchemaS, async (validated, session) => 
                     color: '#F5A623',
                 },
             });
+            await prisma.kanbanColumn.create({
+                data: {
+                    organizationId: res.id,
+                    name: 'Done',
+                    order: 2,
+                    color: '#2EC4B6',
+                },
+            });
         }
 
         return { success: true, data: res };

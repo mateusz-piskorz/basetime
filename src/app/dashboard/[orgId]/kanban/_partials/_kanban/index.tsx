@@ -106,16 +106,14 @@ export function Kanban() {
                             kanbanColumnId: overColumnId as string,
                         });
 
-                        if (!res.success) {
-                            toast.error(res.message || 'something went wrong');
-                            refetch();
-                        }
+                        if (!res.success) toast.error(res.message || 'something went wrong');
+                        refetch();
                     }
                     setDisabled(false);
                 }}
                 getItemValue={(item) => item.id}
             >
-                <KanbanUI.Board className="flex overflow-auto">
+                <KanbanUI.Board className="overflow-auto pb-4">
                     {Object.entries(columns).map(([columnId, tasks]) => {
                         const column = columnsData?.find((c) => c.id === columnId);
                         if (!column) return null;

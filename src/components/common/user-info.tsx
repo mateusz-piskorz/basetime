@@ -16,7 +16,7 @@ export function UserInfo({ name, avatarSrc, textUnder, currentUserIndicator, ava
     const avatar = avatarId ? getUserAvatarUrl({ avatarId }) : undefined;
     return (
         <>
-            <Avatar className={cn('h-8 w-8 overflow-hidden rounded-full', size === 'lg' && 'h-40 w-40')}>
+            <Avatar className={cn('h-8 w-8 overflow-hidden rounded-full border', size === 'lg' && 'h-40 w-40')}>
                 <AvatarImage src={avatarSrc || avatar} alt={name} />
                 <AvatarFallback className="bg-sidebar-accent rounded-lg text-black dark:bg-neutral-700 dark:text-white">
                     {getInitials(name)}

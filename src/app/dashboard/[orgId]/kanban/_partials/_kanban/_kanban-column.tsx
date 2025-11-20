@@ -15,7 +15,7 @@ type Props = {
 
 export const KanbanColumn = ({ column, tasks, disabled, onColumnSelect, onTaskSelect }: Props) => {
     return (
-        <KanbanUI.Column value={column.id} disabled={disabled} className="dark:bg-card min-w-[350px] border bg-transparent">
+        <KanbanUI.Column value={column.id} disabled={disabled} className="dark:bg-card min-w-[350px] bg-transparent dark:border-none">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="size-4 rounded-full" style={{ backgroundColor: column.color }} />

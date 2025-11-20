@@ -41,7 +41,6 @@ export const DetailsForm = ({ task }: Props) => {
     const onSubmit = async (data: z.infer<typeof updateTaskDetailsSchema>) => {
         const { ETA, ...rest } = data;
         const res = await updateTask({
-            orgId,
             taskId,
             estimatedMinutes: durationParser(ETA ?? undefined, 'm'),
             ...rest,

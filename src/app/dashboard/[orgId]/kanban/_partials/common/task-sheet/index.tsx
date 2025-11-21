@@ -7,6 +7,7 @@ import { dayjs } from '@/lib/dayjs';
 import { trpc } from '@/lib/trpc/client';
 import { formatMinutes } from '@/lib/utils/common';
 import { X } from 'lucide-react';
+import { CommentsSection } from './_comments-section';
 import { DescriptionForm } from './_description_form';
 import { DetailsForm } from './_details_form';
 import { TitleForm } from './_title_form';
@@ -60,12 +61,13 @@ export const TaskSheet = ({ open, setOpen, taskId }: Props) => {
                         </div>
 
                         <Separator />
-
                         <DetailsForm task={task} />
 
                         <Separator />
-
                         <DescriptionForm task={task} />
+
+                        <Separator />
+                        <CommentsSection task={task} />
                     </>
                 )}
             </SheetContent>

@@ -16,7 +16,12 @@ export const task = publicProcedure.input(z.object({ taskId: z.string() })).quer
                 Members: { some: { userId: session.userId } },
             },
         },
-        include: { Project: true, TimeEntries: true, Organization: true },
+        include: {
+            Project: true,
+            TimeEntries: true,
+            Organization: true,
+            TaskComments: { orderBy: { createdAt: 'asc' }, include: { Author: { include: { User: true } } } },
+        },
     });
     if (!res) return null;
 
@@ -28,5 +33,10 @@ export const task = publicProcedure.input(z.object({ taskId: z.string() })).quer
 
     const percentCompleted = res.estimatedMinutes ? Number(((loggedMinutes / res.estimatedMinutes) * 100).toFixed(2)) : undefined;
 
-    return { ...res, loggedMinutes, percentCompleted };
+    const TaskComments = res.TaskComments.map((comment) => {
+        const { avatarId, name } = comment.Author.User;
+        return { ...comment, isOwner: comment.Author.userId === session?.userId, Author: { avatarId, name } };
+    });
+
+    return { ...res, TaskComments, loggedMinutes, percentCompleted };
 });

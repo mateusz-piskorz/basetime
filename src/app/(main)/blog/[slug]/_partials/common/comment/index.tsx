@@ -1,9 +1,8 @@
 'use client';
 
+import { CommentCard } from '@/components/common/comment-card';
 import ConfirmDialog from '@/components/common/confirm-dialog';
-import { UserInfo } from '@/components/common/user-info';
 import { Button } from '@/components/ui/button';
-import { dayjs } from '@/lib/dayjs';
 import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { deleteBlogPostComment } from '@/lib/server-actions/blog-post';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
@@ -12,7 +11,6 @@ import { MessageCircle } from 'lucide-react';
 import { ComponentProps, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { AddCommentForm } from '../../common/add-comment-form';
-import { CommentContent } from './_comment-content';
 import { CommentList } from './_comment-list';
 import { CommentUpvotesButton } from './_comment-upvotes-button';
 
@@ -63,20 +61,13 @@ export const Comment = ({ comment, nestLevel, className, initialDisplayResponses
                 description="This action cannot be undone. Comment will be removed permanently"
             />
 
-            <div className="flex gap-2">
-                <UserInfo
-                    currentUserIndicator={comment.isOwner}
-                    name={comment.Author.name}
-                    avatarId={comment.Author.avatarId}
-                    textUnder={
-                        <time className="text-muted-foreground" title="Commented at" dateTime={dayjs(comment.updatedAt).format('YYYY-MM-DD')}>
-                            {dayjs(comment.updatedAt).format('MMMM D, YYYY')}
-                        </time>
-                    }
-                />
-            </div>
-
-            <CommentContent comment={comment} />
+            <CommentCard
+                author={comment.Author}
+                content={comment.content}
+                isOwner={comment.isOwner}
+                updatedAt={comment.updatedAt}
+                deleted={comment.deleted}
+            />
 
             <div className="flex items-center">
                 <CommentUpvotesButton

@@ -1,3 +1,5 @@
+'use client';
+
 import { TextareaField } from '@/components/common/form-fields/textarea-field';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';

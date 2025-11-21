@@ -1,7 +1,14 @@
 'use server';
 
 import { prisma } from '../prisma';
-import { createTaskSchemaS, deleteTaskSchemaS, moveTaskOnKanbanSchemaS, updateTaskSchemaS } from '../zod/task-schema';
+import {
+    createTaskCommentSchemaS,
+    createTaskSchemaS,
+    deleteTaskSchemaS,
+    moveTaskOnKanbanSchemaS,
+    updateTaskCommentSchemaS,
+    updateTaskSchemaS,
+} from '../zod/task-schema';
 import { action } from './_utils';
 
 export const createTask = action(
@@ -83,5 +90,33 @@ export const deleteTask = action(deleteTaskSchemaS, async ({ taskId }, { userId 
         return { success: true };
     } catch {
         return { success: false, message: 'Error - deleteTask' };
+    }
+});
+
+export const createTaskComment = action(createTaskCommentSchemaS, async ({ content, taskId }, { userId }) => {
+    try {
+        const member = await prisma.member.findFirst({ where: { userId, Organization: { Tasks: { some: { id: taskId } } } } });
+        if (!member) return { success: false, message: 'Error - permission' };
+
+        await prisma.taskComment.create({
+            data: { taskId, content, authorId: member.id },
+        });
+
+        return { success: true };
+    } catch {
+        return { success: false, message: 'Error - createTaskComment' };
+    }
+});
+
+export const updateTaskComment = action(updateTaskCommentSchemaS, async ({ content, taskCommentId }, { userId }) => {
+    try {
+        await prisma.taskComment.update({
+            where: { id: taskCommentId, Task: { Organization: { Members: { some: { userId } } } }, Author: { userId } },
+            data: { content },
+        });
+
+        return { success: true };
+    } catch {
+        return { success: false, message: 'Error - updateTaskComment' };
     }
 });

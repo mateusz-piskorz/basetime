@@ -35,7 +35,7 @@ export const task = publicProcedure.input(z.object({ taskId: z.string() })).quer
 
     const TaskComments = res.TaskComments.map((comment) => {
         const { avatarId, name } = comment.Author.User;
-        return { ...comment, isOwner: comment.Author.userId === session?.userId, Author: { avatarId, name }, name };
+        return { ...comment, isOwner: comment.Author.userId === session?.userId, Author: { avatarId, name } };
     });
 
     return { ...res, TaskComments, loggedMinutes, percentCompleted };

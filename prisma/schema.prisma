@@ -238,8 +238,9 @@ model TaskComment {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  taskId    String
-  authorId  String
+
+  taskId   String
+  authorId String
 
   Author Member @relation(fields: [authorId], references: [id], onDelete: Cascade)
   Task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)

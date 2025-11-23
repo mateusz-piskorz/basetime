@@ -16,9 +16,7 @@ import z from 'zod';
 export default function RegisterPage() {
     const [error, setError] = React.useState<string | undefined>(undefined);
     const router = useRouter();
-    const form = useForm({
-        resolver: zodResolver(registerSchema),
-    });
+    const form = useForm({ resolver: zodResolver(registerSchema) });
 
     const onSubmit = async (values: z.infer<typeof registerSchema>) => {
         const res = await signup(values);

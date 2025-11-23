@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { getClientIp } from '@/lib/server-utils/get-client-ip';
 import rateLimit from '@/lib/server-utils/rate-limit';
 import { createSession, deleteSession, getSession, setSessionCookie } from '@/lib/session';
-import { loginSchema, logoutServerSchema, registerSchema } from '@/lib/zod/auth-schema';
+import { loginSchema, registerSchema } from '@/lib/zod/auth-schema';
 import bcrypt from 'bcrypt';
 import { headers } from 'next/headers';
 import z from 'zod';
@@ -71,9 +71,10 @@ export const signin = async (data: z.infer<typeof loginSchema>) => {
     }
 };
 
-export const logout = async (data: z.infer<typeof logoutServerSchema>) => {
+const logoutSchema = z.object({ sessionId: z.string().optional() });
+export const logout = async (data: z.infer<typeof logoutSchema>) => {
     try {
-        const validated = logoutServerSchema.safeParse(data);
+        const validated = logoutSchema.safeParse(data);
 
         if (validated.error) return { success: false, message: 'Error validating fields' };
 

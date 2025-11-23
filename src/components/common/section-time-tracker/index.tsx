@@ -1,6 +1,6 @@
-import React from 'react';
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
+import React from 'react';
 
 import { Form } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
@@ -19,11 +19,9 @@ import { SelectProjectField } from '../form-fields/custom-select/select-project-
 import { SelectTaskField } from '../form-fields/custom-select/select-task-field';
 import { TimeEntrySelectField } from '../form-fields/time-entry-select-field';
 import { StartButton } from '../start-button';
-import { Timer } from './_timer';
+import { DateTimer } from './_date-timer';
 
-type Props = {
-    className?: string;
-};
+type Props = { className?: string };
 
 export const SectionTimeTracker = ({ className }: Props) => {
     const trpcUtils = trpc.useUtils();
@@ -116,7 +114,7 @@ export const SectionTimeTracker = ({ className }: Props) => {
                             />
 
                             <Separator orientation="vertical" />
-                            <Timer
+                            <DateTimer
                                 key={activeTimeEntry ? activeTimeEntry.id : 'timer-0'}
                                 startDate={activeTimeEntry ? dayjs().subtract(activeTimeEntry.startNowDiffMs, 'ms').toDate() : new Date()}
                                 isActive={Boolean(activeTimeEntry)}

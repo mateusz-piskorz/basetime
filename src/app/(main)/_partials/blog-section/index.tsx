@@ -1,5 +1,4 @@
 'use server';
-
 import { prisma } from '@/lib/prisma';
 import { BlogSectionDesktop } from './blog-section-desktop';
 import { BlogSectionMobile } from './blog-section-mobile';

@@ -1,14 +1,13 @@
+import { dayjs } from '@/lib/dayjs';
+import { cn } from '@/lib/utils/common';
 import React from 'react';
-import { cn, formatSeconds } from '@/lib/utils/common';
-import dayjs from 'dayjs';
 
 type Props = {
     startDate: Date;
     isActive: boolean;
-    className?: string;
 };
 
-export const Timer = ({ startDate, isActive, className }: Props) => {
+export const DateTimer = ({ startDate, isActive }: Props) => {
     const [timerString, setTimerString] = React.useState('00:00:00');
 
     React.useEffect(() => {
@@ -16,7 +15,8 @@ export const Timer = ({ startDate, isActive, className }: Props) => {
 
         if (isActive) {
             const updateElapsed = () => {
-                const newString = formatSeconds(dayjs().diff(startDate, 's'));
+                const elapsedSeconds = dayjs().diff(startDate, 'second');
+                const newString = dayjs.duration(elapsedSeconds).format('hh:mm:ss');
 
                 setTimerString(newString);
                 document.title = `${newString} - BaseTime`;
@@ -33,7 +33,7 @@ export const Timer = ({ startDate, isActive, className }: Props) => {
     }, [isActive, startDate]);
 
     return (
-        <div className={cn('flex min-w-[100px] items-center justify-center text-center text-sm sm:gap-px sm:text-base sm:font-bold', className)}>
+        <div className={cn('flex min-w-[100px] items-center justify-center text-center text-sm', 'sm:gap-px sm:text-base sm:font-bold')}>
             {timerString}
         </div>
     );

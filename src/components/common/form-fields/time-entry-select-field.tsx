@@ -1,7 +1,5 @@
-import React from 'react';
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
-
 import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
 import { FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -11,6 +9,7 @@ import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
 import { cn } from '@/lib/utils/common';
 import { debounce } from 'lodash';
+import React from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { ProjectBadge } from '../project-badge';
 

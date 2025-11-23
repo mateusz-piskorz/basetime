@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { TimeEntryReportChart } from '@/components/common/time-entry-report-chart';
 
@@ -7,7 +8,6 @@ import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { timeEntrySegments } from '@/lib/utils/timeEntrySegments';
 import { Clock } from 'lucide-react';
-import { useMemo } from 'react';
 import { Scope } from './types';
 
 type Props = {
@@ -24,7 +24,7 @@ export const ThisWeekChart = ({ scope }: Props) => {
         endDate: dayjs().endOf('week').toDate().toString(),
     });
 
-    const { segments } = useMemo(
+    const { segments } = React.useMemo(
         () =>
             timeEntrySegments({
                 timeEntries: timeEntries?.data || [],

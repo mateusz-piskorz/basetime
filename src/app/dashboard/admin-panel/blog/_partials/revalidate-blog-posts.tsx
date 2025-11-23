@@ -1,14 +1,14 @@
 'use client';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { revalidateBlogPosts } from '@/lib/server-actions/blog-post-admin';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 export const RevalidateBlogPosts = () => {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = React.useState(false);
 
     const revalidate = async () => {
         setLoading(true);

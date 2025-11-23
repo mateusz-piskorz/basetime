@@ -1,3 +1,4 @@
+import React from 'react';
 import { DurationField } from '@/components/common/form-fields/duration-field';
 import { HexPickerField } from '@/components/common/form-fields/hex-picker-field';
 import { InputField } from '@/components/common/form-fields/input-field';
@@ -12,7 +13,6 @@ import { formatMinutes } from '@/lib/utils/common';
 import { upsertProjectSchema } from '@/lib/zod/project-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import durationParser from 'parse-duration';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -31,7 +31,7 @@ export const UpsertProjectDialog = ({ open, setOpen, project }: Props) => {
         resolver: zodResolver(upsertProjectSchema),
     });
 
-    useEffect(() => {
+    React.useEffect(() => {
         form.reset({
             memberIds: project?.Members.map((e) => e.id),
             color: project?.color,

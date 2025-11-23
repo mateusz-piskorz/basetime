@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { DashboardHeading } from '@/components/common/dashboard-heading';
 import { ImgInput } from '@/components/common/img-input';
@@ -8,7 +9,6 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { addPublicBlogImg } from '@/lib/public-blog-img';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 type Props = {
@@ -18,10 +18,10 @@ type Props = {
 
 export const NewImgDialog = ({ open, setOpen }: Props) => {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
-    const [img, setImg] = useState<File | null>(null);
+    const [loading, setLoading] = React.useState(false);
+    const [img, setImg] = React.useState<File | null>(null);
 
-    const imgSrc = useMemo(() => {
+    const imgSrc = React.useMemo(() => {
         return img ? URL.createObjectURL(img) : null;
     }, [img]);
 

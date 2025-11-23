@@ -1,9 +1,10 @@
 'use client';
+import React from 'react';
 
 import { BlogPostCard } from '@/components/common/blog-post-card';
 import { Button } from '@/components/ui/button';
 import { MoveRight } from 'lucide-react';
-import { ComponentProps, useRef } from 'react';
+import { ComponentProps } from 'react';
 import { BlogSectionHeading } from './blog-section-heading';
 
 type Props = {
@@ -11,7 +12,7 @@ type Props = {
 };
 
 export const BlogSectionMobile = ({ posts }: Props) => {
-    const scrollRef = useRef<HTMLDivElement | null>(null);
+    const scrollRef = React.useRef<HTMLDivElement | null>(null);
     const handleScrollToEnd = () => {
         const node = scrollRef.current;
         if (node) {

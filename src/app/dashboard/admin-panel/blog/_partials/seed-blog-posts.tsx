@@ -1,14 +1,14 @@
 'use client';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { seedBlogPost } from '@/lib/server-actions/blog-post-admin';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 export const SeedPosts = () => {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = React.useState(false);
 
     const seed = async () => {
         setLoading(true);

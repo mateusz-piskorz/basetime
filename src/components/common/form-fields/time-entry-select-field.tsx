@@ -1,3 +1,4 @@
+import React from 'react';
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
@@ -10,7 +11,6 @@ import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
 import { cn } from '@/lib/utils/common';
 import { debounce } from 'lodash';
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { ProjectBadge } from '../project-badge';
 
@@ -29,10 +29,10 @@ type Props<T extends FieldValues> = {
 };
 
 export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, name, disabled, className, classNameInput, placeholder }: Props<T>) => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = React.useState(false);
     const { control } = form as unknown as UseFormReturn<{ [x: string]: FieldType }>;
     const { orgId, member } = useMember();
-    const [q, setQ] = useState('');
+    const [q, setQ] = React.useState('');
 
     const { data } = trpc.timeEntriesPaginated.useQuery({
         orgId,
@@ -43,16 +43,16 @@ export const TimeEntrySelectField = <T extends FieldValues>({ form, onSelect, na
         order_direction: 'desc',
     });
 
-    const debouncedSetQ = useCallback(
+    const debouncedSetQ = React.useCallback(
         debounce((q) => setQ(q), 400),
         [],
     );
 
     const hasOptions = data && data.data.length > 0;
 
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = React.useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (disabled) {
             setOpen(false);
         }

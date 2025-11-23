@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { TextareaField } from '@/components/common/form-fields/textarea-field';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,6 @@ import { updateTask } from '@/lib/server-actions/task';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PenSquare } from 'lucide-react';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -21,7 +21,7 @@ const schema = z.object({ description: z.string().nonempty() });
 export const DescriptionForm = ({ task }: Props) => {
     const taskId = task.id;
     const defaultValues = { description: task.description || '' };
-    const [editing, setEditing] = useState(false);
+    const [editing, setEditing] = React.useState(false);
     const trpcUtils = trpc.useUtils();
 
     const form = useForm({ resolver: zodResolver(schema), defaultValues });

@@ -1,6 +1,6 @@
+import React from 'react';
 import { cn, formatSeconds } from '@/lib/utils/common';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
 
 type Props = {
     startDate: Date;
@@ -9,9 +9,9 @@ type Props = {
 };
 
 export const Timer = ({ startDate, isActive, className }: Props) => {
-    const [timerString, setTimerString] = useState('00:00:00');
+    const [timerString, setTimerString] = React.useState('00:00:00');
 
-    useEffect(() => {
+    React.useEffect(() => {
         let timeoutId: NodeJS.Timeout;
 
         if (isActive) {

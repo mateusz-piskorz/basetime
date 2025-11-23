@@ -1,22 +1,10 @@
+import React from 'react';
 "use client";
 
 import { Button } from "@/components/ui/button";
 import { CropIcon, RotateCcwIcon } from "lucide-react";
 import { Slot } from "radix-ui";
-import {
-  type ComponentProps,
-  type CSSProperties,
-  createContext,
-  type MouseEvent,
-  type ReactNode,
-  type RefObject,
-  type SyntheticEvent,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { type ComponentProps, type CSSProperties, createContext, type MouseEvent, type ReactNode, type RefObject, type SyntheticEvent } from 'react';
 import ReactCrop, {
   centerCrop,
   makeAspectCrop,
@@ -119,7 +107,7 @@ type ImageCropContextType = {
 const ImageCropContext = createContext<ImageCropContextType | null>(null);
 
 const useImageCrop = () => {
-  const context = useContext(ImageCropContext);
+  const context = React.useContext(ImageCropContext);
   if (!context) {
     throw new Error("ImageCrop components must be used within ImageCrop");
   }
@@ -144,13 +132,13 @@ export const ImageCrop = ({
   onComplete,
   ...reactCropProps
 }: ImageCropProps) => {
-  const imgRef = useRef<HTMLImageElement | null>(null);
-  const [imgSrc, setImgSrc] = useState<string>("");
-  const [crop, setCrop] = useState<PercentCrop>();
-  const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
-  const [initialCrop, setInitialCrop] = useState<PercentCrop>();
+  const imgRef = React.useRef<HTMLImageElement | null>(null);
+  const [imgSrc, setImgSrc] = React.useState<string>("");
+  const [crop, setCrop] = React.useState<PercentCrop>();
+  const [completedCrop, setCompletedCrop] = React.useState<PixelCrop | null>(null);
+  const [initialCrop, setInitialCrop] = React.useState<PercentCrop>();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const reader = new FileReader();
     reader.addEventListener("load", () =>
       setImgSrc(reader.result?.toString() || "")
@@ -158,7 +146,7 @@ export const ImageCrop = ({
     reader.readAsDataURL(file);
   }, [file]);
 
-  const onImageLoad = useCallback(
+  const onImageLoad = React.useCallback(
     (e: SyntheticEvent<HTMLImageElement>) => {
       const { width, height } = e.currentTarget;
       const newCrop = centerAspectCrop(width, height, reactCropProps.aspect);

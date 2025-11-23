@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { InputField } from '@/components/common/form-fields/input-field';
 import { Button } from '@/components/ui/button';
@@ -8,13 +9,12 @@ import { registerSchema } from '@/lib/zod/auth-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
 
 export default function RegisterPage() {
-    const [error, setError] = useState<string | undefined>(undefined);
+    const [error, setError] = React.useState<string | undefined>(undefined);
     const router = useRouter();
     const form = useForm({
         resolver: zodResolver(registerSchema),

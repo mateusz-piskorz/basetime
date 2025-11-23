@@ -1,10 +1,10 @@
 'use client';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { updateBlogPost } from '@/lib/server-actions/blog-post-admin';
 import { BlogPost } from '@prisma/client';
 import MDEditor from '@uiw/react-md-editor';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { MetadataForm } from './metadata-form';
 
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const Editor = ({ post }: Props) => {
-    const [content, setContent] = useState<string | undefined>(post.content);
+    const [content, setContent] = React.useState<string | undefined>(post.content);
 
     const saveContent = async () => {
         const res = await updateBlogPost({ id: post.id, content, oldSlug: post.slug });

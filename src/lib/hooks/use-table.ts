@@ -1,3 +1,4 @@
+import React from 'react';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 'use client';
@@ -14,7 +15,6 @@ import {
     useReactTable,
     VisibilityState,
 } from '@tanstack/react-table';
-import { useState } from 'react';
 
 type Props<TData, TValue> = {
     columns: ColumnDef<TData, TValue>[];
@@ -28,7 +28,7 @@ type Props<TData, TValue> = {
 const emptyArr: any[] = [];
 
 export const useTable = <TData, TValue>({ columns, data, sortingProp }: Props<TData, TValue>) => {
-    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const table = useReactTable({
         data: data || emptyArr,
         columns,

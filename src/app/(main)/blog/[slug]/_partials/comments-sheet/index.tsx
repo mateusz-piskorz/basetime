@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -7,7 +8,6 @@ import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { trpc } from '@/lib/trpc/client';
 import { BlogPost } from '@prisma/client';
 import { ChevronLeft } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
 import { AddCommentForm } from '../common/add-comment-form';
 import { Comment } from '../common/comment';
 import { ListInfiniteScroll } from './_list-infinite-scroll';
@@ -40,7 +40,7 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
         },
     );
 
-    const activeComment = useMemo(() => {
+    const activeComment = React.useMemo(() => {
         if (!activeCommentThread) return null;
 
         const infComments = data?.pages.flatMap(({ data }) => data);
@@ -48,7 +48,7 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
         return infComments?.find((comment) => comment.id === activeCommentThread.id);
     }, [data, activeCommentThread]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (activeCommentThread && !activeComment) {
             goBack();
         }

@@ -1,8 +1,8 @@
+import React from 'react';
 import { SpinLoader } from '@/components/common/spin-loader';
 import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { trpc } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
-import { useCallback, useRef } from 'react';
 import { Comment } from '../common/comment';
 
 type Props = {
@@ -21,8 +21,8 @@ export const ListInfiniteScroll = ({ parentId, nestLevel }: Props) => {
 
     const results = data?.pages.flatMap((e) => e.data);
 
-    const intObserver = useRef<IntersectionObserver>(null);
-    const lastCommentRef = useCallback(
+    const intObserver = React.useRef<IntersectionObserver>(null);
+    const lastCommentRef = React.useCallback(
         (comment: HTMLLIElement | null) => {
             if (isFetchingNextPage) return;
 

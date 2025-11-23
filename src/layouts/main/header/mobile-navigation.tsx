@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { AppearanceToggle } from '@/components/common/appearance-toggle';
 import { AuthButton } from '@/components/common/auth-button';
@@ -7,10 +8,9 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { NAV_LIST } from '@/lib/constants/nav-list';
 import { Menu } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
 
 export const MobileNavigation = () => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = React.useState(false);
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>

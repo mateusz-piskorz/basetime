@@ -1,9 +1,9 @@
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
-import { useState } from 'react';
 
 type Props = {
     selected?: Date;
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export const CalendarInput = ({ selected, onSelect, saleDate, label, className, placeholder }: Props) => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = React.useState(false);
 
     return (
         <div className={className}>

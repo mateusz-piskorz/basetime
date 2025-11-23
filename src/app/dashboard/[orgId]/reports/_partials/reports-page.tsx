@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { DashboardHeading } from '@/components/common/dashboard-heading';
 import { MembersFilter } from '@/components/common/members-filter';
@@ -10,18 +11,17 @@ import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { formatMinutes, sumBillableAmount, sumTimeEntries } from '@/lib/utils/common';
 import { timeEntrySegments } from '@/lib/utils/timeEntrySegments';
-import { useMemo, useState } from 'react';
 import { PeriodDropdown } from './period-dropdown';
 
 export const ReportsPage = () => {
     const { dayjs } = useDayjs();
     const { orgId, member, roundUpMinutesThreshold, roundUpSecondsThreshold } = useMember();
 
-    const [startDate, setStartDate] = useState(dayjs().startOf('week').toDate());
-    const [endDate, setEndDate] = useState(dayjs().endOf('week').toDate());
+    const [startDate, setStartDate] = React.useState(dayjs().startOf('week').toDate());
+    const [endDate, setEndDate] = React.useState(dayjs().endOf('week').toDate());
 
-    const [members, setMembers] = useState<string[]>([]);
-    const [projects, setProjects] = useState<string[]>([]);
+    const [members, setMembers] = React.useState<string[]>([]);
+    const [projects, setProjects] = React.useState<string[]>([]);
 
     const { data: timeEntriesData } = trpc.timeEntriesPaginated.useQuery({
         orgId,
@@ -39,7 +39,7 @@ export const ReportsPage = () => {
         endDate: endDate.toString(),
     });
 
-    const { segments } = useMemo(() => {
+    const { segments } = React.useMemo(() => {
         const rangeOfDays = dayjs(endDate).diff(dayjs(startDate), 'day');
 
         const granularity = rangeOfDays < 24 ? 'day' : rangeOfDays < 93 ? 'week' : 'month';
@@ -54,11 +54,11 @@ export const ReportsPage = () => {
         });
     }, [timeEntriesData, startDate, endDate, dayjs, roundUpSecondsThreshold]);
 
-    const totalMinutes = useMemo(
+    const totalMinutes = React.useMemo(
         () => sumTimeEntries({ entries: timeEntriesData?.data || [], dayjs, roundUpSecondsThreshold }),
         [timeEntriesData, dayjs, roundUpSecondsThreshold],
     );
-    const billableAmount = useMemo(
+    const billableAmount = React.useMemo(
         () =>
             sumBillableAmount({
                 roundUpMinutesThreshold,

@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,6 @@ import { Card } from '@/components/ui/card';
 import { CopyButton } from '@/components/ui/copy-button';
 import { removePublicBlogImg } from '@/lib/public-blog-img';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
 };
 
 export const ImgCard = ({ alt, url, imgPath }: Props) => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = React.useState(false);
     const router = useRouter();
     return (
         <>

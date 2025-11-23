@@ -1,3 +1,4 @@
+import React from 'react';
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
@@ -10,7 +11,6 @@ import { cn } from '@/lib/utils/common';
 import { startTimerSchema } from '@/lib/zod/time-entry-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -34,11 +34,11 @@ export const SectionTimeTracker = ({ className }: Props) => {
 
     const { data: activeTimeEntry, refetch, isFetching } = trpc.activeTimeEntry.useQuery({ memberId });
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (activeTimeEntry) form.reset(activeTimeEntry);
     }, [isFetching]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (activeTimeEntry) refetch();
     }, []);
 

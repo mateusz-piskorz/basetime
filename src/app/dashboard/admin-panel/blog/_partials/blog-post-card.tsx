@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,6 @@ import { removeBlogPost } from '@/lib/server-actions/blog-post-admin';
 import { BlogPost } from '@prisma/client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export const BlogPostCard = ({ post }: Props) => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = React.useState(false);
     const router = useRouter();
     return (
         <>

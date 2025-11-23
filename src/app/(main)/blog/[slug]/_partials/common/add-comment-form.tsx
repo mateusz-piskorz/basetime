@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { TextareaField } from '@/components/common/form-fields/textarea-field';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,6 @@ import { trpc, TrpcRouterInput, TrpcRouterOutput } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
 import { blogPostCommentSchema } from '@/lib/zod/blog-post-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -27,7 +27,7 @@ export const AddCommentForm = ({ parentComment, infiniteQueryArgs, onCommentAdde
 
     const form = useForm({ resolver: zodResolver(blogPostCommentSchema) });
 
-    useEffect(() => {
+    React.useEffect(() => {
         form.reset({ postId, parentId: parentComment?.id, content: '' });
     }, [form, form.formState.isSubmitSuccessful, postId, parentComment]);
 

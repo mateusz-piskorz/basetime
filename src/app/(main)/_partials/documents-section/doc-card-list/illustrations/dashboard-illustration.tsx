@@ -1,7 +1,7 @@
-import { useId } from 'react';
+import React from 'react';
 
 export const DashboardIllustration = ({ className }: { className?: string }) => {
-    const titleId = useId();
+    const titleId = React.useId();
     return (
         <svg
             className={className}

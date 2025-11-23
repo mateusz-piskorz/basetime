@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { CropDialog } from '@/components/common/crop-dialog';
@@ -9,13 +10,11 @@ import { Card } from '@/components/ui/card';
 import { useMember } from '@/lib/hooks/use-member';
 import { updateOrgLogo } from '@/lib/server-actions/organization';
 import { trpc } from '@/lib/trpc/client';
-
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 export const SectionOrgLogo = () => {
-    const [confirm, setConfirm] = useState(false);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [confirm, setConfirm] = React.useState(false);
+    const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
     const trpcUtils = trpc.useUtils();
     const { orgLogo, orgId, orgName } = useMember();
 

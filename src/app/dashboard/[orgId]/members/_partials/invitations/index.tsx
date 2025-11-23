@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { DataTable } from '@/components/common/data-table';
@@ -15,7 +16,6 @@ import { updateInvStatus } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
 import { INVITATION_STATUS } from '@prisma/client';
 import { debounce } from 'lodash';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { getColumns } from './columns';
 import { CreateInvitationDialog } from './create-invitation-dialog';
@@ -26,12 +26,12 @@ type Props = {
 };
 
 export const TableInvitations = ({ open, setOpen }: Props) => {
-    const [q, setQ] = useState('');
+    const [q, setQ] = React.useState('');
     const { dayjs } = useDayjs();
     const { orgId } = useMember();
-    const [status, setStatus] = useState<INVITATION_STATUS[]>([]);
-    const [openConfirm, setOpenConfirm] = useState(false);
-    const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
+    const [status, setStatus] = React.useState<INVITATION_STATUS[]>([]);
+    const [openConfirm, setOpenConfirm] = React.useState(false);
+    const [selectedId, setSelectedId] = React.useState<string | undefined>(undefined);
     const { order_column, order_direction, sortingProp } = useTableSorting();
     const { limit, page } = useTablePagination();
 

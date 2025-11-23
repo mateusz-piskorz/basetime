@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -7,7 +8,6 @@ import { useDayjs } from '@/lib/hooks/use-dayjs';
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { formatMinutes, sumBillableAmount, sumTimeEntries } from '@/lib/utils/common';
-import { useMemo } from 'react';
 import { Scope } from './types';
 
 type Props = {
@@ -33,11 +33,11 @@ export const MetricCards = ({ scope, setScope }: Props) => {
         endDate: dayjs().endOf('week').toDate().toString(),
     });
 
-    const totalMinutes = useMemo(
+    const totalMinutes = React.useMemo(
         () => sumTimeEntries({ entries: timeEntries?.data || [], dayjs, roundUpSecondsThreshold }),
         [timeEntries, dayjs, roundUpSecondsThreshold],
     );
-    const billableAmount = useMemo(
+    const billableAmount = React.useMemo(
         () =>
             sumBillableAmount({
                 roundUpMinutesThreshold,

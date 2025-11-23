@@ -1,5 +1,5 @@
+import React from 'react';
 import { cn } from '@/lib/utils/common';
-import { useEffect, useState } from 'react';
 
 type Props = {
     initialSeconds: number;
@@ -16,9 +16,9 @@ const returnTime = (seconds: number) => {
 };
 
 export const TimerSeconds = ({ initialSeconds, isActive, className }: Props) => {
-    const [elapsedSeconds, setElapsedSeconds] = useState<number>(initialSeconds);
+    const [elapsedSeconds, setElapsedSeconds] = React.useState<number>(initialSeconds);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (isActive) {
             const updateElapsed = () => {
                 setElapsedSeconds((prev) => prev + 1);

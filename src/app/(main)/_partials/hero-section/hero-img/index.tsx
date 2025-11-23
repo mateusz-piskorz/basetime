@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import React from 'react';
 import { HeroImgItem } from './hero-img-item';
 
 const arr = [
@@ -26,7 +26,7 @@ const arr = [
 ] as const;
 
 export const HeroImg = () => {
-    const [active, setActive] = useState('Backend API Refactor');
+    const [active, setActive] = React.useState('Backend API Refactor');
     return (
         <div className="relative hidden h-[472px] w-[600px] lg:block">
             <div className="border-accent dark:border-border absolute flex h-[472px] w-[600px] flex-col rounded-md border">

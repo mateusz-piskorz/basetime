@@ -1,7 +1,7 @@
 'use client';
+import React from 'react';
 
 import { SectionTimeTracker } from '@/components/common/section-time-tracker';
-import { useState } from 'react';
 import { ActivityGraph } from './activity-graph';
 import { Last7Days } from './last-7-days';
 import { MetricCards } from './metric-cards';
@@ -10,7 +10,7 @@ import { ThisWeekChart } from './this-week-chart';
 import { Scope } from './types';
 
 export const OrganizationDashboard = () => {
-    const [scope, setScope] = useState<Scope>('member');
+    const [scope, setScope] = React.useState<Scope>('member');
 
     return (
         <div className="space-y-16 py-8">

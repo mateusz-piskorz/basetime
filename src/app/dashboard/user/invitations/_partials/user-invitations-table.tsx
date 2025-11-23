@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { DataTable } from '@/components/common/data-table';
 import { DataTableViewOptions } from '@/components/common/data-table/data-table-view-options';
@@ -11,15 +12,14 @@ import { updateInvStatus } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
 import { INVITATION_STATUS } from '@prisma/client';
 import { debounce } from 'lodash';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { getColumns } from './columns';
 
 export const UserInvitationsTable = () => {
     const trpcUtils = trpc.useUtils();
     const { limit, page } = useTablePagination();
-    const [q, setQ] = useState('');
-    const [status, setStatus] = useState<INVITATION_STATUS[]>([]);
+    const [q, setQ] = React.useState('');
+    const [status, setStatus] = React.useState<INVITATION_STATUS[]>([]);
 
     const { data: invitations, refetch } = trpc.invitations.useQuery({ page, limit, status, q, queryColumn: 'ORGANIZATION_NAME' });
 

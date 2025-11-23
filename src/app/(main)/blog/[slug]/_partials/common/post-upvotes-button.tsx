@@ -1,8 +1,8 @@
 'use client';
+import React from 'react';
 
 import { upvoteBlogPost } from '@/lib/server-actions/blog-post';
 import { trpc } from '@/lib/trpc/client';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { UpvotesButton } from './upvotes-button';
 
@@ -13,7 +13,7 @@ type Props = {
 
 export const PostUpvotesButton = ({ upvotes, postId }: Props) => {
     const { data, refetch } = trpc.blogPostUpvote.useQuery({ postId });
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = React.useState(false);
 
     const upvoteHandler = async () => {
         setLoading(true);

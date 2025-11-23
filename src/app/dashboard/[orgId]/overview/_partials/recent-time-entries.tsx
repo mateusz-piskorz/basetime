@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { ProjectBadge } from '@/components/common/project-badge';
 import { StartButton } from '@/components/common/start-button';
@@ -7,7 +8,6 @@ import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
 import { CircleCheckBig } from 'lucide-react';
-import { useMemo } from 'react';
 import { Scope } from './types';
 
 type Props = {
@@ -22,7 +22,7 @@ export const RecentTimeEntries = ({ scope }: Props) => {
         limit: 4,
     });
 
-    const paddedEntries = useMemo(() => {
+    const paddedEntries = React.useMemo(() => {
         const entries = (timeEntries?.data || []).slice(0, 4);
         const emptySlots = Array(Math.max(0, 4 - entries.length)).fill(null);
         return [...entries, ...emptySlots];

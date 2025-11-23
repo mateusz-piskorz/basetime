@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 /* eslint-disable react-hooks/exhaustive-deps */
 import { SelectTaskField } from '@/components/common/form-fields/custom-select/select-task-field';
@@ -14,7 +15,6 @@ import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { formatMinutes, getDurationInMinutes, prepareDateTime } from '@/lib/utils/common';
 import { manualTimeEntrySchema } from '@/lib/zod/time-entry-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -45,7 +45,7 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
         },
     });
 
-    useEffect(() => {
+    React.useEffect(() => {
         const ste = selectedTimeEntry;
 
         form.reset(

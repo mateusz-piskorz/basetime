@@ -1,7 +1,7 @@
+import React from 'react';
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Nullable, TypedFieldPath } from '@/lib/types/common';
 import { CURRENCY } from '@prisma/client';
-import { useEffect, useMemo, useReducer } from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 import { Input } from '../../ui/input';
 
@@ -26,7 +26,7 @@ export const CurrencyField = <T extends FieldValues>({
     currency,
     errorMessage = true,
 }: Props<T>) => {
-    const moneyFormatter = useMemo(
+    const moneyFormatter = React.useMemo(
         () =>
             Intl.NumberFormat('en', {
                 currency: currency,
@@ -43,7 +43,7 @@ export const CurrencyField = <T extends FieldValues>({
     const initialValue = getValues(name) ? moneyFormatter.format(getValues(name) || 0) : 0;
 
     /* eslint-disable @typescript-eslint/no-explicit-any */
-    const [value, setValue] = useReducer((_: any, next: string) => {
+    const [value, setValue] = React.useReducer((_: any, next: string) => {
         const digits = next.replace(/\D/g, '');
         return moneyFormatter.format(Number(digits) / 100);
     }, initialValue);
@@ -56,7 +56,7 @@ export const CurrencyField = <T extends FieldValues>({
 
     const valueW = watch(name);
 
-    useEffect(() => {
+    React.useEffect(() => {
         const watchedValue = valueW;
         if (watchedValue !== undefined && watchedValue !== null) {
             setValue(moneyFormatter.format(Number(watchedValue)));

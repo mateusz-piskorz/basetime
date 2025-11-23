@@ -1,7 +1,7 @@
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { TrpcRouterOutput } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
-import { useState } from 'react';
 
 type Props = {
     comment: NonNullable<TrpcRouterOutput['blogPostComments']>['data'][number];
@@ -10,7 +10,7 @@ type Props = {
 const maxLength = 225;
 
 export const CommentContent = ({ comment }: Props) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = React.useState(false);
     const isTooLong = comment.content.length > maxLength;
 
     return (

@@ -1,11 +1,11 @@
 'use client';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
 import { CreateNewPostDialog } from './create-new-post-dialog';
 
 export const CreateNewPost = () => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = React.useState(false);
     return (
         <>
             <CreateNewPostDialog open={open} setOpen={setOpen} />

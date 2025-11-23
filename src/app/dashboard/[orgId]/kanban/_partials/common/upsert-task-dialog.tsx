@@ -51,7 +51,7 @@ export const UpsertTaskDialog = ({ open, setOpen, selectedTask, onSuccess }: Pro
                       priority: st.priority,
                       kanbanColumnId: st.kanbanColumnId,
                   }
-                : { assignedMemberId: 'null', priority: 'MINOR' },
+                : { assignedMemberId: null, priority: 'MINOR' },
         );
     }, [selectedTask, form.formState.isSubmitSuccessful]);
 

@@ -24,8 +24,7 @@ export const toggleTimer = action(toggleTimerSchemaS, async ({ orgId, name, proj
             data: { memberId: member.id, start: new Date(), name: name || 'unnamed time entry', organizationId: orgId, projectId, taskId },
         });
         return { success: true, message: 'Timer started successfully' };
-    } catch (e) {
-        console.log(e);
+    } catch {
         return { success: false, message: 'Error - toggleTimer' };
     }
 });

@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import React from 'react';
 
 import { InputField } from '@/components/common/form-fields/input-field';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,6 @@ import { createInv } from '@/lib/server-actions/invitation';
 import { trpc } from '@/lib/trpc/client';
 import { createInvSchema } from '@/lib/zod/invitation-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -22,7 +22,7 @@ type Props = {
 export const CreateInvitationDialog = ({ open, setOpen }: Props) => {
     const { orgId } = useMember();
     const trpcUtils = trpc.useUtils();
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = React.useState<string | null>(null);
 
     const form = useForm({ resolver: zodResolver(createInvSchema) });
 
@@ -40,7 +40,7 @@ export const CreateInvitationDialog = ({ open, setOpen }: Props) => {
         setOpen(false);
     };
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (form.formState.isSubmitSuccessful) form.reset({ email: '' });
     }, [form.formState.isSubmitSuccessful]);
 

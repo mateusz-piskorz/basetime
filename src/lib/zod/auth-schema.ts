@@ -1,9 +1,5 @@
 import z from 'zod';
 
-export const logoutServerSchema = z.object({
-    sessionId: z.string().optional(),
-});
-
 export const loginSchema = z.object({
     email: z.string().email('Invalid email'),
     password: z.string().nonempty("Password can't be empty"),

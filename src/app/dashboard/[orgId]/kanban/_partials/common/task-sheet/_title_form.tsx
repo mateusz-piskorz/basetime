@@ -1,3 +1,4 @@
+import React from 'react';
 import { InputField } from '@/components/common/form-fields/input-field';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
@@ -6,7 +7,6 @@ import { updateTask } from '@/lib/server-actions/task';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PenSquare } from 'lucide-react';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -18,7 +18,7 @@ export const TitleForm = ({ task }: Props) => {
     const { orgId } = useMember();
     const taskId = task.id;
     const defaultValues = { name: task.name || '' };
-    const [editing, setEditing] = useState(false);
+    const [editing, setEditing] = React.useState(false);
     const trpcUtils = trpc.useUtils();
 
     const form = useForm({ resolver: zodResolver(schema), defaultValues });

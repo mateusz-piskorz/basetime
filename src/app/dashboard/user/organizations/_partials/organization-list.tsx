@@ -1,16 +1,16 @@
 'use client';
+import React from 'react';
 
 import { CreateOrganizationDialog } from '@/components/common/create-organization-dialog';
 import { DashboardHeading } from '@/components/common/dashboard-heading';
 import { SpinLoader } from '@/components/common/spin-loader';
 import { Button } from '@/components/ui/button';
 import { trpc } from '@/lib/trpc/client';
-import { useState } from 'react';
 import { EmptyOrganizationsState } from './empty-organizations-otate';
 import { OrganizationCard } from './organization-card';
 
 export const OrganizationList = () => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = React.useState(false);
     const { data, isLoading, isError } = trpc.organizations.useQuery({});
 
     return (

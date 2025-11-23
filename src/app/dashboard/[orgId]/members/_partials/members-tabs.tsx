@@ -1,15 +1,15 @@
 'use client';
+import React from 'react';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMember } from '@/lib/hooks/use-member';
-import { useState } from 'react';
 import { TableInvitations } from './invitations';
 import { MemberList } from './members';
 
 export const MembersTabs = () => {
     const { role } = useMember().member;
-    const [value, setValue] = useState('members');
-    const [openInvitationsDialog, setOpenInvitationsDialog] = useState(false);
+    const [value, setValue] = React.useState('members');
+    const [openInvitationsDialog, setOpenInvitationsDialog] = React.useState(false);
 
     return (
         <div className="space-y-8 px-4 py-8 md:px-8">

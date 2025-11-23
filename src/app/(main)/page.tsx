@@ -11,6 +11,7 @@ export default async function Home() {
     return (
         <>
             <HeroSection />
+            {/* refactor-23-11-2025 end */}
             <DocumentsSection />
             <TeamImgContent />
             <BlogSection />

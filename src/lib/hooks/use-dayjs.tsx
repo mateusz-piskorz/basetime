@@ -1,9 +1,9 @@
 'use client';
+import React from 'react';
 
 import { createDayjs } from '@/lib/dayjs';
 import { WEEK_START } from '@prisma/client';
-
-import { createContext, ReactNode, useContext } from 'react';
+import { createContext, ReactNode } from 'react';
 
 type DayjsContextType = {
     dayjs: typeof import('dayjs');
@@ -17,7 +17,7 @@ export const DayjsProvider = ({ weekStart, children }: { weekStart: WEEK_START; 
 };
 
 export const useDayjs = () => {
-    const context = useContext(DayjsContext);
+    const context = React.useContext(DayjsContext);
 
     if (!context) {
         throw new Error('useDayjs must be used within a <DayjsProvider />');

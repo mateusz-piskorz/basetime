@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { CropDialog } from '@/components/common/crop-dialog';
@@ -11,15 +12,14 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { updateProfileAvatar } from '@/lib/server-actions/profile';
 import { getUserAvatarUrl } from '@/lib/utils/common';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 export const SectionAvatar = () => {
-    const [confirm, setConfirm] = useState(false);
+    const [confirm, setConfirm] = React.useState(false);
     const { user } = useAuth();
     const userAvatar = user.avatarId ? getUserAvatarUrl({ avatarId: user.avatarId }) : null;
     const router = useRouter();
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
 
     return (
         <>

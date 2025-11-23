@@ -1,9 +1,9 @@
 'use client';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { seedBlogPostComments } from '@/lib/server-actions/blog-post-admin';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { toast } from 'sonner';
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 
 export const SeedBlogPostComments = ({ postId }: Props) => {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = React.useState(false);
 
     const seed = async () => {
         setLoading(true);

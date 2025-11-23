@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { DashboardHeading } from '@/components/common/dashboard-heading';
 import { InputField } from '@/components/common/form-fields/input-field';
@@ -11,7 +12,6 @@ import { trpc } from '@/lib/trpc/client';
 import { deleteOrgSchema } from '@/lib/zod/organization-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
@@ -21,7 +21,7 @@ export const SectionDeleteOrg = () => {
     const { orgId } = useMember();
 
     const router = useRouter();
-    const [error, setError] = useState<undefined | string>(undefined);
+    const [error, setError] = React.useState<undefined | string>(undefined);
     const form = useForm({ resolver: zodResolver(deleteOrgSchema) });
 
     const onSubmit = async ({ password }: z.infer<typeof deleteOrgSchema>) => {

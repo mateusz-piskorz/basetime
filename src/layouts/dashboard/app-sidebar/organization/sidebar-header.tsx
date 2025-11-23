@@ -1,3 +1,4 @@
+import React from 'react';
 import { CreateOrganizationDialog } from '@/components/common/create-organization-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -8,10 +9,9 @@ import { cn, getInitials } from '@/lib/utils/common';
 
 import { ChevronsUpDown, Plus } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
 
 export const SidebarHeader = () => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = React.useState(false);
     const { orgLogo, orgName } = useMember();
     const { setOpenMobile } = useSidebar();
     const { data } = trpc.organizations.useQuery({});

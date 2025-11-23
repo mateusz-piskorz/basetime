@@ -1,15 +1,15 @@
 'use client';
+import React from 'react';
 
 import { DashboardHeading } from '@/components/common/dashboard-heading';
-import { useState } from 'react';
 import { Kanban } from './_kanban';
 import { ActionButton } from './common/action-button';
 import { UpsertStatusColumnDialog } from './common/upsert-status-column-dialog';
 import { UpsertTaskDialog } from './common/upsert-task-dialog';
 
 export const SectionKanban = () => {
-    const [open, setOpen] = useState(false);
-    const [openColumnDialog, setOpenColumnDialog] = useState(false);
+    const [open, setOpen] = React.useState(false);
+    const [openColumnDialog, setOpenColumnDialog] = React.useState(false);
 
     return (
         <>

@@ -1,7 +1,8 @@
 'use client';
+import React from 'react';
 
 import { USER_ROLE } from '@prisma/client';
-import { createContext, ReactNode, useContext } from 'react';
+import { createContext, ReactNode } from 'react';
 
 type AuthUser = {
     sessionId: string;
@@ -23,7 +24,7 @@ export const AuthProvider = ({ user, children }: { user: AuthUser; children: Rea
 };
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
+    const context = React.useContext(AuthContext);
 
     if (!context) {
         throw new Error('useAuth must be used within a <AuthProvider />');

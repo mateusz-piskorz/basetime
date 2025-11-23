@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { DashboardHeading } from '@/components/common/dashboard-heading';
@@ -9,19 +10,18 @@ import { useMember } from '@/lib/hooks/use-member';
 import { deleteProject } from '@/lib/server-actions/project';
 import { trpc } from '@/lib/trpc/client';
 import { Plus } from 'lucide-react';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { ProjectCard } from './project-card';
 import { UpsertProjectDialog } from './upsert-project-dialog';
 
 export const SectionProjects = () => {
-    const [open, setOpen] = useState(false);
-    const [openConfirm, setOpenConfirm] = useState(false);
+    const [open, setOpen] = React.useState(false);
+    const [openConfirm, setOpenConfirm] = React.useState(false);
     const { orgId } = useMember();
     const { role } = useMember().member;
 
     const { data, error, isLoading, refetch } = trpc.projects.useQuery({ orgId });
-    const [selectedId, setSelectedId] = useState<null | string>(null);
+    const [selectedId, setSelectedId] = React.useState<null | string>(null);
     const selectedProject = data?.find((project) => project.id === selectedId);
 
     const handleRemoveProject = async (projectId: string) => {

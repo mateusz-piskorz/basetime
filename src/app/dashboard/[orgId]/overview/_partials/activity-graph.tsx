@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -8,7 +9,6 @@ import { trpc } from '@/lib/trpc/client';
 import { formatMinutes } from '@/lib/utils/common';
 import { timeEntrySegments } from '@/lib/utils/timeEntrySegments';
 import { Activity } from 'lucide-react';
-import { useMemo } from 'react';
 import { Scope } from './types';
 
 type Props = {
@@ -24,7 +24,7 @@ export const ActivityGraph = ({ scope }: Props) => {
         startDate: dayjs().subtract(2, 'month').startOf('week').toDate().toString(),
     });
 
-    const { segments, max } = useMemo(
+    const { segments, max } = React.useMemo(
         () =>
             timeEntrySegments({
                 timeEntries: timeEntries?.data || [],

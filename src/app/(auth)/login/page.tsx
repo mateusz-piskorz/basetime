@@ -8,24 +8,22 @@ import { loginSchema } from '@/lib/zod/auth-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
 
 export default function LoginPage() {
-    const [error, setError] = useState<string | undefined>(undefined);
+    const [error, setError] = React.useState<string | undefined>(undefined);
     const router = useRouter();
-    const form = useForm({
-        resolver: zodResolver(loginSchema),
-    });
+    const form = useForm({ resolver: zodResolver(loginSchema) });
 
     const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-        const res = await signin(values);
+        const { success, message } = await signin(values);
 
-        if (!res.success) {
-            toast.error(res.message);
-            setError(res.message);
+        if (!success) {
+            toast.error(message);
+            setError(message);
             return;
         }
 

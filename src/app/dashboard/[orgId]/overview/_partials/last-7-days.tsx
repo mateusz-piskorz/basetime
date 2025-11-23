@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -8,7 +9,6 @@ import { trpc } from '@/lib/trpc/client';
 import { cn, formatMinutes } from '@/lib/utils/common';
 import { timeEntrySegments } from '@/lib/utils/timeEntrySegments';
 import { CalendarRange } from 'lucide-react';
-import { useMemo } from 'react';
 import { Scope } from './types';
 
 type Props = {
@@ -25,7 +25,7 @@ export const Last7Days = ({ scope }: Props) => {
         startDate: dayjs().subtract(7, 'day').toDate().toString(),
     });
 
-    const { segments } = useMemo(
+    const { segments } = React.useMemo(
         () =>
             timeEntrySegments({
                 timeEntries: timeEntries?.data || [],

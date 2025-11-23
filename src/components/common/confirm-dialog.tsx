@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import {
     AlertDialog,
@@ -10,7 +11,7 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { ComponentProps, useState } from 'react';
+import { ComponentProps } from 'react';
 
 type Props = {
     title: string;
@@ -23,7 +24,7 @@ type Props = {
 };
 
 const ConfirmDialog = ({ title, description, open, continueButtonText, setOpen, onContinue, buttonVariant }: Props) => {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = React.useState(false);
     const continueHandler = async () => {
         setLoading(true);
         await onContinue();

@@ -1,15 +1,15 @@
 'use client';
+import React from 'react';
 
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
 
 const MOBILE_BREAKPOINT = 1024;
 
 export function useIsMobile(breakpoint_arg?: number) {
-    const [isMobile, setIsMobile] = useState<boolean>();
+    const [isMobile, setIsMobile] = React.useState<boolean>();
     const breakpoint = breakpoint_arg || MOBILE_BREAKPOINT;
 
-    useEffect(() => {
+    React.useEffect(() => {
         const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
 
         const onChange = () => {

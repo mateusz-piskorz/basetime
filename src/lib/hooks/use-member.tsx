@@ -1,7 +1,8 @@
 'use client';
+import React from 'react';
 
 import { CURRENCY, MEMBER_ROLE } from '@prisma/client';
-import { createContext, ReactNode, useContext } from 'react';
+import { createContext, ReactNode } from 'react';
 
 type Member = {
     id: string;
@@ -48,7 +49,7 @@ export const MemberProvider = ({
 };
 
 export const useMember = () => {
-    const context = useContext(MemberContext);
+    const context = React.useContext(MemberContext);
 
     if (!context) {
         throw new Error('useMember must be used within a <MemberProvider />');

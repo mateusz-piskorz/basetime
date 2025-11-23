@@ -1,32 +1,37 @@
 'use client';
-import { useState } from 'react';
-import { HeroImgItem } from './hero-img-item';
+import React from 'react';
+import { Item } from './_item';
 
 const arr = [
     {
         title: 'New Landing Page',
-        initialSeconds: 48,
-        type: 'Design',
+        initSeconds: 48,
+        typeName: 'Design',
+        hexColor: '#449DD1',
     },
     {
         title: 'Competitor Analysis',
-        initialSeconds: 135,
-        type: 'Research',
+        initSeconds: 135,
+        typeName: 'Research',
+        hexColor: '#F49D37',
     },
     {
         title: 'Authentication Module',
-        initialSeconds: 8,
-        type: 'Development',
+        initSeconds: 8,
+        typeName: 'Development',
+        hexColor: '#94BAA7',
     },
     {
         title: 'Backend API Refactor',
-        initialSeconds: 254,
-        type: 'Development',
+        initSeconds: 254,
+        typeName: 'Development',
+        hexColor: '#94BAA7',
     },
-] as const;
+];
 
-export const HeroImg = () => {
-    const [active, setActive] = useState('Backend API Refactor');
+export const HeroSectionImg = () => {
+    const [active, setActive] = React.useState('Backend API Refactor');
+
     return (
         <div className="relative hidden h-[472px] w-[600px] lg:block">
             <div className="border-accent dark:border-border absolute flex h-[472px] w-[600px] flex-col rounded-md border">
@@ -34,15 +39,9 @@ export const HeroImg = () => {
                     const last = index === arr.length - 1;
                     const isActive = args.title === active;
                     return (
-                        <HeroImgItem
+                        <Item
                             isActive={isActive}
-                            toggleActive={(title) => {
-                                if (active === title) {
-                                    setActive('');
-                                } else {
-                                    setActive(title);
-                                }
-                            }}
+                            toggleActive={(title) => setActive(active === title ? '' : title)}
                             className={last ? '' : 'border-accent dark:border-border border-b'}
                             key={args.title}
                             {...args}

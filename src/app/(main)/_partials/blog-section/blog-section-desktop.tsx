@@ -1,9 +1,10 @@
 'use client';
+import React from 'react';
 
 import { BlogPostCard } from '@/components/common/blog-post-card';
 import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils/common';
-import { ComponentProps, useEffect, useState } from 'react';
+import { ComponentProps } from 'react';
 import { BlogSectionHeading } from './blog-section-heading';
 
 type Props = {
@@ -11,10 +12,10 @@ type Props = {
 };
 
 export const BlogSectionDesktop = ({ posts }: Props) => {
-    const [api, setApi] = useState<CarouselApi>();
-    const [current, setCurrent] = useState(0);
+    const [api, setApi] = React.useState<CarouselApi>();
+    const [current, setCurrent] = React.useState(0);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (!api) {
             return;
         }

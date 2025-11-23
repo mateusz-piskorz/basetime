@@ -1,22 +1,12 @@
 import { AppLogo } from '@/components/common/app-logo';
-import type { Metadata } from 'next';
+import { SkipToMainContent } from '@/components/common/skip-to-main-content';
 import Link from 'next/link';
 
-export const metadata: Metadata = {
-    title: 'Auth',
-    description: 'Auth description',
-};
-
-export default function AuthLayout({
-    children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+export const metadata = { title: 'Auth', description: 'Auth description' };
+export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <>
-            <a href="#main-content" className="absolute z-10 w-0 overflow-hidden focus:w-fit">
-                Skip to main content
-            </a>
+            <SkipToMainContent />
             <div className="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
                 <div className="bg-muted relative hidden h-full flex-col p-10 text-white lg:flex dark:border-r">
                     <div className="absolute inset-0 bg-zinc-900" />

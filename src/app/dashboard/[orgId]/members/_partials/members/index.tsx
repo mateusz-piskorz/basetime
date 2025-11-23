@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { SpinLoader } from '@/components/common/spin-loader';
@@ -8,7 +9,6 @@ import { useMember } from '@/lib/hooks/use-member';
 import { removeMember } from '@/lib/server-actions/member';
 import { trpc } from '@/lib/trpc/client';
 import { Plus } from 'lucide-react';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { MemberCard } from './member-card';
 import { UpdateMemberDialog } from './update-member-dialog';
@@ -23,9 +23,9 @@ export const MemberList = ({ openInvitationDialog }: Props) => {
         member: { role },
     } = useMember();
 
-    const [open, setOpen] = useState(false);
-    const [openConfirm, setOpenConfirm] = useState(false);
-    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [open, setOpen] = React.useState(false);
+    const [openConfirm, setOpenConfirm] = React.useState(false);
+    const [selectedId, setSelectedId] = React.useState<string | null>(null);
 
     const { data, error, isLoading, refetch } = trpc.members.useQuery({ orgId });
 

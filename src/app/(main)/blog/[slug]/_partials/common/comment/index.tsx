@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { CommentCard } from '@/components/common/comment-card';
 import ConfirmDialog from '@/components/common/confirm-dialog';
@@ -8,7 +9,7 @@ import { deleteBlogPostComment } from '@/lib/server-actions/blog-post';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
 import { MessageCircle } from 'lucide-react';
-import { ComponentProps, useRef, useState } from 'react';
+import { ComponentProps } from 'react';
 import { toast } from 'sonner';
 import { AddCommentForm } from '../../common/add-comment-form';
 import { CommentList } from './_comment-list';
@@ -25,12 +26,12 @@ type Props = {
 export const Comment = ({ comment, nestLevel, className, initialDisplayResponses, infiniteQueryArgs }: Props) => {
     const trpcUtils = trpc.useUtils();
     const { setActiveCommentThread, activeCommentThread } = useBlogCommentsSheet();
-    const [displayResponses, setDisplayResponses] = useState(initialDisplayResponses);
-    const [showReplyForm, setShowReplyForm] = useState(!comment.deleted && activeCommentThread?.id === comment.id);
+    const [displayResponses, setDisplayResponses] = React.useState(initialDisplayResponses);
+    const [showReplyForm, setShowReplyForm] = React.useState(!comment.deleted && activeCommentThread?.id === comment.id);
 
-    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmOpen, setConfirmOpen] = React.useState(false);
 
-    const listRef = useRef<HTMLUListElement | null>(null);
+    const listRef = React.useRef<HTMLUListElement | null>(null);
     const onCommentAdded = () => {
         setShowReplyForm(false);
         const node = listRef.current;

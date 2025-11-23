@@ -40,14 +40,14 @@ export const SectionTimeTracker = ({ className }: Props) => {
         if (activeTimeEntry) refetch();
     }, []);
 
-    const form = useForm({ resolver: zodResolver(startTimerSchema), defaultValues: { projectId: 'null', taskId: 'null' } });
+    const form = useForm({ resolver: zodResolver(startTimerSchema), defaultValues: { projectId: null, taskId: null } });
 
     const onSubmit = async ({ name, projectId, taskId }: z.infer<typeof startTimerSchema>) => {
         let res;
 
         if (activeTimeEntry) {
             res = await toggleTimer({ orgId });
-            form.reset({ name: '', projectId: 'null', taskId: 'null' });
+            form.reset({ name: '', projectId: null, taskId: null });
         } else {
             res = await toggleTimer({ name, projectId, orgId, taskId });
         }

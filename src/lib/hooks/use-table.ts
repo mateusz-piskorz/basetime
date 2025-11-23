@@ -1,6 +1,4 @@
-import React from 'react';
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 'use client';
 
 import {
@@ -15,6 +13,7 @@ import {
     useReactTable,
     VisibilityState,
 } from '@tanstack/react-table';
+import React from 'react';
 
 type Props<TData, TValue> = {
     columns: ColumnDef<TData, TValue>[];

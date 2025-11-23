@@ -1,6 +1,4 @@
-import React from 'react';
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 'use client';
 
 import ConfirmDialog from '@/components/common/confirm-dialog';
@@ -19,6 +17,7 @@ import { removeTimeEntries } from '@/lib/server-actions/time-entry';
 import { trpc } from '@/lib/trpc/client';
 import { debounce } from 'lodash';
 import { Trash2 } from 'lucide-react';
+import React from 'react';
 import { toast } from 'sonner';
 import { ManualTimeEntryDialog } from './manual-time-entry-dialog';
 import { getTimeEntryColumns } from './time-entry-columns';

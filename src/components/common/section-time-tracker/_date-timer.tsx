@@ -16,7 +16,7 @@ export const DateTimer = ({ startDate, isActive }: Props) => {
         if (isActive) {
             const updateElapsed = () => {
                 const elapsedSeconds = dayjs().diff(startDate, 'second');
-                const newString = dayjs.duration(elapsedSeconds).format('hh:mm:ss');
+                const newString = dayjs.duration(elapsedSeconds, 's').format('HH:mm:ss');
 
                 setTimerString(newString);
                 document.title = `${newString} - BaseTime`;

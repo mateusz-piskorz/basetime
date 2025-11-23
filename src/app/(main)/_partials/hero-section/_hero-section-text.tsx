@@ -2,7 +2,7 @@ import { AuthButton } from '@/components/common/auth-button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils/common';
 
-export const HeroText = () => {
+export const HeroSectionText = () => {
     return (
         <div
             className={cn(

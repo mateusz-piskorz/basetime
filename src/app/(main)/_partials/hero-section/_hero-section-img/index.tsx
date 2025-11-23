@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { HeroImgItem } from './hero-img-item';
+import { Item } from './_item';
 
 const arr = [
     {
@@ -29,7 +29,7 @@ const arr = [
     },
 ];
 
-export const HeroImg = () => {
+export const HeroSectionImg = () => {
     const [active, setActive] = React.useState('Backend API Refactor');
 
     return (
@@ -39,7 +39,7 @@ export const HeroImg = () => {
                     const last = index === arr.length - 1;
                     const isActive = args.title === active;
                     return (
-                        <HeroImgItem
+                        <Item
                             isActive={isActive}
                             toggleActive={(title) => setActive(active === title ? '' : title)}
                             className={last ? '' : 'border-accent dark:border-border border-b'}

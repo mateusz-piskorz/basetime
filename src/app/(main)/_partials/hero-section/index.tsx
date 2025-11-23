@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils/common';
-import { HeroCardList } from './hero-card-list';
-import { HeroImg } from './hero-img';
-import { HeroText } from './hero-text';
+import { HeroSectionCards } from './_hero-section-cards';
+import { HeroSectionImg } from './_hero-section-img';
+import { HeroSectionText } from './_hero-section-text';
 
 export const HeroSection = () => {
     return (
@@ -15,10 +15,10 @@ export const HeroSection = () => {
             )}
         >
             <div className="flex items-center justify-between gap-40">
-                <HeroText />
-                <HeroImg />
+                <HeroSectionText />
+                <HeroSectionImg />
             </div>
-            <HeroCardList />
+            <HeroSectionCards />
         </section>
     );
 };

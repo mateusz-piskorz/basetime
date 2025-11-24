@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils/common';
 import { CheckCircle, Crosshair, UserCheck2, Zap } from 'lucide-react';
-import { DocCard } from './doc-card';
-import { DashboardIllustration } from './illustrations/dashboard-illustration';
-import { ProjectsManagementIllustration } from './illustrations/projects-management-illustration';
-import { ReportsIllustration } from './illustrations/reports-illustration';
-import { UserFriendlyIllustration } from './illustrations/user-friendly-illustration';
+import { DashboardIllustration } from '../_illustrations/dashboard-illustration';
+import { ProjectsManagementIllustration } from '../_illustrations/projects-management-illustration';
+import { ReportsIllustration } from '../_illustrations/reports-illustration';
+import { UserFriendlyIllustration } from '../_illustrations/user-friendly-illustration';
+import { Item } from './_item';
 
 const arr = [
     {
@@ -68,18 +68,14 @@ const arr = [
     },
 ];
 
-type Props = {
-    className?: string;
-};
-
-export const DocCardList = ({ className }: Props) => {
+export const FeatShowcaseList = () => {
     return (
-        <div className={cn('flex flex-col gap-24 sm:px-5 lg:px-0', className)}>
+        <div className="flex flex-col gap-24 sm:px-5 lg:w-[55%] lg:px-0">
             {arr.map((args, index) => {
                 const first = index === 0;
                 const last = index === arr.length - 1;
                 return (
-                    <DocCard
+                    <Item
                         className={cn(first && 'lg:rounded-t-none lg:pt-24 2xl:pt-40', last && 'lg:rounded-b-none lg:pb-24 2xl:pb-40')}
                         key={args.heading}
                         {...args}

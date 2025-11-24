@@ -1,10 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils/common';
 
-type Props = {
-    className?: string;
-};
-
+type Props = { className?: string };
 export const BlogSectionHeading = ({ className }: Props) => {
     return (
         <div className={cn('max-w-[600px] space-y-4 2xl:max-w-[800px]', className)}>

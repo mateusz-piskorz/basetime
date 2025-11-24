@@ -2,12 +2,9 @@ import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 
-export const TeamImgContent = () => {
+export const AboutSection = () => {
     return (
-        <section
-            className="bg-background px-5 py-24 sm:px-6 md:px-8 lg:px-10 2xl:mx-auto 2xl:max-w-[1920px] 2xl:px-20 2xl:py-40"
-            id="team-img-content-section"
-        >
+        <section className="bg-background px-5 py-24 sm:px-6 md:px-8 lg:px-10 2xl:mx-auto 2xl:max-w-[1920px] 2xl:px-20 2xl:py-40" id="about-section">
             <div className="mx-auto space-y-8 md:space-y-12">
                 <div className="bg-card aspect-video w-full">
                     <img className="rounded dark:opacity-90" src="/team-img-content-photo.jpeg" alt="team image" loading="lazy" />

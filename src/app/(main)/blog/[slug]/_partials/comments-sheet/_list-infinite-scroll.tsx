@@ -41,12 +41,9 @@ export const ListInfiniteScroll = ({ parentId, nestLevel }: Props) => {
     return (
         <ul className={cn(nestLevel !== 0 && 'ml-2 border-l-2 pl-2')}>
             {results?.map((comment, index) => {
+                const isLast = results.length === index + 1;
                 return (
-                    <li
-                        key={comment.id}
-                        ref={results.length === index + 1 ? undefined : lastCommentRef}
-                        className={cn('px-6', index !== 0 && 'border-t')}
-                    >
+                    <li key={comment.id} ref={isLast ? lastCommentRef : undefined} className={cn('px-6', index !== 0 && 'border-t')}>
                         <Comment infiniteQueryArgs={infiniteQueryArgs} nestLevel={nestLevel} comment={comment} />
                     </li>
                 );

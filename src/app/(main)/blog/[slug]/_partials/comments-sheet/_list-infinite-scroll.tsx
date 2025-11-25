@@ -1,9 +1,10 @@
-import React from 'react';
+'use client';
 import { SpinLoader } from '@/components/common/spin-loader';
 import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { trpc } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
-import { Comment } from '../common/comment';
+import React from 'react';
+import { Comment } from './comment';
 
 type Props = {
     parentId: null | string;
@@ -11,9 +12,8 @@ type Props = {
 };
 
 export const ListInfiniteScroll = ({ parentId, nestLevel }: Props) => {
-    const { limitQuery, postId, sorting } = useBlogCommentsSheet();
-
-    const infiniteQueryArgs = { postId, limit: limitQuery, parentId, sorting };
+    const { limit, postId, sorting } = useBlogCommentsSheet();
+    const infiniteQueryArgs = { postId, limit, parentId, sorting };
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } = trpc.blogPostComments.useInfiniteQuery(infiniteQueryArgs, {
         getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined),
         initialCursor: 1,
@@ -25,7 +25,6 @@ export const ListInfiniteScroll = ({ parentId, nestLevel }: Props) => {
     const lastCommentRef = React.useCallback(
         (comment: HTMLLIElement | null) => {
             if (isFetchingNextPage) return;
-
             if (intObserver.current) intObserver.current.disconnect();
 
             intObserver.current = new IntersectionObserver((posts) => {
@@ -42,15 +41,9 @@ export const ListInfiniteScroll = ({ parentId, nestLevel }: Props) => {
     return (
         <ul className={cn(nestLevel !== 0 && 'ml-2 border-l-2 pl-2')}>
             {results?.map((comment, index) => {
-                if (results.length === index + 1) {
-                    return (
-                        <li key={comment.id} ref={lastCommentRef} className={cn('px-6', index !== 0 && 'border-t')}>
-                            <Comment infiniteQueryArgs={infiniteQueryArgs} nestLevel={nestLevel} comment={comment} />
-                        </li>
-                    );
-                }
+                const isLast = results.length === index + 1;
                 return (
-                    <li key={comment.id} className={cn('px-6', index !== 0 && 'border-t')}>
+                    <li key={comment.id} ref={isLast ? lastCommentRef : undefined} className={cn('px-6', index !== 0 && 'border-t')}>
                         <Comment infiniteQueryArgs={infiniteQueryArgs} nestLevel={nestLevel} comment={comment} />
                     </li>
                 );

@@ -1,19 +1,18 @@
 'use server';
 
+import { AboutSection } from './_partials/about-section';
 import { BlogSection } from './_partials/blog-section';
-import { DocumentsSection } from './_partials/documents-section';
-import FAQSection from './_partials/FAQ-section';
+import { FAQSection } from './_partials/FAQ-section';
+import { FeatShowcase } from './_partials/feat-showcase';
 import { HeroSection } from './_partials/hero-section';
-import PricingSection from './_partials/pricing-section';
-import { TeamImgContent } from './_partials/team-img-content';
+import { PricingSection } from './_partials/pricing-section';
 
 export default async function Home() {
     return (
         <>
             <HeroSection />
-            {/* refactor-23-11-2025 end */}
-            <DocumentsSection />
-            <TeamImgContent />
+            <FeatShowcase />
+            <AboutSection />
             <BlogSection />
             <FAQSection />
             <PricingSection />

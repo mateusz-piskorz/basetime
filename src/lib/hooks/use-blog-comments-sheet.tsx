@@ -1,31 +1,36 @@
 'use client';
-import React from 'react';
-import { createContext, ReactNode } from 'react';
+import React, { createContext, ReactNode } from 'react';
 import { TrpcRouterInput } from '../trpc/client';
 
 type BlogCommentsSheetContextType = {
     activeCommentThread: { parentId: string | null; id: string } | null;
-    limitQuery: number;
+    limit: number;
     setActiveCommentThread: (val: { parentId: string | null; id: string }) => void;
     goBack: () => void;
     reset: () => void;
     postId: string;
     sorting: TrpcRouterInput['blogPostComments']['sorting'];
     setSorting: (val: TrpcRouterInput['blogPostComments']['sorting']) => void;
+    sheetOpen: boolean;
+    setSheetOpen: (val: boolean) => void;
 } | null;
 
 const BlogCommentsSheetContext = createContext<BlogCommentsSheetContextType>(null);
 
 export const BlogCommentsSheetProvider = ({ children, postId }: { children: ReactNode; postId: string }) => {
+    const [sheetOpen, setSheetOpen] = React.useState(false);
     const [activeCommentThreadPath, setActiveCommentThreadPath] = React.useState<{ parentId: string | null; id: string }[]>([]);
     const [sorting, setSorting] = React.useState<TrpcRouterInput['blogPostComments']['sorting']>('featured');
+
     return (
         <BlogCommentsSheetContext.Provider
             value={{
+                sheetOpen,
+                setSheetOpen,
                 sorting,
                 setSorting,
                 postId,
-                limitQuery: 30,
+                limit: 30,
                 activeCommentThread: activeCommentThreadPath[activeCommentThreadPath.length - 1] || null,
                 goBack: () => setActiveCommentThreadPath((prevPath) => prevPath.slice(0, -1)),
                 setActiveCommentThread: (val: { parentId: string | null; id: string }) => setActiveCommentThreadPath((prev) => [...prev, val]),

@@ -1,7 +1,7 @@
 'use server';
 import { prisma } from '@/lib/prisma';
-import { BlogSectionDesktop } from './blog-section-desktop';
-import { BlogSectionMobile } from './blog-section-mobile';
+import { BlogSectionDesktop } from './_blog-section-desktop';
+import { BlogSectionMobile } from './_blog-section-mobile';
 
 export const BlogSection = async () => {
     const posts = await prisma.blogPost.findMany({ take: 5, include: { _count: true } });

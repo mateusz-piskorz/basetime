@@ -1,11 +1,10 @@
-import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { dayjs } from '@/lib/dayjs';
 import { cn } from '@/lib/utils/common';
 import { BlogPost } from '@prisma/client';
 import { ChevronRight, MessageCircle, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '../ui/button';
+import { BlogPostHeader } from './blog-post-header';
 
 type Props = {
     post: {
@@ -35,25 +34,9 @@ export const BlogPostCard = ({ post, className }: Props) => {
                     />
                 </div>
 
-                <div className="flex h-full flex-col items-start gap-4 px-6 py-8 lg:w-[40%] lg:py-6 2xl:p-10">
-                    <div className="mb-4 flex flex-wrap gap-4 lg:hidden">
-                        {post.tags.map((tag) => (
-                            <Badge variant="outline" key={tag}>
-                                {tag}
-                            </Badge>
-                        ))}
-                    </div>
+                <div className="flex h-full flex-col gap-4 px-6 py-8 lg:w-[40%] lg:py-6 2xl:p-10">
+                    <BlogPostHeader post={post} hideTagsDesktop />
 
-                    <time
-                        className="text-muted-foreground text-sm 2xl:text-base"
-                        title="Posted at"
-                        dateTime={dayjs(post.updatedAt).format('YYYY-MM-DD')}
-                    >
-                        {dayjs(post.updatedAt).format('MMMM D, YYYY')}
-                        {` - ${post.readTime}`}
-                    </time>
-
-                    <h1 className="text-xl xl:text-2xl 2xl:text-3xl">{post.title}</h1>
                     <p className="text-muted-foreground text-sm 2xl:text-base">{post.description}</p>
 
                     <div className="relative mt-auto flex items-center gap-4">

@@ -18,6 +18,7 @@ export const AddCommentForm = ({ parentComment, infiniteQueryArgs, onCommentAdde
 
     return (
         <CommentForm
+            className="px-6"
             onCancel={() => onCancel?.()}
             onSubmit={async ({ content }) => {
                 const res = await createBlogPostComment({ content, postId, parentId: parentComment?.id });

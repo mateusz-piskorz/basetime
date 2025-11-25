@@ -1,20 +1,17 @@
 'use client';
-import React from 'react';
-
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
 import { trpc } from '@/lib/trpc/client';
 import { BlogPost } from '@prisma/client';
 import { ChevronLeft } from 'lucide-react';
-import { AddCommentForm } from '../common/add-comment-form';
-import { Comment } from '../common/comment';
+import React from 'react';
+import { AddCommentForm } from './_add-comment-form';
 import { ListInfiniteScroll } from './_list-infinite-scroll';
+import { SelectSorting } from './_select-sorting';
+import { Comment } from './comment';
 
 type Props = {
-    open: boolean;
-    setOpen: (val: boolean) => void;
     post: {
         _count: {
             Comments: number;
@@ -23,15 +20,15 @@ type Props = {
     } & BlogPost;
 };
 
-export const CommentsSheet = ({ open, setOpen, post }: Props) => {
-    const { reset, activeCommentThread, goBack, limitQuery, sorting, setSorting } = useBlogCommentsSheet();
+export const CommentsSheet = ({ post }: Props) => {
+    const { reset, activeCommentThread, goBack, limit, sorting, sheetOpen, setSheetOpen } = useBlogCommentsSheet();
 
     const { data } = trpc.blogPostComments.useInfiniteQuery(
         {
             parentId: activeCommentThread?.parentId ?? null,
             postId: post.id,
             sorting: 'oldest',
-            limit: limitQuery,
+            limit,
         },
         {
             enabled: Boolean(activeCommentThread),
@@ -42,23 +39,18 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
 
     const activeComment = React.useMemo(() => {
         if (!activeCommentThread) return null;
-
-        const infComments = data?.pages.flatMap(({ data }) => data);
-
-        return infComments?.find((comment) => comment.id === activeCommentThread.id);
+        return data?.pages.flatMap(({ data }) => data).find((comment) => comment.id === activeCommentThread.id);
     }, [data, activeCommentThread]);
 
     React.useEffect(() => {
-        if (activeCommentThread && !activeComment) {
-            goBack();
-        }
+        if (activeCommentThread && !activeComment) goBack();
     }, [activeComment, activeCommentThread, goBack]);
 
     return (
         <Sheet
-            open={open}
+            open={sheetOpen}
             onOpenChange={(val) => {
-                setOpen(val);
+                setSheetOpen(val);
                 if (val === false) reset();
             }}
             modal={false}
@@ -79,7 +71,7 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
 
                 {activeCommentThread && activeComment ? (
                     <Comment
-                        infiniteQueryArgs={{ postId: post.id, limit: limitQuery, parentId: activeCommentThread.parentId, sorting: 'oldest' }}
+                        infiniteQueryArgs={{ postId: post.id, limit, parentId: activeCommentThread.parentId, sorting: 'oldest' }}
                         initialDisplayResponses
                         nestLevel={0}
                         comment={activeComment}
@@ -87,21 +79,8 @@ export const CommentsSheet = ({ open, setOpen, post }: Props) => {
                     />
                 ) : (
                     <>
-                        <AddCommentForm infiniteQueryArgs={{ postId: post.id, limit: limitQuery, parentId: null, sorting }} />
-
-                        <Select onValueChange={(val) => setSorting(val as typeof sorting)} value={sorting}>
-                            <SelectTrigger className="mx-6 border bg-transparent dark:bg-transparent">
-                                <SelectValue className="bg-transparent" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {['featured', 'latest', 'oldest'].map((elem) => (
-                                    <SelectItem key={elem} value={elem}>
-                                        {elem}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-
+                        <AddCommentForm infiniteQueryArgs={{ postId: post.id, limit, parentId: null, sorting }} />
+                        <SelectSorting />
                         <ListInfiniteScroll nestLevel={0} parentId={null} />
                     </>
                 )}

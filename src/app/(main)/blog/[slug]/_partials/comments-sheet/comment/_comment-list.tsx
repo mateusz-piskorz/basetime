@@ -1,7 +1,8 @@
+'use client';
 import { SpinLoader } from '@/components/common/spin-loader';
 import { Button } from '@/components/ui/button';
 import { useBlogCommentsSheet } from '@/lib/hooks/use-blog-comments-sheet';
-import { trpc, TrpcRouterInput } from '@/lib/trpc/client';
+import { trpc } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
 import { RefObject } from 'react';
 import { Comment } from '.';
@@ -9,14 +10,12 @@ import { Comment } from '.';
 type Props = {
     parentId: null | string;
     nestLevel: number;
-    sorting: TrpcRouterInput['blogPostComments']['sorting'];
     listRef: RefObject<HTMLUListElement | null>;
 };
 
-export const CommentList = ({ parentId, nestLevel, sorting, listRef }: Props) => {
-    const { limitQuery, postId } = useBlogCommentsSheet();
-
-    const infiniteQueryArgs = { postId, limit: limitQuery, parentId, sorting };
+export const CommentList = ({ parentId, nestLevel, listRef }: Props) => {
+    const { limit, postId } = useBlogCommentsSheet();
+    const infiniteQueryArgs = { postId, limit, parentId, sorting: 'oldest' } as const;
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } = trpc.blogPostComments.useInfiniteQuery(infiniteQueryArgs, {
         getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined),
@@ -37,7 +36,7 @@ export const CommentList = ({ parentId, nestLevel, sorting, listRef }: Props) =>
                     <SpinLoader />
                 </div>
             )}
-            {hasNextPage && !isFetchingNextPage && !isPending && <Button onClick={() => fetchNextPage()}>fetchNextPage</Button>}
+            {hasNextPage && !isFetchingNextPage && !isPending && <Button onClick={() => fetchNextPage()}>Load More</Button>}
         </ul>
     );
 };

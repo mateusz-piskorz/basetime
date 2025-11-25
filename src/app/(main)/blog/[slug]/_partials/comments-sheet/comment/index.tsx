@@ -1,6 +1,4 @@
 'use client';
-import React from 'react';
-
 import { CommentCard } from '@/components/common/comment-card';
 import ConfirmDialog from '@/components/common/confirm-dialog';
 import { Button } from '@/components/ui/button';
@@ -9,9 +7,9 @@ import { deleteBlogPostComment } from '@/lib/server-actions/blog-post';
 import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { cn } from '@/lib/utils/common';
 import { MessageCircle } from 'lucide-react';
-import { ComponentProps } from 'react';
+import React, { ComponentProps } from 'react';
 import { toast } from 'sonner';
-import { AddCommentForm } from '../../common/add-comment-form';
+import { AddCommentForm } from '../_add-comment-form';
 import { CommentList } from './_comment-list';
 import { CommentUpvotesButton } from './_comment-upvotes-button';
 
@@ -28,7 +26,6 @@ export const Comment = ({ comment, nestLevel, className, initialDisplayResponses
     const { setActiveCommentThread, activeCommentThread } = useBlogCommentsSheet();
     const [displayResponses, setDisplayResponses] = React.useState(initialDisplayResponses);
     const [showReplyForm, setShowReplyForm] = React.useState(!comment.deleted && activeCommentThread?.id === comment.id);
-
     const [confirmOpen, setConfirmOpen] = React.useState(false);
 
     const listRef = React.useRef<HTMLUListElement | null>(null);
@@ -128,7 +125,7 @@ export const Comment = ({ comment, nestLevel, className, initialDisplayResponses
                 />
             )}
 
-            {displayResponses && <CommentList listRef={listRef} sorting="oldest" nestLevel={nestLevel + 1} parentId={comment.id} />}
+            {displayResponses && <CommentList listRef={listRef} nestLevel={nestLevel + 1} parentId={comment.id} />}
         </div>
     );
 };

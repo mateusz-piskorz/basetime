@@ -1,10 +1,9 @@
 'use client';
-import React from 'react';
-
+import { UpvotesButton } from '@/components/common/upvotes-button';
 import { upvoteBlogPostComment } from '@/lib/server-actions/blog-post';
 import { trpc, TrpcRouterInput } from '@/lib/trpc/client';
+import React from 'react';
 import { toast } from 'sonner';
-import { UpvotesButton } from '../upvotes-button';
 
 type Props = {
     upvotes: number;

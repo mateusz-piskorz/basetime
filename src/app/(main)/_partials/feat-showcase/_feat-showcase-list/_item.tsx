@@ -2,7 +2,6 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils/common';
 import { LucideIcon } from 'lucide-react';
-import { FC } from 'react';
 import './_style.css';
 
 type TextProps = {
@@ -32,7 +31,10 @@ const Text = ({ Icon, badges, description, heading }: TextProps) => {
 };
 
 type Props = {
-    Illustration: FC<{ className?: string }>;
+    illustration: {
+        src: string;
+        alt: string;
+    };
     heading: string;
     Icon: LucideIcon;
     description: string;
@@ -40,7 +42,7 @@ type Props = {
     className?: string;
 };
 
-export const Item = ({ className, badges, description, heading, Icon, Illustration }: Props) => {
+export const Item = ({ className, badges, description, heading, Icon, illustration }: Props) => {
     return (
         <div className={cn('bg-background feat-showcase-item-radius space-y-10 rounded-md px-5 py-10 lg:px-8 2xl:px-10', className)}>
             <Card
@@ -51,9 +53,11 @@ export const Item = ({ className, badges, description, heading, Icon, Illustrati
                     'lg:h-60 lg:bg-transparent lg:px-0 lg:py-0',
                     'xl:bg-card xl:h-96 xl:px-10 xl:py-10',
                     '2xl:h-[440px] 2xl:py-10',
+                    'text-accent-secondary',
                 )}
             >
-                <Illustration className="w-full min-w-[400px]" />
+                <img src={illustration.src} alt={illustration.alt} className="text-accent-secondary min-h-[1px] w-full" loading="lazy" />
+                {/* <Illustration className="w-full min-w-[400px]" /> */}
             </Card>
 
             <Text Icon={Icon} badges={badges} description={description} heading={heading} />

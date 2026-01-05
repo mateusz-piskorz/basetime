@@ -122,6 +122,9 @@ copy_if_exists "/app/.next/server/app" "temp_app"
 merge_into_dest_overwrite "${DEST%/}/temp_app"
 merge_into_dest_skip_existing "${DEST%/}/temp_public"
 
+
+rm -rf "${DEST%/}/favicon.ico" "${DEST%/}/icon.svg"
+
 TARGET_MEDIA_DIR="/app/.next/static/media"
 # Find and copy favicon
 FAVICON_PATH=$(docker exec "${CONTAINER}" find "${TARGET_MEDIA_DIR}" -name "favicon.*.ico" 2>/dev/null | head -n 1)

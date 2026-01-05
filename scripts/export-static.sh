@@ -123,21 +123,15 @@ merge_into_dest_overwrite "${DEST%/}/temp_app"
 merge_into_dest_skip_existing "${DEST%/}/temp_public"
 
 
-rm -rf "${DEST%/}/favicon.ico" "${DEST%/}/icon.svg"
+rm -rf "${DEST%/}/favicon.ico" "${DEST%/}/icon.svg" "${DEST%/}/icon.png"
 
 TARGET_MEDIA_DIR="/app/.next/static/media"
-# Find and copy favicon
-FAVICON_PATH=$(docker exec "${CONTAINER}" find "${TARGET_MEDIA_DIR}" -name "favicon.*.ico" 2>/dev/null | head -n 1)
-if [ -n "${FAVICON_PATH}" ]; then
-  docker cp "${CONTAINER}:${FAVICON_PATH}" "${DEST%/}/favicon.ico"
-  echo "Copied ${FAVICON_PATH} -> ${DEST%/}/favicon.ico"
-fi
 
 # Find and copy icon
-ICON_PATH=$(docker exec "${CONTAINER}" find "${TARGET_MEDIA_DIR}" -name "icon.*.svg" 2>/dev/null | head -n 1)
+ICON_PATH=$(docker exec "${CONTAINER}" find "${TARGET_MEDIA_DIR}" -name "icon.*.png" 2>/dev/null | head -n 1)
 if [ -n "${ICON_PATH}" ]; then
-  docker cp "${CONTAINER}:${ICON_PATH}" "${DEST%/}/icon.svg"
-  echo "Copied ${ICON_PATH} -> ${DEST%/}/icon.svg"
+  docker cp "${CONTAINER}:${ICON_PATH}" "${DEST%/}/icon.png"
+  echo "Copied ${ICON_PATH} -> ${DEST%/}/icon.png"
 fi
 
 

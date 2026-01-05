@@ -52,6 +52,7 @@ export function PricingSection() {
                                     alt="Nvidia Logo"
                                     height="20"
                                     width="auto"
+                                    loading="lazy"
                                 />
                                 <img
                                     className="h-4 w-fit dark:invert"
@@ -59,6 +60,7 @@ export function PricingSection() {
                                     alt="Column Logo"
                                     height="16"
                                     width="auto"
+                                    loading="lazy"
                                 />
                                 <img
                                     className="h-4 w-fit dark:invert"
@@ -66,6 +68,7 @@ export function PricingSection() {
                                     alt="GitHub Logo"
                                     height="16"
                                     width="auto"
+                                    loading="lazy"
                                 />
                                 <img
                                     className="h-5 w-fit dark:invert"
@@ -73,6 +76,7 @@ export function PricingSection() {
                                     alt="Nike Logo"
                                     height="20"
                                     width="auto"
+                                    loading="lazy"
                                 />
                             </div>
                         </div>

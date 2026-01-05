@@ -1,14 +1,15 @@
 import { cn } from '@/lib/utils/common';
 import { CheckCircle, Crosshair, UserCheck2, Zap } from 'lucide-react';
 import { DashboardIllustration } from '../_illustrations/dashboard-illustration';
-import { ProjectsManagementIllustration } from '../_illustrations/projects-management-illustration';
-import { ReportsIllustration } from '../_illustrations/reports-illustration';
-import { UserFriendlyIllustration } from '../_illustrations/user-friendly-illustration';
 import { Item } from './_item';
 
 const arr = [
     {
         Illustration: DashboardIllustration,
+        illustration: {
+            src: '/illustrations/dashboard.svg',
+            alt: 'Dashboard illustration',
+        },
         heading: 'Modern Dashboard',
         Icon: Zap,
         description:
@@ -25,7 +26,10 @@ const arr = [
         ],
     },
     {
-        Illustration: ReportsIllustration,
+        illustration: {
+            src: '/illustrations/reports.svg',
+            alt: 'Reports illustration',
+        },
         heading: 'Accurate Reports',
         Icon: Crosshair,
         description:
@@ -33,7 +37,10 @@ const arr = [
         badges: ['Projects Filter', 'Members Filter', 'Period Filter', '2 Years History', 'Billable Amount', 'Total Time'],
     },
     {
-        Illustration: ProjectsManagementIllustration,
+        illustration: {
+            src: '/illustrations/projectsmanagement.svg',
+            alt: 'projects management illustration',
+        },
         heading: 'Simple Projects Management',
         Icon: CheckCircle,
         description:
@@ -50,7 +57,10 @@ const arr = [
         ],
     },
     {
-        Illustration: UserFriendlyIllustration,
+        illustration: {
+            src: '/illustrations/userfriendly.svg',
+            alt: 'User friendly UI illustration',
+        },
         heading: 'User Friendly UI',
         Icon: UserCheck2,
         description:

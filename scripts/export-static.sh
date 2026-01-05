@@ -123,6 +123,25 @@ merge_into_dest_overwrite "${DEST%/}/temp_app"
 merge_into_dest_skip_existing "${DEST%/}/temp_public"
 
 
+rm -rf "${DEST%/}/favicon.ico" "${DEST%/}/icon.svg"
+
+TARGET_MEDIA_DIR="/app/.next/static/media"
+# Find and copy favicon
+FAVICON_PATH=$(docker exec "${CONTAINER}" find "${TARGET_MEDIA_DIR}" -name "favicon.*.ico" 2>/dev/null | head -n 1)
+if [ -n "${FAVICON_PATH}" ]; then
+  docker cp "${CONTAINER}:${FAVICON_PATH}" "${DEST%/}/favicon.ico"
+  echo "Copied ${FAVICON_PATH} -> ${DEST%/}/favicon.ico"
+fi
+
+# Find and copy icon
+ICON_PATH=$(docker exec "${CONTAINER}" find "${TARGET_MEDIA_DIR}" -name "icon.*.svg" 2>/dev/null | head -n 1)
+if [ -n "${ICON_PATH}" ]; then
+  docker cp "${CONTAINER}:${ICON_PATH}" "${DEST%/}/icon.svg"
+  echo "Copied ${ICON_PATH} -> ${DEST%/}/icon.svg"
+fi
+
+
+
 echo "Adjusting permissions (best-effort; you may need sudo)..."
 if chown -R www-data:www-data "${DEST}" >/dev/null 2>&1; then
   echo "Ownership changed to www-data:www-data"

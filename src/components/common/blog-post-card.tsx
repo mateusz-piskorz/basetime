@@ -48,9 +48,11 @@ export const BlogPostCard = ({ post, className }: Props) => {
                             <span className="sr-only">comments</span>
                             <MessageCircle className="size-3.5" /> {post._count.Comments}
                         </span>
-                        <Button asChild variant="link" className="pl-0 text-base xl:text-xl">
+                        <Button asChild variant="link" className="relative pl-0 text-base xl:text-xl">
                             <Link href={`/blog/${post.slug}`}>
-                                Read More <ChevronRight />
+                                Read More
+                                <ChevronRight />
+                                <span className="sr-only">read more about {post.title}</span>
                             </Link>
                         </Button>
                     </div>

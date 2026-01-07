@@ -130,13 +130,14 @@ export const ManualTimeEntryDialog = ({ open, setOpen, selectedTimeEntry, onSucc
                             />
                         </div>
                         <div className="flex gap-4">
-                            <SelectProjectField form={form} name="projectId" className="w-full" />
+                            <SelectProjectField form={form} name="projectId" className="w-full" label="Project" />
                             <SelectTaskField
                                 form={form}
                                 name="taskId"
                                 className="w-full"
                                 disabled={form.watch('projectId') === 'no-project'}
                                 projectId={form.watch('projectId')}
+                                label="Task"
                             />
                         </div>
 

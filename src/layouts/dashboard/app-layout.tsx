@@ -17,7 +17,7 @@ export const AppLayout = ({ children, type }: AppLayoutProps) => {
 
             <SidebarInset>
                 <AppHeader />
-                <NextTopLoader color="hsl(213, 94, 68)" initialPosition={0.08} crawlSpeed={200} height={3} showSpinner={false} />
+                <NextTopLoader color="var(--accent-secondary)" showSpinner={false} />
                 {children}
             </SidebarInset>
         </SidebarProvider>

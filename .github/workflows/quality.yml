@@ -49,8 +49,5 @@ jobs:
         run: |
           grep -v '^#' .env | grep -v '^$' >> $GITHUB_ENV
 
-      - name: Log all env variables
-        run: env | sort
-
       - name: test
         run: npm run test

@@ -39,7 +39,8 @@ export const signup = async (data: z.infer<typeof registerSchema>) => {
         await createSession({ userAgent: (await headers()).get('user-agent') || '', userId: user.id });
 
         return { success: true };
-    } catch {
+    } catch (e) {
+        console.log(e);
         return { success: false, message: 'Error - signup' };
     }
 };
@@ -66,7 +67,8 @@ export const signin = async (data: z.infer<typeof loginSchema>) => {
         await createSession({ userAgent: (await headers()).get('user-agent') || '', userId: user.id });
 
         return { success: true };
-    } catch {
+    } catch (error) {
+        console.log(error);
         return { success: false, message: 'Error - signin' };
     }
 };

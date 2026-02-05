@@ -92,7 +92,8 @@ export const updateOrgLogo = action(updateOrgLogoSchema, async ({ logoBase64, or
         }
 
         return { success: true };
-    } catch {
+    } catch (e) {
+        console.log(e);
         return { success: false, message: 'Error - updateOrgLogo' };
     }
 });

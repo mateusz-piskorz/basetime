@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { prisma } from '@/lib/prisma';
 // it's executed before every .test.ts file
 
 jest.mock('next/cache', () => ({ revalidatePath: () => {} }));
@@ -17,4 +17,18 @@ jest.mock('@/lib/session', () => {
     };
 });
 
-execSync('npx prisma migrate reset --force --skip-seed', { stdio: 'inherit' });
+async function resetDb() {
+    const tablenames = await prisma.$queryRaw<Array<{ tablename: string }>>`
+    SELECT tablename FROM pg_tables WHERE schemaname='public' AND tablename != '_prisma_migrations';
+  `;
+
+    const tables = tablenames.map(({ tablename }) => `"${tablename}"`).join(', ');
+
+    try {
+        await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${tables} RESTART IDENTITY CASCADE;`);
+    } catch (error) {
+        console.error('Błąd podczas czyszczenia bazy:', error);
+    }
+}
+
+beforeEach(async () => await resetDb());

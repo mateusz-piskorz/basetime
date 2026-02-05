@@ -8,14 +8,26 @@ const userId = 'userId';
 const postId1 = 'post1';
 const postId2 = 'post2';
 
-afterEach(() => {
+beforeEach(async () => {
     queryClient.clear();
-});
 
-beforeAll(async () => {
-    await prisma.user.create({ data: { email: '', name: '', password: '', id: userId } });
-    await prisma.blogPost.create({ data: { content: '', slug: '1', title: '', id: postId1, Upvotes: { create: { userId } } } });
-    await prisma.blogPost.create({ data: { content: '', slug: '2', title: '', id: postId2 } });
+    await prisma.user.create({
+        data: { email: 'user@test.com', name: 'User', password: 'password', id: userId },
+    });
+
+    await prisma.blogPost.create({
+        data: {
+            content: '',
+            slug: '1',
+            title: 'Post 1',
+            id: postId1,
+            Upvotes: { create: { userId } },
+        },
+    });
+
+    await prisma.blogPost.create({
+        data: { content: '', slug: '2', title: 'Post 2', id: postId2 },
+    });
 });
 
 test('returns false for unauthenticated user', async () => {

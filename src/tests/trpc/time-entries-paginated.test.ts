@@ -1,7 +1,7 @@
 import { dayjs } from '@/lib/dayjs';
 import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/session';
 import { getQueryClient, trpc } from '@/lib/trpc/server-client';
+import { mockSession } from '../utils/mock-session';
 
 const employee = {
     id: 'u1Id',
@@ -44,32 +44,38 @@ const owner = {
 
 const orgId = 'oid';
 
-const mockedGetSession = getSession as jest.Mock;
 const queryClient = getQueryClient();
 
-afterEach(() => {
+beforeEach(async () => {
     queryClient.clear();
-});
 
-test('time-entries-paginated setup', async () => {
-    await prisma.organization.create({ data: { currency: 'EUR', name: '', id: orgId } });
+    await prisma.organization.create({
+        data: { currency: 'EUR', name: 'Test Org', id: orgId },
+    });
+
     const users = [employee, manager, owner];
 
-    for (const index in users) {
-        const user = users[index];
-
+    for (const [index, user] of users.entries()) {
         await prisma.user.create({
             data: {
-                email: index,
-                name: index,
-                password: index,
+                email: `paginated-user-${index}@test.com`,
+                name: `User ${index}`,
+                password: 'password',
                 id: user.id,
                 Members: {
                     create: {
                         id: user.memberId,
                         organizationId: orgId,
                         role: user.role,
-                        Projects: { create: { color: 'BLUE', name: '', id: user.projectId, organizationId: orgId, shortName: `1-${index}` } },
+                        Projects: {
+                            create: {
+                                color: 'BLUE',
+                                name: `Project ${index}`,
+                                id: user.projectId,
+                                organizationId: orgId,
+                                shortName: `pag-${index}`,
+                            },
+                        },
                         TimeEntries: {
                             create: [
                                 {
@@ -89,84 +95,87 @@ test('time-entries-paginated setup', async () => {
     }
 });
 
-test('returns null for unauthenticated users', async () => {
-    expect((await queryClient.fetchQuery(trpc.timeEntriesPaginated.queryOptions({ orgId }))).data).toEqual([]);
+test('returns empty array for unauthenticated users', async () => {
+    const res = await queryClient.fetchQuery(trpc.timeEntriesPaginated.queryOptions({ orgId }));
+    expect(res.data).toEqual([]);
 });
 
 test('employee can get his timeEntries', async () => {
-    const { id, timeEntry } = employee;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(employee.id);
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesPaginated.queryOptions({ orgId, members: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesPaginated.queryOptions({
+            orgId,
+            members: [manager.memberId, employee.memberId, owner.memberId],
+        }),
     );
-
-    expect(res.data.length).toBe(1);
-    expect(res.data[0].id).toBe(timeEntry.id);
+    expect(res.data).toHaveLength(1);
+    expect(res.data[0].id).toBe(employee.timeEntry.id);
 });
 
 test('manager can get others timeEntries', async () => {
-    const { id } = manager;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(manager.id);
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesPaginated.queryOptions({ orgId, members: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesPaginated.queryOptions({
+            orgId,
+            members: [manager.memberId, employee.memberId, owner.memberId],
+        }),
     );
-
-    expect(res.data.length).toBe(3);
+    expect(res.data).toHaveLength(3);
 });
 
 test('owner can get others timeEntries', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesPaginated.queryOptions({ orgId, members: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesPaginated.queryOptions({
+            orgId,
+            members: [manager.memberId, employee.memberId, owner.memberId],
+        }),
     );
-
-    expect(res.data.length).toBe(3);
+    expect(res.data).toHaveLength(3);
 });
 
 test('members all arg works - timeEntries', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const res1 = await queryClient.fetchQuery(trpc.timeEntriesPaginated.queryOptions({ orgId }));
-    expect(res1.data.length).toBe(1);
+    expect(res1.data).toHaveLength(1);
 
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const res2 = await queryClient.fetchQuery(trpc.timeEntriesPaginated.queryOptions({ orgId, members: 'all' }));
-    expect(res2.data.length).toBe(3);
+    expect(res2.data).toHaveLength(3);
 });
 
 test('limit arg works - timeEntries', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
+
     const res = await queryClient.fetchQuery(
-        trpc.timeEntriesPaginated.queryOptions({ orgId, limit: 2, members: [manager.memberId, employee.memberId, owner.memberId] }),
+        trpc.timeEntriesPaginated.queryOptions({
+            orgId,
+            limit: 2,
+            members: [manager.memberId, employee.memberId, owner.memberId],
+        }),
     );
 
-    expect(res.data.length).toBe(2);
+    expect(res.data).toHaveLength(2);
 });
 
 test('page arg works - timeEntries', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const page1 = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({ orgId, limit: 1, page: 1, members: [manager.memberId, employee.memberId] }),
     );
-
     expect(page1.data.length).toBe(1);
     expect(page1.page).toBe(1);
 
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const page2 = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({ orgId, limit: 1, page: 2, members: [manager.memberId, employee.memberId] }),
     );
-
     expect(page2.data.length).toBe(1);
     expect(page2.data[0].id).not.toBe(page1.data[0].id);
 });
 
 test('order arg works - timeEntries', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const desc = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             orgId,
@@ -175,13 +184,12 @@ test('order arg works - timeEntries', async () => {
             order_direction: 'desc',
         }),
     );
-
     expect(desc.data.length).toBe(2);
     expect(desc.data[0].name).toBe('managerEntry');
     expect(desc.data[1].name).toBe('employeeEntry');
 
     //asc
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const asc = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             orgId,
@@ -190,17 +198,14 @@ test('order arg works - timeEntries', async () => {
             order_direction: 'asc',
         }),
     );
-
     expect(asc.data.length).toBe(2);
     expect(asc.data[0].name).toBe('employeeEntry');
     expect(asc.data[1].name).toBe('managerEntry');
 });
 
 test('members arg works - timeEntries', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const res = await queryClient.fetchQuery(trpc.timeEntriesPaginated.queryOptions({ orgId, members: [employee.memberId, owner.memberId] }));
-
     expect(res.data.length).toBe(2);
     res.data.forEach((timeEntry) => {
         expect([employee.timeEntry.id, owner.timeEntry.id].includes(timeEntry.id)).toBe(true);
@@ -208,8 +213,7 @@ test('members arg works - timeEntries', async () => {
 });
 
 test('projects arg works - timeEntries', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             orgId,
@@ -217,7 +221,6 @@ test('projects arg works - timeEntries', async () => {
             projects: [employee.projectId, manager.projectId],
         }),
     );
-
     expect(res.data.length).toBe(2);
     res.data.forEach((timeEntry) => {
         expect([employee.projectId, manager.projectId].includes(timeEntry.projectId!)).toBe(true);
@@ -225,8 +228,7 @@ test('projects arg works - timeEntries', async () => {
 });
 
 test('projects arg employee permission - timeEntries', async () => {
-    const { id } = employee;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(employee.id);
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             orgId,
@@ -234,14 +236,12 @@ test('projects arg employee permission - timeEntries', async () => {
             projects: [employee.projectId, manager.projectId],
         }),
     );
-
     expect(res.data.length).toBe(1);
     expect(res.data[0].projectId).toBe(employee.projectId);
 });
 
 test('takeAll arg works - timeEntries', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             orgId,
@@ -250,13 +250,11 @@ test('takeAll arg works - timeEntries', async () => {
             members: [employee.memberId, owner.memberId, manager.memberId],
         }),
     );
-
     expect(res.data.length).toBe(3);
 });
 
 test('startDate, endDate arg works - timeEntries', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             orgId,
@@ -265,7 +263,6 @@ test('startDate, endDate arg works - timeEntries', async () => {
             endDate: dayjs().subtract(3, 'h').subtract(30, 'minutes').toDate().toString(),
         }),
     );
-
     expect(res.data.length).toBe(2);
     res.data.forEach((timeEntry) => {
         expect([employee.timeEntry.id, manager.timeEntry.id].includes(timeEntry.id)).toBe(true);
@@ -273,8 +270,7 @@ test('startDate, endDate arg works - timeEntries', async () => {
 });
 
 test('query arg works - timeEntries', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const res = await queryClient.fetchQuery(
         trpc.timeEntriesPaginated.queryOptions({
             orgId,
@@ -282,7 +278,6 @@ test('query arg works - timeEntries', async () => {
             q: 'emplo',
         }),
     );
-
     expect(res.data.length).toBe(1);
     expect(res.data[0].id).toBe(employee.timeEntry.id);
 });

@@ -10,97 +10,107 @@ const adminUserId = 'adminId';
 const regularUserId = 'regularId';
 const fileName = 'file-name-test.png';
 const apiUrl = `${API_BASE_URL}/public-blog-img`;
+
 let headersAdmin: HeadersInit;
 let headersRegular: HeadersInit;
 
-describe('avatar', () => {
-    beforeAll(async () => {
-        const expiresAt = dayjs().add(1, 'day').toDate();
-        const adminSession = await encrypt({ sessionId: adminUserId, expiresAt });
-        const regularSession = await encrypt({ sessionId: regularUserId, expiresAt });
-        headersAdmin = { Cookie: `session=${adminSession}` };
-        headersRegular = { Cookie: `session=${regularSession}` };
+beforeEach(async () => {
+    const expiresAt = dayjs().add(1, 'day').toDate();
 
-        // admin
-        await prisma.user.create({
-            data: {
-                email: '1',
-                name: '1',
-                password: '1',
-                id: adminUserId,
-                role: 'ADMIN',
-                Session: { create: { expiresAt, userAgent: '', id: adminUserId } },
-            },
-        });
+    const adminSession = await encrypt({ sessionId: adminUserId, expiresAt });
+    const regularSession = await encrypt({ sessionId: regularUserId, expiresAt });
 
-        // regular
-        await prisma.user.create({
-            data: {
-                email: '2',
-                name: '2',
-                password: '2',
-                id: regularUserId,
-                role: 'USER',
-                Session: { create: { expiresAt, userAgent: '', id: regularUserId } },
-            },
-        });
+    headersAdmin = { Cookie: `session=${adminSession}` };
+    headersRegular = { Cookie: `session=${regularSession}` };
 
-        await minioClient.putObject('public', exstImgFilePath, loadTestNonSharedBuffer(), undefined, {
-            'exst-meta-test': 'exstImg',
-        });
+    await prisma.user.create({
+        data: {
+            email: 'admin@test.com',
+            name: 'Admin',
+            password: '1',
+            id: adminUserId,
+            role: 'ADMIN',
+            Session: { create: { expiresAt, userAgent: 'test', id: adminUserId } },
+        },
     });
 
-    test('regular user can not add public blog img', async () => {
-        const data = await fetch(apiUrl, {
-            method: 'POST',
-            body: getTestFileFormData(fileName),
-            headers: headersRegular,
-        }).then((res) => res.json());
-
-        expect(data.success).toBe(false);
-        expect(await getStatObject({ bucket: 'public', fileName: `blog/${fileName}` })).toBe(undefined);
+    await prisma.user.create({
+        data: {
+            email: 'user@test.com',
+            name: 'User',
+            password: '2',
+            id: regularUserId,
+            role: 'USER',
+            Session: { create: { expiresAt, userAgent: 'test', id: regularUserId } },
+        },
     });
 
-    test('admin can add public blog img', async () => {
-        const data = await fetch(apiUrl, {
-            method: 'POST',
-            body: getTestFileFormData(fileName),
-            headers: headersAdmin,
-        }).then((res) => res.json());
-
-        expect(data.success).toBe(true);
-        expect(await getStatObject({ bucket: 'public', fileName: `blog/${fileName}` })).not.toBe(undefined);
-        const exstObj = await getStatObject({ bucket: 'public', fileName: exstImgFilePath });
-        expect(exstObj?.metaData['exst-meta-test']).toBe('exstImg');
+    await minioClient.putObject('public', exstImgFilePath, loadTestNonSharedBuffer(), undefined, {
+        'exst-meta-test': 'exstImg',
     });
+});
 
-    test('regular user can not remove public blog img', async () => {
-        const formData = new FormData();
-        formData.set('filePath', `blog/${fileName}`);
-
-        const data = await fetch(apiUrl, {
-            method: 'DELETE',
-            body: formData,
-            headers: headersRegular,
-        }).then((res) => res.json());
-
-        expect(data.success).toBe(false);
-        expect(await getStatObject({ bucket: 'public', fileName: `blog/${fileName}` })).not.toBe(undefined);
+test('regular user can not add public blog img', async () => {
+    const res = await fetch(apiUrl, {
+        method: 'POST',
+        body: getTestFileFormData(fileName),
+        headers: headersRegular,
     });
+    const data = await res.json();
 
-    test('admin can remove public blog img', async () => {
-        const formData = new FormData();
-        formData.set('filePath', `blog/${fileName}`);
+    expect(data.success).toBe(false);
+    expect(await getStatObject({ bucket: 'public', fileName: `blog/${fileName}` })).toBeUndefined();
+});
 
-        const data = await fetch(apiUrl, {
-            method: 'DELETE',
-            body: formData,
-            headers: headersAdmin,
-        }).then((res) => res.json());
-
-        expect(data.success).toBe(true);
-        expect(await getStatObject({ bucket: 'public', fileName: `blog/${fileName}` })).toBe(undefined);
-        const exstObj = await getStatObject({ bucket: 'public', fileName: exstImgFilePath });
-        expect(exstObj?.metaData['exst-meta-test']).toBe('exstImg');
+test('admin can add public blog img', async () => {
+    const res = await fetch(apiUrl, {
+        method: 'POST',
+        body: getTestFileFormData(fileName),
+        headers: headersAdmin,
     });
+    const data = await res.json();
+
+    expect(data.success).toBe(true);
+    const stat = await getStatObject({ bucket: 'public', fileName: `blog/${fileName}` });
+    expect(stat).toBeDefined();
+
+    const exstObj = await getStatObject({ bucket: 'public', fileName: exstImgFilePath });
+    expect(exstObj?.metaData['exst-meta-test']).toBe('exstImg');
+});
+
+test('regular user can not remove public blog img', async () => {
+    await minioClient.putObject('public', `blog/${fileName}`, loadTestNonSharedBuffer());
+
+    const formData = new FormData();
+    formData.set('filePath', `blog/${fileName}`);
+
+    const res = await fetch(apiUrl, {
+        method: 'DELETE',
+        body: formData,
+        headers: headersRegular,
+    });
+    const data = await res.json();
+
+    expect(data.success).toBe(false);
+    expect(await getStatObject({ bucket: 'public', fileName: `blog/${fileName}` })).toBeDefined();
+});
+
+test('admin can remove public blog img', async () => {
+    await minioClient.putObject('public', `blog/${fileName}`, loadTestNonSharedBuffer());
+
+    const formData = new FormData();
+    formData.set('filePath', `blog/${fileName}`);
+
+    const res = await fetch(apiUrl, {
+        method: 'DELETE',
+        body: formData,
+        headers: headersAdmin,
+    });
+    const data = await res.json();
+
+    expect(data.success).toBe(true);
+    expect(await getStatObject({ bucket: 'public', fileName: `blog/${fileName}` })).toBeUndefined();
+
+    const exstObj = await getStatObject({ bucket: 'public', fileName: exstImgFilePath });
+    expect(exstObj?.metaData['exst-meta-test']).toBe('exstImg');
 });

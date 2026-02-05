@@ -36,9 +36,6 @@ beforeEach(async () => {
         },
     });
 
-    await minioClient.removeObject('main', logoPath1).catch(() => {});
-    await minioClient.removeObject('main', logoPath2).catch(() => {});
-
     await minioClient.putObject('main', logoPath2, loadTestNonSharedBuffer(), undefined, {
         'org2-meta-test': 'orgWithLogo',
     });

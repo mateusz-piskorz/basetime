@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/session';
 import { getQueryClient, trpc } from '@/lib/trpc/server-client';
+import { mockSession } from '../utils/mock-session';
 
 const employee = { id: 'u1', role: 'EMPLOYEE' } as const;
 const manager = { id: 'u2', role: 'MANAGER' } as const;
@@ -9,25 +9,23 @@ const user1 = { id: 'u4' };
 const user2 = { id: 'u5' };
 const orgId = 'oid';
 
-const mockedGetSession = getSession as jest.Mock;
 const queryClient = getQueryClient();
 
-afterEach(() => {
+beforeEach(async () => {
     queryClient.clear();
-});
 
-test('invitations setup', async () => {
+    const organization = await prisma.organization.create({
+        data: { name: 'organization1', currency: 'EUR', id: orgId },
+    });
+
     const users = [employee, manager, owner, user1, user2];
-    const organization = await prisma.organization.create({ data: { name: 'organization1', currency: 'EUR', id: orgId } });
 
-    for (const index in users) {
-        const user = users[index];
-
+    for (const [index, user] of users.entries()) {
         await prisma.user.create({
             data: {
-                email: index,
-                name: index,
-                password: index,
+                email: `user${index}@test.com`,
+                name: `User ${index}`,
+                password: 'password',
                 id: user.id,
                 ...('role' in user && {
                     Members: {
@@ -41,99 +39,85 @@ test('invitations setup', async () => {
         });
     }
 
-    await prisma.invitation.create({ data: { organizationId: orgId, userId: user1.id, status: 'CANCELED' } });
-    await prisma.invitation.create({ data: { organizationId: orgId, userId: user1.id, status: 'SENT' } });
+    await prisma.invitation.createMany({
+        data: [
+            { organizationId: orgId, userId: user1.id, status: 'CANCELED' },
+            { organizationId: orgId, userId: user1.id, status: 'SENT' },
+        ],
+    });
 });
 
 test('returns empty array for unauthenticated users', async () => {
-    expect((await queryClient.fetchQuery(trpc.invitations.queryOptions({ orgId }))).data).toEqual([]);
+    const res = await queryClient.fetchQuery(trpc.invitations.queryOptions({ orgId }));
+    expect(res.data).toEqual([]);
 });
 
 test('employee cannot see invitations', async () => {
-    const { id } = employee;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(employee.id);
     const res = await queryClient.fetchQuery(trpc.invitations.queryOptions({ orgId }));
-
-    expect(res.data.length).toBe(0);
+    expect(res.data).toHaveLength(0);
 });
 
 test('random user cannot see invitations', async () => {
-    const { id } = user2;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(user2.id);
     const res = await queryClient.fetchQuery(trpc.invitations.queryOptions({}));
-
-    expect(res.data.length).toBe(0);
+    expect(res.data).toHaveLength(0);
 });
 
 test('invited user can see invitation', async () => {
-    const { id } = user1;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(user1.id);
     const res = await queryClient.fetchQuery(trpc.invitations.queryOptions({}));
-
-    expect(res.data.length).toBe(2);
+    expect(res.data).toHaveLength(2);
 });
 
 test('manager can see invitations', async () => {
-    const { id } = manager;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(manager.id);
     const res = await queryClient.fetchQuery(trpc.invitations.queryOptions({ orgId }));
-
-    expect(res.data.length).toBe(2);
+    expect(res.data).toHaveLength(2);
 });
 
 test('owner can see invitations', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const res = await queryClient.fetchQuery(trpc.invitations.queryOptions({ orgId }));
-
-    expect(res.data.length).toBe(2);
+    expect(res.data).toHaveLength(2);
 });
 
 test('invitations filtered by status', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const res = await queryClient.fetchQuery(trpc.invitations.queryOptions({ orgId, status: ['SENT'] }));
-
-    expect(res.data.length).toBe(1);
+    expect(res.data).toHaveLength(1);
     expect(res.data[0].status).toBe('SENT');
 });
 
 test('invitations query filter', async () => {
-    const { id } = user1;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(user1.id);
     const res = await queryClient.fetchQuery(trpc.invitations.queryOptions({ q: 'incorrect query', queryColumn: 'ORGANIZATION_NAME' }));
-    expect(res.data.length).toBe(0);
+    expect(res.data).toHaveLength(0);
 
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(user1.id);
     const res2 = await queryClient.fetchQuery(trpc.invitations.queryOptions({ q: 'organiz', queryColumn: 'ORGANIZATION_NAME' }));
-    expect(res2.data.length).toBe(2);
+    expect(res2.data).toHaveLength(2);
 });
 
 test('invitations pagination', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const page1 = await queryClient.fetchQuery(trpc.invitations.queryOptions({ orgId, limit: 1, page: 1 }));
+    expect(page1.data).toHaveLength(1);
 
-    expect(page1.data.length).toBe(1);
-
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const page2 = await queryClient.fetchQuery(trpc.invitations.queryOptions({ orgId, limit: 1, page: 2 }));
-    expect(page2.data.length).toBe(1);
+    expect(page2.data).toHaveLength(1);
     expect(page2.data[0].id).not.toBe(page1.data[0].id);
 });
 
 test('invitations orderBy', async () => {
-    const { id } = owner;
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const desc = await queryClient.fetchQuery(trpc.invitations.queryOptions({ orgId, order_column: 'status', order_direction: 'desc' }));
-    const [desc1, desc2] = desc.data;
-    // it's by enum index, not alphabetically
-    expect(desc1.status).toBe('CANCELED');
-    expect(desc2.status).toBe('SENT');
+    expect(desc.data[0].status).toBe('CANCELED');
+    expect(desc.data[1].status).toBe('SENT');
 
-    mockedGetSession.mockReturnValueOnce({ userId: id });
+    mockSession(owner.id);
     const asc = await queryClient.fetchQuery(trpc.invitations.queryOptions({ orgId, order_column: 'status', order_direction: 'asc' }));
-    const [asc1, asc2] = asc.data;
-    expect(asc1.status).toBe('SENT');
-    expect(asc2.status).toBe('CANCELED');
+    expect(asc.data[0].status).toBe('SENT');
+    expect(asc.data[1].status).toBe('CANCELED');
 });

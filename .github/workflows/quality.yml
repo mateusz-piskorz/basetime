@@ -18,7 +18,9 @@ jobs:
         run: npm install
 
       - name: Copy Environment File
-        run: cp .env.example .env
+        run: |
+          cp .env.example .env
+          cat .env >> $GITHUB_ENV
 
       - name: Build and run dev containers
         run: |

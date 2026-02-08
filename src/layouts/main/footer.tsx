@@ -71,12 +71,6 @@ const serviceLinks = [
     { text: 'Google Ads', href: data.services.googleads },
 ];
 
-const helpfulLinks = [
-    { text: 'FAQs', href: data.help.faqs },
-    { text: 'Support', href: data.help.support },
-    { text: 'Live Chat', href: data.help.livechat, hasIndicator: true },
-];
-
 const contactInfo = [
     { icon: Mail, text: data.contact.email },
     { icon: Phone, text: data.contact.phone },

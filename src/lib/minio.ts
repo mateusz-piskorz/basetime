@@ -5,7 +5,7 @@ import 'server-only';
 type Bucket = 'main' | 'public';
 
 export const minioClient = new Minio.Client({
-    endPoint: process.env.NEXT_PUBLIC_MINIO_ENDPOINT!,
+    endPoint: process.env.NEXT_PUBLIC_MINIO_ENDPOINT === 'localhost' ? 'minio' : process.env.NEXT_PUBLIC_MINIO_ENDPOINT!,
     port: process.env.MINIO_PORT ? Number(process.env.MINIO_PORT) : undefined,
     accessKey: process.env.MINIO_USER,
     secretKey: process.env.MINIO_PASSWORD,

@@ -4,14 +4,14 @@ import path from 'path';
 const __dirname = path.dirname(__filename);
 
 export function loadTestNonSharedBuffer() {
-    const pngPath = path.join(__dirname, 'example.png');
+    const pngPath = path.join(__dirname, 'example.jpg');
     return fs.readFileSync(pngPath);
 }
 
 export function loadTestFile(fileName?: string) {
-    const pngPath = path.join(__dirname, 'example.png');
+    const pngPath = path.join(__dirname, 'example.jpg');
     const buffer = fs.readFileSync(pngPath);
-    return new File([buffer], fileName || 'example.png', { type: 'image/png' });
+    return new File([buffer], fileName || 'example.jpg', { type: 'image/jpg' });
 }
 
 export function getTestFileFormData(fileName?: string) {

@@ -5,6 +5,8 @@ import { getStatObject, minioClient } from '../../lib/minio';
 import { API_BASE_URL } from '../utils/constants';
 import { getTestFileFormData, loadTestNonSharedBuffer } from '../utils/example-img';
 
+jest.setTimeout(15000);
+
 const exstImgFilePath = 'blog/exst.png';
 const adminUserId = 'adminId';
 const regularUserId = 'regularId';

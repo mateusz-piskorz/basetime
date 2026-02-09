@@ -74,7 +74,7 @@ jobs:
         run: |
           docker images -f "dangling=true" -q | xargs -r docker rmi
 
-      - name: db and minio
+      - name: minio
         run: |
           docker compose -f docker-compose.prod.yml up -d minio
 

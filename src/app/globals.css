@@ -82,9 +82,9 @@
 }
 
 .dark {
-    --background: hsl(300, 10, 10);
+    --background: hsl(300, 10, 6);
     --foreground: hsl(300, 10, 90);
-    --card: hsl(300, 10, 15);
+    --card: hsl(300, 10, 10);
     --card-foreground: hsl(300, 10, 90);
     --popover: hsl(300, 10, 10);
     --popover-foreground: hsl(300, 10, 90);

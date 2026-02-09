@@ -131,7 +131,7 @@ export const seedBlogPostComments = action(seedBlogPostCommentsSchema, async ({ 
                         BlogPostComments: {
                             createMany: {
                                 data: await Promise.all(
-                                    Array.from({ length: 5 }, (_, index) => index).map(async (e) => {
+                                    Array.from({ length: 5 }, (_, index) => index).map(async () => {
                                         const parentPost = await prisma.blogPostComment.findMany({
                                             take: 1,
                                             skip: Math.floor(Math.random() * count),

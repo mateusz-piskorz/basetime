@@ -48,9 +48,7 @@ jobs:
       ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
       NEXT_PUBLIC_URL: ${{ vars.NEXT_PUBLIC_URL }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
-      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
-      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
       MINIO_ROOT_USER: ${{ vars.MINIO_ROOT_USER }}
       MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
       MINIO_USER: ${{ vars.MINIO_USER }}
@@ -78,7 +76,7 @@ jobs:
 
       - name: db and minio
         run: |
-          docker compose -f docker-compose.prod.yml up -d db minio
+          docker compose -f docker-compose.prod.yml up -d minio
 
       - name: setup-minio-buckets
         run: |

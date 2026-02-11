@@ -1,7 +1,5 @@
 https://www.basetime.online/
 
-https://www.juzwystawiam.pl/
-
 # Usage
 
 ```shell

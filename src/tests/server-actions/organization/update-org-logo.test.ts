@@ -36,14 +36,14 @@ beforeEach(async () => {
         },
     });
 
-    await minioClient.putObject('main', logoPath2, loadTestNonSharedBuffer(), undefined, {
+    await minioClient.putObject(process.env.MINIO_BUCKET_PRIVATE ?? '', logoPath2, loadTestNonSharedBuffer(), undefined, {
         'org2-meta-test': 'orgWithLogo',
     });
 });
 
 describe('updateOrgLogo', () => {
     const checkOrg2LogoIntact = async () => {
-        const obj = await getStatObject({ bucket: 'main', fileName: logoPath2 });
+        const obj = await getStatObject({ bucketName: 'private', fileName: logoPath2 });
         expect(obj?.metaData['org2-meta-test']).toBe('orgWithLogo');
     };
 
@@ -53,7 +53,7 @@ describe('updateOrgLogo', () => {
         const res = await updateOrgLogo({ logoBase64: getTestBase64String(), orgId: orgId1 });
 
         expect(res.success).toBe(false);
-        expect(await getStatObject({ bucket: 'main', fileName: logoPath1 })).toBe(undefined);
+        expect(await getStatObject({ bucketName: 'private', fileName: logoPath1 })).toBe(undefined);
         await checkOrg2LogoIntact();
     });
 
@@ -63,7 +63,7 @@ describe('updateOrgLogo', () => {
         const res = await updateOrgLogo({ logoBase64: getTestBase64String(), orgId: orgId1 });
 
         expect(res.success).toBe(true);
-        expect(await getStatObject({ bucket: 'main', fileName: logoPath1 })).not.toBe(undefined);
+        expect(await getStatObject({ bucketName: 'private', fileName: logoPath1 })).not.toBe(undefined);
         await checkOrg2LogoIntact();
     });
 
@@ -75,7 +75,7 @@ describe('updateOrgLogo', () => {
         const res = await updateOrgLogo({ logoBase64: null, orgId: orgId1 });
 
         expect(res.success).toBe(false);
-        expect(await getStatObject({ bucket: 'main', fileName: logoPath1 })).not.toBe(undefined);
+        expect(await getStatObject({ bucketName: 'private', fileName: logoPath1 })).not.toBe(undefined);
         await checkOrg2LogoIntact();
     });
 
@@ -87,7 +87,7 @@ describe('updateOrgLogo', () => {
         const res = await updateOrgLogo({ logoBase64: null, orgId: orgId1 });
 
         expect(res.success).toBe(true);
-        expect(await getStatObject({ bucket: 'main', fileName: logoPath1 })).toBe(undefined);
+        expect(await getStatObject({ bucketName: 'private', fileName: logoPath1 })).toBe(undefined);
         await checkOrg2LogoIntact();
     });
 });

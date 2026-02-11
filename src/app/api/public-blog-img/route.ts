@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
         const resizedBuffer = await sharp(buffer).toBuffer();
 
-        await uploadFile({ bucket: 'public', file: resizedBuffer, fileName: `blog/${file.name}` });
+        await uploadFile({ bucketName: 'public', file: resizedBuffer, fileName: `blog/${file.name}` });
 
         return NextResponse.json({ success: true, message: 'img created' });
     } catch {
@@ -35,7 +35,7 @@ export async function DELETE(req: NextRequest) {
         const formData = await req.formData();
         const filePath = formData.get('filePath') as unknown as string;
 
-        await deleteFile({ bucket: 'public', fileName: filePath });
+        await deleteFile({ bucketName: 'public', fileName: filePath });
 
         return NextResponse.json({ success: true, message: 'img deleted' });
     } catch {

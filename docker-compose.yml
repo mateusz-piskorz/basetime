@@ -19,8 +19,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      minio:
-        condition: service_healthy
     command: >
       sh -c "
       npm install &&
@@ -28,13 +26,7 @@ services:
       npx prisma generate &&
       npm run build &&
       node --experimental-strip-types ./scripts/basetime-org-setup.ts &&
-      node --experimental-strip-types ./scripts/admin-user-setup.ts &&
-      /usr/bin/mc alias set minioalias http://minio:9000 \$MINIO_ROOT_USER \$MINIO_ROOT_PASSWORD &&
-      /usr/bin/mc mb --ignore-existing minioalias/main &&
-      /usr/bin/mc mb --ignore-existing minioalias/public &&
-      /usr/bin/mc anonymous set download minioalias/public &&
-      /usr/bin/mc admin user add minioalias \$MINIO_USER \$MINIO_PASSWORD &&
-      /usr/bin/mc admin policy attach minioalias readwrite --user \$MINIO_USER
+      node --experimental-strip-types ./scripts/admin-user-setup.ts
       "
 
   db:
@@ -47,30 +39,30 @@ services:
       POSTGRES_USER: '${POSTGRES_USER}'
       POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME:-sail} -d ${DB_DATABASE:-laravel}']
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
       interval: 5s
       timeout: 5s
       retries: 5
     ports:
       - '5432:5432'
 
-  minio:
-    image: quay.io/minio/minio:latest
-    container_name: minio
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: rootusername
-      MINIO_ROOT_PASSWORD: rootpassword
-    volumes:
-      - minio_data_dev:/var/lib/minio/data
-    healthcheck:
-      test: ['CMD', 'mc', 'ready', 'local']
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    ports:
-      - 9000:9000
-      - 9001:9001
+  # minio:
+  #   image: quay.io/minio/minio:latest
+  #   container_name: minio
+  #   command: server /data --console-address ":9001"
+  #   environment:
+  #     MINIO_ROOT_USER: '${MINIO_ACCESS_KEY}'
+  #     MINIO_ROOT_PASSWORD: '${MINIO_SECRET_KEY}'
+  #   volumes:
+  #     - minio_data_dev:/var/lib/minio/data
+  #   healthcheck:
+  #     test: ['CMD', 'mc', 'ready', 'local']
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 5
+  #   ports:
+  #     - 9000:9000
+  #     - 9001:9001
 
 volumes:
   db_data_dev:

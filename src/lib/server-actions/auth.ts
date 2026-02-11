@@ -39,8 +39,7 @@ export const signup = async (data: z.infer<typeof registerSchema>) => {
         await createSession({ userAgent: (await headers()).get('user-agent') || '', userId: user.id });
 
         return { success: true };
-    } catch (e) {
-        console.log(e);
+    } catch {
         return { success: false, message: 'Error - signup' };
     }
 };

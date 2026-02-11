@@ -119,9 +119,7 @@ export const getAppEnv = () => {
 };
 
 export const getUserAvatarUrl = ({ avatarId }: { avatarId: string }) => {
-    return process.env.NEXT_PUBLIC_MINIO_ENDPOINT === 'localhost'
-        ? `http://minio:9000/public/user-avatar/${avatarId}.jpeg`
-        : `https://${process.env.NEXT_PUBLIC_MINIO_ENDPOINT}/public/user-avatar/${avatarId}.jpeg`;
+    return `${process.env.NEXT_PUBLIC_MINIO_ENDPOINT}/user-avatar/${avatarId}.jpeg`;
 };
 
 const generateRandomString = (length = 6) =>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { DurationField } from '@/components/common/form-fields/duration-field';
 import { HexPickerField } from '@/components/common/form-fields/hex-picker-field';
 import { InputField } from '@/components/common/form-fields/input-field';
@@ -13,6 +12,7 @@ import { formatMinutes } from '@/lib/utils/common';
 import { upsertProjectSchema } from '@/lib/zod/project-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import durationParser from 'parse-duration';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';

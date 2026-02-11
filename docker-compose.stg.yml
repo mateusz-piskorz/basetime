@@ -18,41 +18,15 @@ services:
       NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
       SESSION_SECRET: ${SESSION_SECRET}
       DATABASE_URL: ${DATABASE_URL}
-      NEXT_PUBLIC_MINIO_ENDPOINT: ${NEXT_PUBLIC_MINIO_ENDPOINT}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       MINIO_SSL: ${MINIO_SSL}
-      MINIO_USER: ${MINIO_USER}
-      MINIO_PASSWORD: ${MINIO_PASSWORD}
+      MINIO_PORT: ${MINIO_PORT}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_BUCKET_PRIVATE: ${MINIO_BUCKET_PRIVATE}
+      MINIO_BUCKET_PUBLIC: ${MINIO_BUCKET_PUBLIC}
+      NEXT_PUBLIC_MINIO_ENDPOINT: ${NEXT_PUBLIC_MINIO_ENDPOINT}
     restart: unless-stopped
     ports:
       - 3001:3000
     entrypoint: ['npm', 'run', 'start:prod']
-
-  setup-minio-buckets:
-    build:
-      context: .
-      dockerfile: Dockerfile-setup-minio-buckets
-    environment:
-      NEXT_PUBLIC_MINIO_ENDPOINT: ${NEXT_PUBLIC_MINIO_ENDPOINT}
-      MINIO_SSL: ${MINIO_SSL}
-      MINIO_USER: ${MINIO_USER}
-      MINIO_PASSWORD: ${MINIO_PASSWORD}
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    entrypoint: /app/scripts/minio/index.sh
-
-  minio:
-    image: quay.io/minio/minio:latest
-    container_name: minio_stg
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    volumes:
-      - minio_data_stg:/var/lib/minio/data
-    healthcheck:
-      test: ['CMD', 'mc', 'ready', 'local']
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    ports:
-      - 9001:9000

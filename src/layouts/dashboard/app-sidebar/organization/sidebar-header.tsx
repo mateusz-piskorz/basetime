@@ -1,4 +1,3 @@
-import React from 'react';
 import { CreateOrganizationDialog } from '@/components/common/create-organization-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -6,6 +5,7 @@ import { SidebarHeader as SidebarHeaderUI, SidebarMenu, SidebarMenuButton, Sideb
 import { useMember } from '@/lib/hooks/use-member';
 import { trpc } from '@/lib/trpc/client';
 import { cn, getInitials } from '@/lib/utils/common';
+import React from 'react';
 
 import { ChevronsUpDown, Plus } from 'lucide-react';
 import Link from 'next/link';

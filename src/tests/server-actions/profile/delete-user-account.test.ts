@@ -31,9 +31,9 @@ test('User can delete account and organization', async () => {
 test('deleteUserAccount also deletes user avatar', async () => {
     mockSession(userId);
     const fileName = `user/${userId}/avatar.png`;
-    await uploadFile({ bucket: 'main', file: loadTestNonSharedBuffer(), fileName });
+    await uploadFile({ bucketName: 'private', file: loadTestNonSharedBuffer(), fileName });
 
     await deleteUserAccount({ password });
 
-    expect(await getStatObject({ bucket: 'main', fileName })).toBe(undefined);
+    expect(await getStatObject({ bucketName: 'private', fileName })).toBe(undefined);
 });

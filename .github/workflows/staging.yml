@@ -51,12 +51,14 @@ jobs:
       NEXT_PUBLIC_URL: ${{ vars.NEXT_PUBLIC_URL }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      MINIO_ROOT_USER: ${{ vars.MINIO_ROOT_USER }}
-      MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
-      MINIO_USER: ${{ vars.MINIO_USER }}
-      MINIO_PASSWORD: ${{ secrets.MINIO_PASSWORD }}
-      NEXT_PUBLIC_MINIO_ENDPOINT: ${{ vars.NEXT_PUBLIC_MINIO_ENDPOINT }}
+      MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
+      MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
       MINIO_SSL: ${{ vars.MINIO_SSL }}
+      MINIO_PORT: ${{ vars.MINIO_PORT }}
+      MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
+      MINIO_BUCKET_PRIVATE: ${{ vars.MINIO_BUCKET_PRIVATE }}
+      MINIO_BUCKET_PUBLIC: ${{ vars.MINIO_BUCKET_PUBLIC }}
+      NEXT_PUBLIC_MINIO_ENDPOINT: ${{ vars.NEXT_PUBLIC_MINIO_ENDPOINT }}
 
     defaults:
       run:

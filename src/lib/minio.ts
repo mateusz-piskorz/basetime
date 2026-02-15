@@ -74,3 +74,23 @@ const getPresignedUrl = async ({ bucketName, fileName }: { bucketName: BucketNam
 export const getOrgLogoUrl = async ({ organizationId }: { organizationId: string }) => {
     return await getPresignedUrl({ bucketName: 'private', fileName: `organization/${organizationId}/logo.png` });
 };
+
+export const clearBucket = async (bucketName: BucketName) => {
+    try {
+        const exists = await minioClient.bucketExists(bucketMap[bucketName]);
+        if (!exists) return;
+
+        const objectsList: string[] = [];
+        const stream = minioClient.listObjects(bucketMap[bucketName], '', true);
+
+        for await (const obj of stream) {
+            if (obj.name) objectsList.push(obj.name);
+        }
+
+        if (objectsList.length > 0) {
+            await minioClient.removeObjects(bucketMap[bucketName], objectsList);
+        }
+    } catch (error) {
+        console.error(`error - clearBucket: ${bucketMap[bucketName]}:`, error);
+    }
+};

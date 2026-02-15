@@ -4,6 +4,4 @@ COPY --from=minio/mc:latest /usr/bin/mc /usr/bin/mc
 
 WORKDIR /app
 
-COPY . .
-
 EXPOSE 3000

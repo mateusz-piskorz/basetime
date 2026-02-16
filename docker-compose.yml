@@ -27,10 +27,9 @@ services:
         condition: service_healthy
     command: >
       sh -c " 
-      npm ci
-      npx prisma generate
-      npx prisma migrate deploy &&
-      npm run build &&
+      npm ci &&
+      npx prisma generate &&
+      npx prisma migrate dev &&
       node --experimental-strip-types ./scripts/basetime-org-setup.ts &&
       node --experimental-strip-types ./scripts/admin-user-setup.ts &&
       /usr/bin/mc alias set minioalias http://minio:9000 \$MINIO_ACCESS_KEY \$MINIO_SECRET_KEY &&

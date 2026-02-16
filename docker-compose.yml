@@ -1,7 +1,7 @@
 services:
   app:
     # build: .
-    # pull_policy: build
+    pull_policy: never
     image: app
     container_name: app
     ports:
@@ -26,10 +26,10 @@ services:
       minio:
         condition: service_healthy
     command: >
-      sh -c "
-      npm install &&
+      sh -c " 
+      npm ci
+      npx prisma generate
       npx prisma migrate deploy &&
-      npx prisma generate &&
       npm run build &&
       node --experimental-strip-types ./scripts/basetime-org-setup.ts &&
       node --experimental-strip-types ./scripts/admin-user-setup.ts &&

@@ -45,7 +45,6 @@ jobs:
     env:
       BT_USER_PASSWORD: ${{ secrets.BT_USER_PASSWORD }}
       ADMIN_USER_PASSWORD: ${{ secrets.ADMIN_USER_PASSWORD }}
-      NEXT_PUBLIC_URL: ${{ vars.NEXT_PUBLIC_URL }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
@@ -55,7 +54,6 @@ jobs:
       MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
       MINIO_BUCKET_PRIVATE: ${{ vars.MINIO_BUCKET_PRIVATE }}
       MINIO_BUCKET_PUBLIC: ${{ vars.MINIO_BUCKET_PUBLIC }}
-      NEXT_PUBLIC_MINIO_ENDPOINT: ${{ vars.NEXT_PUBLIC_MINIO_ENDPOINT }}
 
     defaults:
       run:
@@ -74,15 +72,6 @@ jobs:
       - name: Remove dangling images
         run: |
           docker images -f "dangling=true" -q | xargs -r docker rmi
-
-      - name: minio
-        run: |
-          docker compose -f docker-compose.stg.yml up -d minio
-
-      - name: setup-minio-buckets
-        run: |
-          docker compose -f docker-compose.stg.yml up -d --build --force-recreate setup-minio-buckets
-          sleep 5
 
       - name: app
         run: docker compose -f docker-compose.stg.yml up -d --build --force-recreate app

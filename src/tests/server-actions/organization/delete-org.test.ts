@@ -64,14 +64,14 @@ describe('deleteOrg', () => {
         mockSession(owner.id);
 
         const fileName = `organization/${orgId}/logo.png`;
-        await uploadFile({ bucket: 'main', file: loadTestNonSharedBuffer(), fileName });
+        await uploadFile({ bucketName: 'private', file: loadTestNonSharedBuffer(), fileName });
 
         const res = await performDelete();
 
         expect(res.success).toBe(true);
         expect(await prisma.organization.findUnique({ where: { id: orgId } })).toBeNull();
 
-        const fileStat = await getStatObject({ bucket: 'main', fileName });
+        const fileStat = await getStatObject({ bucketName: 'private', fileName });
         expect(fileStat).toBe(undefined);
     });
 });

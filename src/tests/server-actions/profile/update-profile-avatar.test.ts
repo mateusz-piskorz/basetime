@@ -11,7 +11,7 @@ beforeEach(async () => {
     await prisma.user.create({ data: { email: '1', name: '', password: '', id: userId1 } });
     await prisma.user.create({ data: { email: '2', name: '', password: '', id: user2.id, avatarId: user2.avatarId } });
 
-    await minioClient.putObject('public', `user-avatar/${user2.avatarId}.jpeg`, loadTestNonSharedBuffer(), undefined, {
+    await minioClient.putObject(process.env.MINIO_BUCKET_PUBLIC ?? '', `user-avatar/${user2.avatarId}.jpeg`, loadTestNonSharedBuffer(), undefined, {
         'user2-meta-test': 'userWithAvatar',
     });
 });
@@ -22,7 +22,7 @@ test('user can update profile avatar', async () => {
     expect(res.success).toBe(true);
 
     const user = await prisma.user.findUnique({ where: { id: userId1 } });
-    const stat = await getStatObject({ bucket: 'public', fileName: `user-avatar/${user?.avatarId}.jpeg` });
+    const stat = await getStatObject({ bucketName: 'public', fileName: `user-avatar/${user?.avatarId}.jpeg` });
     expect(stat).not.toBe(undefined);
 });
 
@@ -33,6 +33,6 @@ test('user can remove profile avatar', async () => {
     const res = await updateProfileAvatar({ avatarBase64: null });
     expect(res.success).toBe(true);
 
-    const stat = await getStatObject({ bucket: 'public', fileName: `user-avatar/${initialUser?.avatarId}.jpeg` });
+    const stat = await getStatObject({ bucketName: 'public', fileName: `user-avatar/${initialUser?.avatarId}.jpeg` });
     expect(stat).toBe(undefined);
 });

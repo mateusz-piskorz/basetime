@@ -86,9 +86,9 @@ export const updateOrgLogo = action(updateOrgLogoSchema, async ({ logoBase64, or
             const buffer = await validateBase64({ base64: logoBase64, type: 'png', height: 276, width: 276 });
             if (!buffer) return { success: false, message: 'Error validating fields' };
 
-            await uploadFile({ bucket: 'main', file: buffer, fileName, contentType: 'image/png' });
+            await uploadFile({ bucketName: 'private', file: buffer, fileName, contentType: 'image/png' });
         } else {
-            await deleteFile({ bucket: 'main', fileName });
+            await deleteFile({ bucketName: 'private', fileName });
         }
 
         return { success: true };
@@ -108,7 +108,7 @@ export const deleteOrg = action(deleteOrgSchemaS, async ({ orgId, password }, { 
         await prisma.organization.delete({ where: { id: orgId, Members: { some: { userId, role: 'OWNER' } } } });
 
         const fileName = `organization/${orgId}/logo.png`;
-        await deleteFile({ bucket: 'main', fileName });
+        await deleteFile({ bucketName: 'private', fileName });
 
         return { success: true };
     } catch {

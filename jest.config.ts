@@ -9,6 +9,7 @@ const config: Config = {
         '^.+\\.(js|jsx)$': ['babel-jest', { configFile: './src/tests/babel.config.js' }],
     },
     transformIgnorePatterns: ['node_modules/(?!jose)'],
+    modulePathIgnorePatterns: ['<rootDir>/.next/'],
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',

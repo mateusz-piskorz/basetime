@@ -44,12 +44,12 @@ export const updateProfileAvatar = action(updateProfileAvatarSchema, async ({ av
 
             const newAvatarId = createId();
 
-            if (avatarId) await deleteFile({ bucket: 'public', fileName: `user-avatar/${avatarId}.jpeg` });
+            if (avatarId) await deleteFile({ bucketName: 'public', fileName: `user-avatar/${avatarId}.jpeg` });
 
-            await uploadFile({ bucket: 'public', file: buffer, fileName: `user-avatar/${newAvatarId}.jpeg`, contentType: 'image/jpeg' });
+            await uploadFile({ bucketName: 'public', file: buffer, fileName: `user-avatar/${newAvatarId}.jpeg`, contentType: 'image/jpeg' });
             await prisma.user.update({ where: { id: userId }, data: { avatarId: newAvatarId } });
         } else {
-            if (avatarId) await deleteFile({ bucket: 'public', fileName: `user-avatar/${avatarId}.jpeg` });
+            if (avatarId) await deleteFile({ bucketName: 'public', fileName: `user-avatar/${avatarId}.jpeg` });
             await prisma.user.update({ where: { id: userId }, data: { avatarId: null } });
         }
 
@@ -80,7 +80,7 @@ export const deleteUserAccount = action(deleteUserAccountSchema, async ({ passwo
         await prisma.user.delete({ where: { id: userId } });
 
         const fileName = `user/${userId}/avatar.png`;
-        await deleteFile({ bucket: 'main', fileName });
+        await deleteFile({ bucketName: 'private', fileName });
 
         return { success: true };
     } catch {

@@ -14,6 +14,7 @@ type Props = {
 
 export function UserInfo({ name, avatarSrc, textUnder, currentUserIndicator, avatarId, size }: Props) {
     const avatar = avatarId ? getUserAvatarUrl({ avatarId }) : undefined;
+
     return (
         <>
             <Avatar className={cn('h-8 w-8 overflow-hidden rounded-full border', size === 'lg' && 'h-40 w-40')}>

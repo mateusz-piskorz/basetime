@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
@@ -6,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { TypedFieldPath } from '@/lib/types/common';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
+import React from 'react';
 import { FieldValues, UseFormReturn } from 'react-hook-form';
 
 type FieldType = Date;

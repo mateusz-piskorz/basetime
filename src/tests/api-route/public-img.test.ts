@@ -47,7 +47,7 @@ beforeEach(async () => {
         },
     });
 
-    await minioClient.putObject('public', exstImgFilePath, loadTestNonSharedBuffer(), undefined, {
+    await minioClient.putObject(process.env.MINIO_BUCKET_PUBLIC ?? '', exstImgFilePath, loadTestNonSharedBuffer(), undefined, {
         'exst-meta-test': 'exstImg',
     });
 });
@@ -61,7 +61,7 @@ test('regular user can not add public blog img', async () => {
     const data = await res.json();
 
     expect(data.success).toBe(false);
-    expect(await getStatObject({ bucket: 'public', fileName: `blog/${fileName}` })).toBeUndefined();
+    expect(await getStatObject({ bucketName: 'public', fileName: `blog/${fileName}` })).toBeUndefined();
 });
 
 test('admin can add public blog img', async () => {
@@ -73,15 +73,15 @@ test('admin can add public blog img', async () => {
     const data = await res.json();
 
     expect(data.success).toBe(true);
-    const stat = await getStatObject({ bucket: 'public', fileName: `blog/${fileName}` });
+    const stat = await getStatObject({ bucketName: 'public', fileName: `blog/${fileName}` });
     expect(stat).toBeDefined();
 
-    const exstObj = await getStatObject({ bucket: 'public', fileName: exstImgFilePath });
+    const exstObj = await getStatObject({ bucketName: 'public', fileName: exstImgFilePath });
     expect(exstObj?.metaData['exst-meta-test']).toBe('exstImg');
 });
 
 test('regular user can not remove public blog img', async () => {
-    await minioClient.putObject('public', `blog/${fileName}`, loadTestNonSharedBuffer());
+    await minioClient.putObject(process.env.MINIO_BUCKET_PUBLIC ?? '', `blog/${fileName}`, loadTestNonSharedBuffer());
 
     const formData = new FormData();
     formData.set('filePath', `blog/${fileName}`);
@@ -94,11 +94,11 @@ test('regular user can not remove public blog img', async () => {
     const data = await res.json();
 
     expect(data.success).toBe(false);
-    expect(await getStatObject({ bucket: 'public', fileName: `blog/${fileName}` })).toBeDefined();
+    expect(await getStatObject({ bucketName: 'public', fileName: `blog/${fileName}` })).toBeDefined();
 });
 
 test('admin can remove public blog img', async () => {
-    await minioClient.putObject('public', `blog/${fileName}`, loadTestNonSharedBuffer());
+    await minioClient.putObject(process.env.MINIO_BUCKET_PUBLIC ?? '', `blog/${fileName}`, loadTestNonSharedBuffer());
 
     const formData = new FormData();
     formData.set('filePath', `blog/${fileName}`);
@@ -111,8 +111,8 @@ test('admin can remove public blog img', async () => {
     const data = await res.json();
 
     expect(data.success).toBe(true);
-    expect(await getStatObject({ bucket: 'public', fileName: `blog/${fileName}` })).toBeUndefined();
+    expect(await getStatObject({ bucketName: 'public', fileName: `blog/${fileName}` })).toBeUndefined();
 
-    const exstObj = await getStatObject({ bucket: 'public', fileName: exstImgFilePath });
+    const exstObj = await getStatObject({ bucketName: 'public', fileName: exstImgFilePath });
     expect(exstObj?.metaData['exst-meta-test']).toBe('exstImg');
 });

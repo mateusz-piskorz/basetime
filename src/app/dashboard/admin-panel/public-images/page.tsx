@@ -9,17 +9,14 @@ const PublicImagesPage = async () => {
     if (!user) return redirect('/');
     if (user.role !== 'ADMIN') return redirect('/dashboard');
 
-    const objects = await listObjects({ bucket: 'public', fileName: 'blog/' });
+    const objects = await listObjects({ bucketName: 'public', fileName: 'blog/' });
 
     return (
         <div className="flex flex-col items-center gap-4 py-12">
             <AddNewImg />
 
             {objects?.map((obj) => {
-                const url =
-                    process.env.NEXT_PUBLIC_MINIO_ENDPOINT === 'localhost'
-                        ? `http://minio:9000/public/${obj.name}`
-                        : `https://${process.env.NEXT_PUBLIC_MINIO_ENDPOINT}/public/${obj.name}`;
+                const url = `${process.env.NEXT_PUBLIC_MINIO_ENDPOINT}/${obj.name}`;
                 return <ImgCard imgPath={`${obj.name}`} alt={obj.name || ''} url={url} key={obj.etag} />;
             })}
         </div>

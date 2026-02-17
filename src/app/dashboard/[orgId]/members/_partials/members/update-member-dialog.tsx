@@ -1,4 +1,3 @@
-import React from 'react';
 import { CurrencyField } from '@/components/common/form-fields/currency-field';
 import { MultiSelectField } from '@/components/common/form-fields/multi-select-field';
 import { SelectField } from '@/components/common/form-fields/select-field';
@@ -11,6 +10,7 @@ import { trpc, TrpcRouterOutput } from '@/lib/trpc/client';
 import { updateMemberSchema } from '@/lib/zod/member-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MEMBER_ROLE } from '@prisma/client';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';

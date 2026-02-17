@@ -49,12 +49,7 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
       MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
-      MINIO_SSL: ${{ vars.MINIO_SSL }}
-      MINIO_PORT: ${{ vars.MINIO_PORT }}
       MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
-      MINIO_BUCKET_PRIVATE: ${{ vars.MINIO_BUCKET_PRIVATE }}
-      MINIO_BUCKET_PUBLIC: ${{ vars.MINIO_BUCKET_PUBLIC }}
-      NEXT_PUBLIC_MINIO_ENDPOINT: ${{ vars.NEXT_PUBLIC_MINIO_ENDPOINT }}
 
     defaults:
       run:

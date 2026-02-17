@@ -1,6 +1,5 @@
 services:
   app:
-    # build: .
     pull_policy: never
     image: app
     container_name: app

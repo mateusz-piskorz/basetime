@@ -9,7 +9,7 @@ services:
       network: host
       dockerfile: Dockerfile-prod
       args:
-        NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
+        NEXT_PUBLIC_URL: https://staging.basetime.online
         DATABASE_URL: ${DATABASE_URL}
         BT_USER_PASSWORD: ${BT_USER_PASSWORD}
         ADMIN_USER_PASSWORD: ${ADMIN_USER_PASSWORD}
@@ -18,17 +18,17 @@ services:
     environment:
       BT_USER_PASSWORD: ${BT_USER_PASSWORD}
       ADMIN_USER_PASSWORD: ${ADMIN_USER_PASSWORD}
-      NEXT_PUBLIC_URL: ${NEXT_PUBLIC_URL}
+      NEXT_PUBLIC_URL: https://staging.basetime.online
       SESSION_SECRET: ${SESSION_SECRET}
       DATABASE_URL: ${DATABASE_URL}
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-      MINIO_SSL: ${MINIO_SSL}
-      MINIO_PORT: ${MINIO_PORT}
+      MINIO_SSL: true
+      MINIO_PORT: 443
       MINIO_ENDPOINT: ${MINIO_ENDPOINT}
-      MINIO_BUCKET_PRIVATE: ${MINIO_BUCKET_PRIVATE}
-      MINIO_BUCKET_PUBLIC: ${MINIO_BUCKET_PUBLIC}
-      NEXT_PUBLIC_MINIO_ENDPOINT: ${NEXT_PUBLIC_MINIO_ENDPOINT}
+      MINIO_BUCKET_PRIVATE: basetime-stg-private
+      MINIO_BUCKET_PUBLIC: basetime-stg-public
+      NEXT_PUBLIC_MINIO_ENDPOINT: https://pub-7948a7aff65c43eea2f780146a7e3661.r2.dev
     restart: unless-stopped
     ports:
       - 3001:3000

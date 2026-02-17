@@ -113,8 +113,6 @@ async function reset() {
 }
 
 async function user() {
-    console.log('here123');
-    console.log(process.env.BT_USER_PASSWORD);
     const pwHash = await bcrypt.hash(process.env.BT_USER_PASSWORD!, 9);
 
     await prisma.user.createMany({ data: users.map(({ id, email, name }) => ({ id, email, name, password: pwHash })) });

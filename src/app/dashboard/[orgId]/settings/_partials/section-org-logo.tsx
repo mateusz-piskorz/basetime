@@ -18,8 +18,6 @@ export const SectionOrgLogo = () => {
     const trpcUtils = trpc.useUtils();
     const { orgLogo, orgId, orgName } = useMember();
 
-    console.log(orgLogo);
-
     return (
         <>
             <ConfirmDialog
